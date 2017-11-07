@@ -14,7 +14,9 @@ the things you launch most often first.
 
 # TODO Before Getting Beta Testers
 * Add Crashlytics crash reporting
-* Add Timber logging
+* Point Timber logs to Crashlytics
+* Run unit tests in Travis
+* Run Android Lint in Travis
 * Add a search button that filters the app list as you type
 * Keep per-app stats on:
   * Number of launches
@@ -37,3 +39,6 @@ Incorporate these stats in the scoring algorithm.
   * SMS
   * E-mail
   * Open Contact
+
+# DONE
+* Add Timber logging
