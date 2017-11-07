@@ -15,8 +15,10 @@ the things you launch most often first.
 # TODO Before Getting Beta Testers
 * Add Crashlytics crash reporting
 * Point Timber logs to Crashlytics
-* Run unit tests in Travis
-* Run Android Lint in Travis
+* Run unit tests in [Travis](https://travis-ci.org/)
+* Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
+* Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
+* Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
 * Add a search button that filters the app list as you type
 * Keep per-app stats on:
   * Number of launches
@@ -27,10 +29,10 @@ the things you launch most often first.
 # TODO Before First Public Release
 
 # TODO Misc
+* Add system settings to the list.
 * Add contacts to the list. Multiply contact scores by 0.5.
 * Keep per-app stats on launches per weekday vs launches per sat / sun.
 Incorporate these stats in the scoring algorithm.
-* Add system settings to the list.
 * Long clicking app should bring up a menu:
   * Show on Google Play
   * Uninstall
