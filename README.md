@@ -6,14 +6,14 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Installing on Johan's Phone
-* List installed apps
+* List launchable activities in `MainActivityFragment.java`
 * Present installed apps with icon and name in a grid
 * Launch app when clicked
 * Make the grid scrollable
 * Sort app list alphabetically by title
 
 # TODO Before Getting Beta Testers
-* Add Crashlytics crash reporting
+* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
 * Run unit tests in [Travis](https://travis-ci.org/)
 * Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
@@ -44,3 +44,4 @@ Incorporate these stats in the scoring algorithm.
 
 # DONE
 * Add Timber logging
+* List installed apps
