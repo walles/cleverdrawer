@@ -6,7 +6,6 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Installing on Johan's Phone
-* List launchable activities in `MainActivityFragment.java`
 * Present installed apps with icon and name in a grid
 * Launch app when clicked
 * Make the grid scrollable
@@ -45,3 +44,4 @@ Incorporate these stats in the scoring algorithm.
 # DONE
 * Add Timber logging
 * List installed apps
+* List launchable activities in `MainActivityFragment.java`
