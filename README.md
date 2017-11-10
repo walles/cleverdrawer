@@ -6,7 +6,6 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Installing on Johan's Phone
-* Put some contents in the grid. Anything goes.
 * Give the grid cells an image and a caption each
 * Present installed apps with icon and name in the grid
 * Launch app when clicked
@@ -34,6 +33,8 @@ the things you launch most often first.
 * Add contacts to the list. Multiply contact scores by 0.5.
 * Keep per-app stats on launches per weekday vs launches per sat / sun.
 Incorporate these stats in the scoring algorithm.
+* Keep per-app stats on launches vs most recently used other app. Incorporate
+these stats in the scoring algorithm.
 * Long clicking app should bring up a menu:
   * Show on Google Play
   * Uninstall
@@ -48,3 +49,4 @@ Incorporate these stats in the scoring algorithm.
 * List installed apps
 * List launchable activities in `MainActivityFragment.java`
 * Show a grid. It can be empty or have some contents.
+* Put some contents in the grid. Anything goes.
