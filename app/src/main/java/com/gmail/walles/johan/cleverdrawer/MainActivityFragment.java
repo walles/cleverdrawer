@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import timber.log.Timber;
@@ -31,6 +32,13 @@ public class MainActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         GridView gridView = view.findViewById(R.id.grid_view);
         gridView.setAdapter(new LaunchableAdapter(getContext()));
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
+                Timber.i("%s clicked", launchable.name);
+            }
+        });
         return view;
     }
 }
