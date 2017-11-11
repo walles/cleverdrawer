@@ -16,7 +16,7 @@ import java.util.TreeSet;
 
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
-    private final List<CharSequence> launchables;
+    private final List<Launchable> launchables;
 
     public LaunchableAdapter(Context context) {
         this.context = context;
@@ -47,23 +47,25 @@ class LaunchableAdapter extends BaseAdapter {
             view = new TextView(context);
         }
 
-        view.setText(launchables.get(i));
+        view.setText(launchables.get(i).name);
 
         return view;
     }
 
-    private static List<CharSequence> getLaunchables(Context context) {
+    private static List<Launchable> getLaunchables(Context context) {
         final PackageManager packageManager = context.getPackageManager();
 
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> resInfos = packageManager.queryIntentActivities(intent, 0);
 
-        SortedSet<CharSequence> activityNames = new TreeSet<>();
+        SortedSet<Launchable> launchables = new TreeSet<>();
         for(ResolveInfo resolveInfo : resInfos) {
-            activityNames.add(resolveInfo.loadLabel(packageManager));
+            Launchable launchable =
+                    new Launchable(resolveInfo.loadLabel(packageManager).toString());
+            launchables.add(launchable);
         }
 
-        return new ArrayList<>(activityNames);
+        return new ArrayList<>(launchables);
     }
 }

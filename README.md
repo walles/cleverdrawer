@@ -18,6 +18,7 @@ the things you launch most often first.
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
 * Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
 * Add a search button that filters the app list as you type
+* Test grid with different font sizes and app name lengths
 * Keep per-app stats on:
   * Number of launches
   * Time of first launch
