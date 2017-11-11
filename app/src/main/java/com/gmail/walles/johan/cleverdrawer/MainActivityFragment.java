@@ -1,8 +1,5 @@
 package com.gmail.walles.johan.cleverdrawer;
 
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,10 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
-
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import timber.log.Timber;
 
@@ -29,25 +22,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        listLaunchables();
-    }
-
-    private void listLaunchables() {
-        final PackageManager packageManager = getContext().getPackageManager();
-
-        Intent intent = new Intent(Intent.ACTION_MAIN, null);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> resInfos = packageManager.queryIntentActivities(intent, 0);
-
-        SortedSet<CharSequence> activityNames = new TreeSet<>();
-        for(ResolveInfo resolveInfo : resInfos) {
-            activityNames.add(resolveInfo.loadLabel(packageManager));
-        }
-
-        for (CharSequence activityName: activityNames) {
-            Timber.i("Launchable: %s", activityName);
-        }
     }
 
     @Override

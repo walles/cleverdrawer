@@ -6,11 +6,9 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Installing on Johan's Phone
-* Give the grid cells an image and a caption each
-* Present installed apps with icon and name in the grid
+* Add an icon above each app name
 * Launch app when clicked
 * Make the grid scrollable
-* Sort app list alphabetically by title
 
 # TODO Before Getting Beta Testers
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
@@ -50,3 +48,5 @@ these stats in the scoring algorithm.
 * List launchable activities in `MainActivityFragment.java`
 * Show a grid. It can be empty or have some contents.
 * Put some contents in the grid. Anything goes.
+* Sort app list alphabetically by title
+* List installed app names in the grid
