@@ -6,11 +6,10 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Installing on Johan's Phone
-* Add an icon above each app name
 * Launch app when clicked
-* Make the grid scrollable
 
 # TODO Before Getting Beta Testers
+* Adjust number of columns
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
 * Run unit tests in [Travis](https://travis-ci.org/)
@@ -51,3 +50,5 @@ these stats in the scoring algorithm.
 * Put some contents in the grid. Anything goes.
 * Sort app list alphabetically by title
 * List installed app names in the grid
+* Add an icon above each app name
+* Make the grid scrollable

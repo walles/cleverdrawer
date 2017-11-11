@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -40,14 +42,20 @@ class LaunchableAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
-        TextView view;
+        View view;
         if (convertView != null) {
-            view = (TextView)convertView;
+            view = convertView;
         } else {
-            view = new TextView(context);
+            LayoutInflater inflater =
+                    (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inflater.inflate(R.layout.launchable, null);
         }
 
-        view.setText(launchables.get(i).name);
+        Launchable launchable = (Launchable)getItem(i);
+        TextView textView = (TextView)view.findViewById(R.id.launchableName);
+        textView.setText(launchable.name);
+        ImageView imageView = (ImageView)view.findViewById(R.id.launchableIcon);
+        imageView.setImageDrawable(launchable.icon);
 
         return view;
     }
@@ -62,7 +70,9 @@ class LaunchableAdapter extends BaseAdapter {
         SortedSet<Launchable> launchables = new TreeSet<>();
         for(ResolveInfo resolveInfo : resInfos) {
             Launchable launchable =
-                    new Launchable(resolveInfo.loadLabel(packageManager).toString());
+                    new Launchable(
+                            resolveInfo.loadLabel(packageManager).toString(),
+                            resolveInfo.loadIcon(packageManager));
             launchables.add(launchable);
         }
 
