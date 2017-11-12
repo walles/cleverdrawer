@@ -6,6 +6,8 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Getting Beta Testers
+* Size all icons the same
+* Center app titles
 * Keep per-app stats on:
   * Number of launches
   * Time of first launch
@@ -13,6 +15,7 @@ the things you launch most often first.
 * Sort list based on saved per-app stats
 * Add a search button that filters the app list as you type
 * Test grid with different font sizes and app name lengths
+* Create a release process with automated release numbering
 
 # TODO Before First Public Release
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
