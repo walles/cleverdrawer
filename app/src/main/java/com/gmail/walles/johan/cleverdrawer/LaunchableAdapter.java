@@ -65,6 +65,7 @@ class LaunchableAdapter extends BaseAdapter {
 
         Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
         queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        queryIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         List<ResolveInfo> resInfos = packageManager.queryIntentActivities(queryIntent, 0);
 
         SortedSet<Launchable> launchables = new TreeSet<>();

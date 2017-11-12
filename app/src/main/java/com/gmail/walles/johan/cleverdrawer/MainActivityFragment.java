@@ -37,6 +37,7 @@ public class MainActivityFragment extends Fragment {
                 Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
                 Timber.i("Launching %s...", launchable.name);
                 getContext().startActivity(launchable.launchIntent);
+                getActivity().finish();
             }
         });
         return view;
