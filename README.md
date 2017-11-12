@@ -6,29 +6,28 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Getting Beta Testers
-* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
-* Point Timber logs to Crashlytics
-* Run unit tests in [Travis](https://travis-ci.org/)
-* Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
-* Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
-* Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
-* Add a search button that filters the app list as you type
-* Test grid with different font sizes and app name lengths
 * Keep per-app stats on:
   * Number of launches
   * Time of first launch
   * Time of last launch
-* Sort list by `(number of launches) * (age of first launch) / (age of last launch)`
+* Sort list based on saved per-app stats
+* Add a search button that filters the app list as you type
+* Test grid with different font sizes and app name lengths
 
 # TODO Before First Public Release
+* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
+* Point Timber logs to Crashlytics
+* Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
+* Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
+* Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
+* Run unit tests in [Travis](https://travis-ci.org/)
+* Make sure rows are aligned on initial load
 
 # TODO Misc
 * Add system settings to the list.
 * Add contacts to the list. Multiply contact scores by 0.5.
-* Keep per-app stats on launches per weekday vs launches per sat / sun.
-Incorporate these stats in the scoring algorithm.
-* Keep per-app stats on launches vs most recently used other app. Incorporate
-these stats in the scoring algorithm.
+* Use weekday vs not weekday as scoring factor
+* Use most recently used other as scoring factor
 * Long clicking app should bring up a menu:
   * Show on Google Play
   * Uninstall
