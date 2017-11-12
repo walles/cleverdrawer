@@ -48,7 +48,7 @@ class LaunchableAdapter extends BaseAdapter {
         } else {
             LayoutInflater inflater =
                     (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.launchable, null);
+            view = inflater.inflate(R.layout.launchable, null, false);
         }
 
         Launchable launchable = (Launchable)getItem(i);
