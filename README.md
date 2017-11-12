@@ -6,7 +6,6 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Getting Beta Testers
-* Size all icons the same
 * Center app titles
 * Keep per-app stats on:
   * Number of launches
@@ -53,3 +52,4 @@ the things you launch most often first.
 * Launch app when clicked
 * Remove app from running apps after launching
 * Adjust number of columns
+* Size all icons the same
