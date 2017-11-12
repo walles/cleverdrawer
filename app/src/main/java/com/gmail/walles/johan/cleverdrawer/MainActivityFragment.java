@@ -15,7 +15,6 @@ import timber.log.Timber;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
-
     public MainActivityFragment() {
         Timber.d("Main Activity Fragment being constructed...");
     }
@@ -36,7 +35,8 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
-                Timber.i("%s clicked", launchable.name);
+                Timber.i("Launching %s...", launchable.name);
+                getContext().startActivity(launchable.launchIntent);
             }
         });
         return view;

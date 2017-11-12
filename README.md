@@ -5,10 +5,8 @@ App drawer that reads your mind.
 It then uses that information to sort everything launchable with
 the things you launch most often first.
 
-# TODO Before Installing on Johan's Phone
-* Launch app when clicked
-
 # TODO Before Getting Beta Testers
+* Remove app from running apps after launching
 * Adjust number of columns
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
@@ -52,3 +50,4 @@ these stats in the scoring algorithm.
 * List installed app names in the grid
 * Add an icon above each app name
 * Make the grid scrollable
+* Launch app when clicked

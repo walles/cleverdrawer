@@ -52,9 +52,9 @@ class LaunchableAdapter extends BaseAdapter {
         }
 
         Launchable launchable = (Launchable)getItem(i);
-        TextView textView = (TextView)view.findViewById(R.id.launchableName);
+        TextView textView = view.findViewById(R.id.launchableName);
         textView.setText(launchable.name);
-        ImageView imageView = (ImageView)view.findViewById(R.id.launchableIcon);
+        ImageView imageView = view.findViewById(R.id.launchableIcon);
         imageView.setImageDrawable(launchable.icon);
 
         return view;
@@ -63,17 +63,13 @@ class LaunchableAdapter extends BaseAdapter {
     private static List<Launchable> getLaunchables(Context context) {
         final PackageManager packageManager = context.getPackageManager();
 
-        Intent intent = new Intent(Intent.ACTION_MAIN, null);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> resInfos = packageManager.queryIntentActivities(intent, 0);
+        Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
+        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> resInfos = packageManager.queryIntentActivities(queryIntent, 0);
 
         SortedSet<Launchable> launchables = new TreeSet<>();
         for(ResolveInfo resolveInfo : resInfos) {
-            Launchable launchable =
-                    new Launchable(
-                            resolveInfo.loadLabel(packageManager).toString(),
-                            resolveInfo.loadIcon(packageManager));
-            launchables.add(launchable);
+            launchables.add(new Launchable(resolveInfo, packageManager));
         }
 
         return new ArrayList<>(launchables);
