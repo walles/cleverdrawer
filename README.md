@@ -6,7 +6,6 @@ It then uses that information to sort everything launchable with
 the things you launch most often first.
 
 # TODO Before Getting Beta Testers
-* Center app titles
 * Keep per-app stats on:
   * Number of launches
   * Time of first launch
@@ -23,7 +22,6 @@ the things you launch most often first.
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
 * Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
 * Run unit tests in [Travis](https://travis-ci.org/)
-* Make sure rows are aligned on initial load
 
 # TODO Misc
 * Add system settings to the list.
@@ -53,3 +51,5 @@ the things you launch most often first.
 * Remove app from running apps after launching
 * Adjust number of columns
 * Size all icons the same
+* Center app titles
+* Make sure rows are aligned on initial load
