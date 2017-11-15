@@ -3,9 +3,10 @@
 App drawer that reads your mind.
 
 It then uses that information to sort everything launchable with
-the things you launch most often first.
+the things you are most likely to launch first.
 
 # TODO Before Getting Beta Testers
+* Use a dark background
 * Keep per-app stats on:
   * Number of launches
   * Time of first launch
@@ -26,8 +27,9 @@ the things you launch most often first.
 # TODO Misc
 * Add system settings to the list.
 * Add contacts to the list. Multiply contact scores by 0.5.
-* Use weekday vs not weekday as scoring factor
-* Use most recently used other as scoring factor
+* Use weekday vs weekend as scoring factor
+* Use time of day as a scoring factor
+* Use most recently used other app as scoring factor
 * Long clicking app should bring up a menu:
   * Show on Google Play
   * Uninstall
