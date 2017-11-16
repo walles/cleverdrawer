@@ -21,13 +21,17 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
     {
+        final Statistics statistics = new Statistics(getContext());
+
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+
         GridView gridView = view.findViewById(R.id.grid_view);
-        gridView.setAdapter(new LaunchableAdapter(getContext()));
+        gridView.setAdapter(new LaunchableAdapter(getContext(), statistics.getComparator()));
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
             Timber.i("Launching %s...", launchable.name);
             getContext().startActivity(launchable.launchIntent);
+            statistics.update(launchable);
             getActivity().finish();
         });
         return view;
