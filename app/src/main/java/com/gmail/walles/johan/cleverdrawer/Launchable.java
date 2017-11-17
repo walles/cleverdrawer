@@ -6,9 +6,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 
-public class Launchable implements Comparable<Launchable> {
+import org.jetbrains.annotations.TestOnly;
+
+public class Launchable {
+    public final String id;
     public final String name;
     public final Drawable icon;
     public final Intent launchIntent;
@@ -17,6 +19,17 @@ public class Launchable implements Comparable<Launchable> {
         this.name = resolveInfo.loadLabel(packageManager).toString();
         this.icon = resolveInfo.loadIcon(packageManager);
         this.launchIntent = createLaunchIntent(resolveInfo);
+
+        ActivityInfo activityInfo = resolveInfo.activityInfo;
+        this.id = activityInfo.applicationInfo.packageName + "." + activityInfo.name;
+    }
+
+    @TestOnly
+    public Launchable(String name) {
+        this.id = name;
+        this.name = name;
+        this.icon = null;
+        this.launchIntent = null;
     }
 
     private static Intent createLaunchIntent(
@@ -36,7 +49,7 @@ public class Launchable implements Comparable<Launchable> {
     }
 
     @Override
-    public int compareTo(@NonNull Launchable launchable) {
-        return name.compareTo(launchable.name);
+    public String toString() {
+        return id;
     }
 }
