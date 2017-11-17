@@ -111,8 +111,7 @@ public class Statistics {
                 sql("SELECT id, launch_count, latest_launch FROM statistics").
                 select((rset, stmt) -> {
                     Map<String, Double> returnMe = new HashMap<>();
-                    for (/* rset.first() */; !rset.isAfterLast(); rset.next()) {
-
+                    for (rset.next(); !rset.isAfterLast(); rset.next()) {
                         String id = rset.getString(1);
                         int launch_count = rset.getInt(2);
                         long latest_launch = rset.getLong(3);
