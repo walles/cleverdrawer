@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
@@ -73,11 +71,11 @@ class LaunchableAdapter extends BaseAdapter {
         queryIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         List<ResolveInfo> resInfos = packageManager.queryIntentActivities(queryIntent, 0);
 
-        SortedSet<Launchable> launchables = new TreeSet<>();
+        List<Launchable> launchables = new ArrayList<>();
         for(ResolveInfo resolveInfo : resInfos) {
             launchables.add(new Launchable(resolveInfo, packageManager));
         }
 
-        return new ArrayList<>(launchables);
+        return launchables;
     }
 }
