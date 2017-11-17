@@ -3,6 +3,7 @@ package com.gmail.walles.johan.cleverdrawer;
 import android.content.Context;
 
 import com.jcabi.jdbc.JdbcSession;
+import com.jcabi.jdbc.Outcome;
 import com.jcabi.jdbc.SingleOutcome;
 
 import org.flywaydb.core.Flyway;
@@ -52,7 +53,30 @@ public class Statistics {
      * Register that this launchable has been launched.
      */
     public void registerLaunch(Launchable launchable) throws SQLException {
-        // FIXME: Register launch in database
+        boolean rowExists = 0 < new JdbcSession(dataSource).
+                sql("SELECT COUNT(*) FROM statistics WHERE id = ?").
+                set(launchable.id).
+                select(new SingleOutcome<>(Long.class));
+
+        long now = System.currentTimeMillis() / 1000L;
+
+        // If the launchable already has a row...
+        if (rowExists) {
+            // ... then update the stats on that row.
+            new JdbcSession(dataSource).
+                    sql("UPDATE statistics SET launch_count = launch_count + 1, latest_launch = ? WHERE id = ?").
+                    set(launchable.id).
+                    update(Outcome.VOID);
+        } else {
+            // No row exists, create a new one
+            new JdbcSession(dataSource).
+                    sql("INSERT INTO statistics (id, launch_count, first_launch, latest_launch) VALUES (?, ?, ?, ?)").
+                    set(launchable.id).
+                    set(1).
+                    set(now).
+                    set(now).
+                    update(Outcome.VOID);
+        }
     }
 
     public Comparator<Launchable> getComparator() {
