@@ -94,7 +94,7 @@ public class Statistics {
                 score2 = 0d;
             }
 
-            // Note reverse order comparison to get the highest scores first
+            // Note reverse order to get higher scores at the top
             int result = Double.compare(score2, score1);
             if (result != 0) {
                 return result;
@@ -117,7 +117,7 @@ public class Statistics {
                         int launch_count = rset.getInt(2);
                         long latest_launch = rset.getLong(3);
 
-                        double score = launch_count * (double)(nowSeconds - latest_launch);
+                        double score = launch_count / (double)(nowSeconds - latest_launch);
                         returnMe.put(id, score);
                     }
                     return returnMe;
