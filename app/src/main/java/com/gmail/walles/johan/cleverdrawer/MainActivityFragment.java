@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
+import java.sql.SQLException;
+
 import timber.log.Timber;
 
 /**
@@ -31,7 +33,11 @@ public class MainActivityFragment extends Fragment {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
             Timber.i("Launching %s...", launchable.name);
             getContext().startActivity(launchable.launchIntent);
-            statistics.update(launchable);
+            try {
+                statistics.registerLaunch(launchable);
+            } catch (SQLException e) {
+                Timber.e(e, "Failed to register " + launchable.name + " launch: " + launchable.id);
+            }
             getActivity().finish();
         });
         return view;

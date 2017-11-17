@@ -16,7 +16,9 @@
     <option name="TEST_SEARCH_SCOPE">
       <value defaultName="singleModule" />
     </option>
-    <envs />
+    <envs>
+      <env name="FLYWAY_MIGRATIONS_PATH" value="/Users/johan/src/CleverDrawer/app/src/main/assets" />
+    </envs>
     <dir value="$PROJECT_DIR$/app/src/test/java/com/gmail/walles/johan/cleverdrawer" />
     <patterns />
     <method />
