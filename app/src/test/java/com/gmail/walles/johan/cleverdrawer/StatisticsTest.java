@@ -31,7 +31,7 @@ public class StatisticsTest {
     }
 
     @Test
-    public void testAlphabeticFallback() throws IOException {
+    public void testAlphabeticFallback() throws Exception {
         try (TestableStatistics testMe = new TestableStatistics()) {
 
             Launchable ape = new Launchable("Ape");
@@ -67,7 +67,7 @@ public class StatisticsTest {
 
             Launchable[] launchables = new Launchable[]{ape, zebra};
             testMe.registerLaunch(ape);
-            Thread.sleep(2000);  // Yes, I know
+            Thread.sleep(1200);  // Yes, I know
             testMe.registerLaunch(zebra);
 
             Arrays.sort(launchables, testMe.getComparator());

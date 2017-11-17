@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 
 import timber.log.Timber;
 
@@ -27,8 +28,15 @@ public class MainActivityFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
+        Comparator<Launchable> comparator = null;
+        try {
+            comparator = statistics.getComparator();
+        } catch (SQLException e) {
+            throw new RuntimeException("Getting comparator failed", e);
+        }
+
         GridView gridView = view.findViewById(R.id.grid_view);
-        gridView.setAdapter(new LaunchableAdapter(getContext(), statistics.getComparator()));
+        gridView.setAdapter(new LaunchableAdapter(getContext(), comparator));
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
             Timber.i("Launching %s...", launchable.name);
