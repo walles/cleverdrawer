@@ -12,15 +12,17 @@ import org.jetbrains.annotations.TestOnly;
 public class Launchable {
     public final String id;
     public final String name;
-    public final Drawable icon;
+    private Drawable icon;
+    private ResolveInfo resolveInfo;
+    private PackageManager packageManager;
     public final Intent launchIntent;
 
     public Launchable(ResolveInfo resolveInfo, PackageManager packageManager) {
-        // Slow!
-        this.name = resolveInfo.loadLabel(packageManager).toString();
+        this.resolveInfo = resolveInfo;
+        this.packageManager = packageManager;
 
         // Slow!
-        this.icon = resolveInfo.loadIcon(packageManager);
+        this.name = resolveInfo.loadLabel(packageManager).toString();
 
         // Fast!
         this.launchIntent = createLaunchIntent(resolveInfo);
@@ -28,6 +30,15 @@ public class Launchable {
         // Fast!
         ActivityInfo activityInfo = resolveInfo.activityInfo;
         this.id = activityInfo.applicationInfo.packageName + "." + activityInfo.name;
+    }
+
+    public Drawable getIcon() {
+        if (icon == null) {
+            // Slow!
+            icon = resolveInfo.loadIcon(packageManager);
+        }
+
+        return icon;
     }
 
     @TestOnly
