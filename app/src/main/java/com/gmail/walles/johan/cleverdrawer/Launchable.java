@@ -16,10 +16,16 @@ public class Launchable {
     public final Intent launchIntent;
 
     public Launchable(ResolveInfo resolveInfo, PackageManager packageManager) {
+        // Slow!
         this.name = resolveInfo.loadLabel(packageManager).toString();
+
+        // Slow!
         this.icon = resolveInfo.loadIcon(packageManager);
+
+        // Fast!
         this.launchIntent = createLaunchIntent(resolveInfo);
 
+        // Fast!
         ActivityInfo activityInfo = resolveInfo.activityInfo;
         this.id = activityInfo.applicationInfo.packageName + "." + activityInfo.name;
     }

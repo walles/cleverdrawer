@@ -16,15 +16,22 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import timber.log.Timber;
+
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
     private final List<Launchable> launchables;
 
     public LaunchableAdapter(Context context, Comparator<Launchable> comparator) {
         this.context = context;
+        Timer timer = new Timer();
+        timer.addLeg("Getting Launchables");
         launchables = getLaunchables(context);
 
+        timer.addLeg("Sorting Launchables");
         Collections.sort(launchables, comparator);
+
+        Timber.i("LaunchableAdapter timings: %s", timer);
     }
 
     @Override
@@ -64,6 +71,7 @@ class LaunchableAdapter extends BaseAdapter {
     }
 
     private static List<Launchable> getLaunchables(Context context) {
+        Timer timer = new Timer();
         final PackageManager packageManager = context.getPackageManager();
 
         Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
@@ -71,11 +79,13 @@ class LaunchableAdapter extends BaseAdapter {
         queryIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         List<ResolveInfo> resInfos = packageManager.queryIntentActivities(queryIntent, 0);
 
+        timer.addLeg("Creating Launchables");
         List<Launchable> launchables = new ArrayList<>();
         for(ResolveInfo resolveInfo : resInfos) {
             launchables.add(new Launchable(resolveInfo, packageManager));
         }
 
+        Timber.i("getLaunchables() timings: %s", timer);
         return launchables;
     }
 }
