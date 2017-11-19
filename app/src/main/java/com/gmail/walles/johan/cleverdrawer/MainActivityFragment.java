@@ -24,19 +24,26 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
     {
+        Timer timer = new Timer();
+        timer.addLeg("Instantiating Statistics");
         final Statistics statistics = new Statistics(getContext());
 
+        timer.addLeg("Inflating View");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
-        Comparator<Launchable> comparator = null;
+        timer.addLeg("Getting Comparator");
+        Comparator<Launchable> comparator;
         try {
             comparator = statistics.getComparator();
         } catch (SQLException e) {
             throw new RuntimeException("Getting comparator failed", e);
         }
 
+        timer.addLeg("Finding GridView");
         GridView gridView = view.findViewById(R.id.grid_view);
+        timer.addLeg("Constructing Adapter");
         gridView.setAdapter(new LaunchableAdapter(getContext(), comparator));
+        timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
             Timber.i("Launching %s...", launchable.name);
@@ -48,6 +55,9 @@ public class MainActivityFragment extends Fragment {
             }
             getActivity().finish();
         });
+
+        Timber.i("onCreateView() timings: %s", timer.toString());
+
         return view;
     }
 }

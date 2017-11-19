@@ -18,6 +18,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import timber.log.Timber;
+
 public class Statistics {
     // This should really be final
     private DataSource dataSource;
@@ -33,6 +35,7 @@ public class Statistics {
     }
 
     void setDataSource(DataSource dataSource) {
+        Timer timer = new Timer();
         this.dataSource = dataSource;
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
@@ -47,7 +50,10 @@ public class Statistics {
             flyway.setLocations("filesystem:" + migrationsPath);
         }
 
+        timer.addLeg("Migrating db");
         flyway.migrate();
+
+        Timber.i("Statistics timings: %s", timer);
     }
 
     /**

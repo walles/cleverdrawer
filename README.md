@@ -6,21 +6,24 @@ It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
 # TODO Before Getting Beta Testers
-* Reload statistics each time the user re-activates us
+* Fix startup time
+* Four icons per row on my phone
+* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
+* Point Timber logs to Crashlytics
+* Don't crash if user rotates the device
 * Use a dark background
 * Add a search button that filters the app list as you type
 * Test grid with different font sizes and app name lengths
 * Create a release process with automated release numbering
 
 # TODO Before First Public Release
-* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
-* Point Timber logs to Crashlytics
+
+# TODO Misc
+* Run unit tests in [Travis](https://travis-ci.org/)
+* Make a pre-commit hook that runs `gradlew check --continue`
 * Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
 * Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
-* Run unit tests in [Travis](https://travis-ci.org/)
-
-# TODO Misc
 * Add system settings to the list.
 * Add contacts to the list. Multiply contact scores by 0.5.
 * Use weekday vs weekend as scoring factor
@@ -56,3 +59,5 @@ the things you are most likely to launch first.
   * Time of first launch
   * Time of last launch
 * Sort list based on saved per-app stats
+* Reload statistics each time the user re-activates us
+* Log startup time
