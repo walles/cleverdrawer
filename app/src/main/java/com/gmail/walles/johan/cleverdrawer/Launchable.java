@@ -10,19 +10,18 @@ import android.graphics.drawable.Drawable;
 import org.jetbrains.annotations.TestOnly;
 
 public class Launchable {
-    public final String id;
-    public final String name;
-    private Drawable icon;
     private ResolveInfo resolveInfo;
     private PackageManager packageManager;
+
+    private Drawable icon;
+    private String name;
+
+    public final String id;
     public final Intent launchIntent;
 
     public Launchable(ResolveInfo resolveInfo, PackageManager packageManager) {
         this.resolveInfo = resolveInfo;
         this.packageManager = packageManager;
-
-        // Slow!
-        this.name = resolveInfo.loadLabel(packageManager).toString();
 
         // Fast!
         this.launchIntent = createLaunchIntent(resolveInfo);
@@ -39,6 +38,15 @@ public class Launchable {
         }
 
         return icon;
+    }
+
+    public String getName() {
+        if (name == null) {
+            // Slow!
+            this.name = resolveInfo.loadLabel(packageManager).toString();
+        }
+
+        return name;
     }
 
     @TestOnly

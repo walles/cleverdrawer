@@ -107,7 +107,7 @@ public class Statistics {
             }
 
             // Don't know, go for alphabetic order
-            return o1.name.compareTo(o2.name);
+            return o1.getName().compareTo(o2.getName());
         };
     }
 

@@ -46,12 +46,12 @@ public class MainActivityFragment extends Fragment {
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
-            Timber.i("Launching %s...", launchable.name);
+            Timber.i("Launching %s...", launchable.getName());
             getContext().startActivity(launchable.launchIntent);
             try {
                 statistics.registerLaunch(launchable);
             } catch (SQLException e) {
-                Timber.e(e, "Failed to register " + launchable.name + " launch: " + launchable.id);
+                Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.id);
             }
             getActivity().finish();
         });

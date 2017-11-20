@@ -63,7 +63,7 @@ class LaunchableAdapter extends BaseAdapter {
 
         Launchable launchable = (Launchable)getItem(i);
         TextView textView = view.findViewById(R.id.launchableName);
-        textView.setText(launchable.name);
+        textView.setText(launchable.getName());
         ImageView imageView = view.findViewById(R.id.launchableIcon);
         imageView.setImageDrawable(launchable.getIcon());
 
