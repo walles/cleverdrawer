@@ -11,67 +11,54 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class StatisticsTest {
-    private static class TestableStatistics extends Statistics implements AutoCloseable {
-        private final File dbFile;
+    private static Statistics createStatistics() throws IOException {
+        File dbFile = File.createTempFile("testable-statistics-", ".sqlite");
+        dbFile.deleteOnExit();
 
-        public TestableStatistics() throws IOException {
-            dbFile = File.createTempFile("testable-statistics-", ".sqlite");
-            dbFile.deleteOnExit();
-            SQLiteDataSource dataSource = new SQLiteDataSource();
-            dataSource.setUrl("jdbc:sqlite:" + dbFile.getAbsolutePath());
-            setDataSource(dataSource);
-        }
+        SQLiteDataSource dataSource = new SQLiteDataSource();
+        dataSource.setUrl("jdbc:sqlite:" + dbFile.getAbsolutePath());
 
-        @Override
-        public void close() throws IOException {
-            if (!dbFile.delete()) {
-                throw new IOException("Failed to delete db file: " + dbFile.getAbsolutePath());
-            }
-        }
+        DatabaseUtils.migrate(dataSource);
+
+        return new Statistics(dataSource);
     }
 
     @Test
     public void testAlphabeticFallback() throws Exception {
-        try (TestableStatistics testMe = new TestableStatistics()) {
+        Statistics testMe = createStatistics();
+        Launchable ape = new Launchable("Ape");
+        Launchable zebra = new Launchable("Zebra");
 
-            Launchable ape = new Launchable("Ape");
-            Launchable zebra = new Launchable("Zebra");
-
-            Launchable[] launchables = new Launchable[]{zebra, ape};
-            Arrays.sort(launchables, testMe.getComparator());
-            Assert.assertThat(launchables, is(new Launchable[]{ape, zebra}));
-        }
+        Launchable[] launchables = new Launchable[]{zebra, ape};
+        Arrays.sort(launchables, testMe.getComparator());
+        Assert.assertThat(launchables, is(new Launchable[]{ape, zebra}));
     }
 
     @Test
     public void testLaunchedBetterThanNotLaunched() throws Exception {
-        try (TestableStatistics testMe = new TestableStatistics()) {
+        Statistics testMe = createStatistics();
+        Launchable ape = new Launchable("Ape");
+        Launchable zebra = new Launchable("Zebra");
 
-            Launchable ape = new Launchable("Ape");
-            Launchable zebra = new Launchable("Zebra");
+        Launchable[] launchables = new Launchable[]{ape, zebra};
+        testMe.registerLaunch(zebra);
 
-            Launchable[] launchables = new Launchable[]{ape, zebra};
-            testMe.registerLaunch(zebra);
-
-            Arrays.sort(launchables, testMe.getComparator());
-            Assert.assertThat(launchables, is(new Launchable[]{zebra, ape}));
-        }
+        Arrays.sort(launchables, testMe.getComparator());
+        Assert.assertThat(launchables, is(new Launchable[]{zebra, ape}));
     }
 
     @Test
     public void testRecentLaunchesAreBetter() throws Exception {
-        try (TestableStatistics testMe = new TestableStatistics()) {
+        Statistics testMe = createStatistics();
+        Launchable ape = new Launchable("Ape");
+        Launchable zebra = new Launchable("Zebra");
 
-            Launchable ape = new Launchable("Ape");
-            Launchable zebra = new Launchable("Zebra");
+        Launchable[] launchables = new Launchable[]{ape, zebra};
+        testMe.registerLaunch(ape);
+        Thread.sleep(1200);  // Yes, I know
+        testMe.registerLaunch(zebra);
 
-            Launchable[] launchables = new Launchable[]{ape, zebra};
-            testMe.registerLaunch(ape);
-            Thread.sleep(1200);  // Yes, I know
-            testMe.registerLaunch(zebra);
-
-            Arrays.sort(launchables, testMe.getComparator());
-            Assert.assertThat(launchables, is(new Launchable[]{zebra, ape}));
-        }
+        Arrays.sort(launchables, testMe.getComparator());
+        Assert.assertThat(launchables, is(new Launchable[]{zebra, ape}));
     }
 }

@@ -26,7 +26,8 @@ public class MainActivityFragment extends Fragment {
     {
         Timer timer = new Timer();
         timer.addLeg("Instantiating Statistics");
-        final Statistics statistics = new Statistics(getContext());
+        final Statistics statistics =
+                new Statistics(DatabaseUtils.getMigratedAndroidDataSource(getContext()));
 
         timer.addLeg("Inflating View");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
