@@ -10,6 +10,8 @@ import android.widget.GridView;
 import java.sql.SQLException;
 import java.util.Comparator;
 
+import javax.sql.DataSource;
+
 import timber.log.Timber;
 
 /**
@@ -26,8 +28,8 @@ public class MainActivityFragment extends Fragment {
     {
         Timer timer = new Timer();
         timer.addLeg("Instantiating Statistics");
-        final Statistics statistics =
-                new Statistics(DatabaseUtils.getMigratedAndroidDataSource(getContext()));
+        final DataSource dataSource = DatabaseUtils.getMigratedAndroidDataSource(getContext());
+        final Statistics statistics = new Statistics(dataSource);
 
         timer.addLeg("Inflating View");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
@@ -43,7 +45,7 @@ public class MainActivityFragment extends Fragment {
         timer.addLeg("Finding GridView");
         GridView gridView = view.findViewById(R.id.grid_view);
         timer.addLeg("Constructing Adapter");
-        gridView.setAdapter(new LaunchableAdapter(getContext(), comparator));
+        gridView.setAdapter(new LaunchableAdapter(getContext(), dataSource, comparator));
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);

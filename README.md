@@ -7,9 +7,9 @@ the things you are most likely to launch first.
 
 # TODO Startup Time
 * Add a `cache` database table, mapping IDs to app labels
-* After loading the launchables, update the cache with all new IDs
 * After loading the launchables, fill in all names we have from the
 cache
+* After loading the launchables, update the cache with all new IDs
 * After loading the launchables, remove not-found launchable IDs from
 the cache
 * In the background, after we're done with the cache, load all actual

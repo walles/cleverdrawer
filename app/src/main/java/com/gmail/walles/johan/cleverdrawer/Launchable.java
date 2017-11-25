@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
 
@@ -40,18 +41,24 @@ public class Launchable {
         return icon;
     }
 
+    @Nullable
     public String getName() {
-        if (name == null) {
-            // Slow!
-            this.name = resolveInfo.loadLabel(packageManager).toString();
+        if (name != null) {
+            return name;
         }
 
-        return name;
+        if (resolveInfo != null) {
+            // Slow!
+            name = resolveInfo.loadLabel(packageManager).toString();
+            return name;
+        }
+
+        return null;
     }
 
     @TestOnly
-    public Launchable(String name) {
-        this.id = name;
+    public Launchable(String id, @Nullable String name) {
+        this.id = id;
         this.name = name;
         this.icon = null;
         this.launchIntent = null;

@@ -16,20 +16,24 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import timber.log.Timber;
 
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
     private final List<Launchable> launchables;
 
-    public LaunchableAdapter(Context context, Comparator<Launchable> comparator) {
+    public LaunchableAdapter(Context context, DataSource dataSource, Comparator<Launchable> comparator) {
         this.context = context;
         Timer timer = new Timer();
         timer.addLeg("Getting Launchables");
         launchables = getLaunchables(context);
+        DatabaseUtils.nameLaunchablesFromCache(dataSource, launchables);
 
         timer.addLeg("Sorting Launchables");
         Collections.sort(launchables, comparator);
+        DatabaseUtils.cacheNames(dataSource, launchables);
 
         Timber.i("LaunchableAdapter timings: %s", timer);
     }

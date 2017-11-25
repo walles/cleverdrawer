@@ -7,6 +7,7 @@ import org.flywaydb.core.api.android.ContextHolder;
 import org.sqldroid.DroidDataSource;
 
 import java.io.File;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -41,5 +42,25 @@ public class DatabaseUtils {
 
         DatabaseUtils.migrate(dataSource);
         return dataSource;
+    }
+
+    public static void nameLaunchablesFromCache(
+            DataSource dataSource, List<Launchable> launchables)
+    {
+        // FIXME: Load the launchables table into an id->name map
+
+        // FIXME: Update all launchable names from the map
+
+    }
+
+    public static void cacheNames(DataSource dataSource, List<Launchable> launchables) {
+        // FIXME: Start a transaction
+
+        // FIXME: Empty the name cache table
+
+        // FIXME: Add all the non-null non-empty names to the cache
+
+        // FIXME: Close the transaction
+
     }
 }
