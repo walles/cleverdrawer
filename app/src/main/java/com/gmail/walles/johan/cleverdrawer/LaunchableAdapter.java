@@ -11,6 +11,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,14 +24,30 @@ class LaunchableAdapter extends BaseAdapter {
     private final Context context;
     private final List<Launchable> launchables;
 
-    public LaunchableAdapter(Context context, Comparator<Launchable> comparator) {
+    public LaunchableAdapter(Context context, File statsFile, File nameCacheFile) {
         this.context = context;
         Timer timer = new Timer();
         timer.addLeg("Getting Launchables");
         launchables = getLaunchables(context);
+        try {
+            DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, launchables);
+        } catch (IOException e) {
+            Timber.w(e, "Updating names from cache failed");
+        }
 
         timer.addLeg("Sorting Launchables");
+        Comparator<Launchable> comparator = null;
+        try {
+            comparator = Statistics.getComparator(statsFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed loading statistics", e);
+        }
         Collections.sort(launchables, comparator);
+        try {
+            DatabaseUtils.cacheNames(nameCacheFile, launchables);
+        } catch (IOException e) {
+            Timber.w(e, "Caching names failed");
+        }
 
         Timber.i("LaunchableAdapter timings: %s", timer);
     }

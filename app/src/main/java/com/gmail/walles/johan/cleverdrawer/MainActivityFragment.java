@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 
-import java.sql.SQLException;
-import java.util.Comparator;
+import java.io.File;
+import java.io.IOException;
 
 import timber.log.Timber;
 
@@ -24,33 +24,25 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
     {
-        Timer timer = new Timer();
-        timer.addLeg("Instantiating Statistics");
-        final Statistics statistics = new Statistics(getContext());
+        final File statsFile = new File(getContext().getFilesDir(), "statistics.json");
+        final File cacheFile = new File(getContext().getFilesDir(), "nameCache.json");
 
+        Timer timer = new Timer();
         timer.addLeg("Inflating View");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-
-        timer.addLeg("Getting Comparator");
-        Comparator<Launchable> comparator;
-        try {
-            comparator = statistics.getComparator();
-        } catch (SQLException e) {
-            throw new RuntimeException("Getting comparator failed", e);
-        }
 
         timer.addLeg("Finding GridView");
         GridView gridView = view.findViewById(R.id.grid_view);
         timer.addLeg("Constructing Adapter");
-        gridView.setAdapter(new LaunchableAdapter(getContext(), comparator));
+        gridView.setAdapter(new LaunchableAdapter(getContext(), statsFile, cacheFile));
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
             Timber.i("Launching %s...", launchable.getName());
             getContext().startActivity(launchable.launchIntent);
             try {
-                statistics.registerLaunch(launchable);
-            } catch (SQLException e) {
+                Statistics.registerLaunch(statsFile, launchable);
+            } catch (IOException e) {
                 Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.id);
             }
             getActivity().finish();
