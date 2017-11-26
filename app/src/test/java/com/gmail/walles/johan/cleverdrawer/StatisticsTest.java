@@ -7,9 +7,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
 import java.util.Arrays;
-
-import javax.sql.DataSource;
 
 public class StatisticsTest {
     @Rule
@@ -17,40 +16,40 @@ public class StatisticsTest {
 
     @Test
     public void testAlphabeticFallback() throws Exception {
-        DataSource dataSource = TestUtils.getMigratedFileDataSource(tempdir.newFile());
+        File dbFile = new File(tempdir.getRoot(), "testFile");
         Launchable ape = new Launchable("Ape", "Ape");
         Launchable zebra = new Launchable("Zebra", "Zebra");
 
         Launchable[] launchables = new Launchable[]{zebra, ape};
-        Arrays.sort(launchables, Statistics.getComparator(dataSource));
+        Arrays.sort(launchables, Statistics.getComparator(dbFile));
         Assert.assertThat(launchables, is(new Launchable[]{ape, zebra}));
     }
 
     @Test
     public void testLaunchedBetterThanNotLaunched() throws Exception {
-        DataSource dataSource = TestUtils.getMigratedFileDataSource(tempdir.newFile());
+        File dbFile = new File(tempdir.getRoot(), "testFile");
         Launchable ape = new Launchable("Ape", "Ape");
         Launchable zebra = new Launchable("Zebra", "Zebra");
 
         Launchable[] launchables = new Launchable[]{ape, zebra};
-        DatabaseUtils.registerLaunch(dataSource, zebra);
+        Statistics.registerLaunch(dbFile, zebra);
 
-        Arrays.sort(launchables, Statistics.getComparator(dataSource));
+        Arrays.sort(launchables, Statistics.getComparator(dbFile));
         Assert.assertThat(launchables, is(new Launchable[]{zebra, ape}));
     }
 
     @Test
     public void testRecentLaunchesAreBetter() throws Exception {
-        DataSource dataSource = TestUtils.getMigratedFileDataSource(tempdir.newFile());
+        File dbFile = new File(tempdir.getRoot(), "testFile");
         Launchable ape = new Launchable("Ape", "Ape");
         Launchable zebra = new Launchable("Zebra", "Zebra");
 
         Launchable[] launchables = new Launchable[]{ape, zebra};
-        DatabaseUtils.registerLaunch(dataSource, ape);
+        Statistics.registerLaunch(dbFile, ape);
         Thread.sleep(1200);  // Yes, I know
-        DatabaseUtils.registerLaunch(dataSource, zebra);
+        Statistics.registerLaunch(dbFile, zebra);
 
-        Arrays.sort(launchables, Statistics.getComparator(dataSource));
+        Arrays.sort(launchables, Statistics.getComparator(dbFile));
         Assert.assertThat(launchables, is(new Launchable[]{zebra, ape}));
     }
 }

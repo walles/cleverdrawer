@@ -20,10 +20,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    sourceSets {
-        // See: https://flywaydb.org/documentation/api/
-        main { assets.srcDirs = ['src/main/assets'] }
-    }
 }
 
 dependencies {
@@ -33,13 +29,9 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.jakewharton.timber:timber:4.6.0'
     implementation 'org.jetbrains:annotations:15.0'
-
-    implementation 'org.flywaydb:flyway-core:4.2.0'
-    implementation 'org.sqldroid:sqldroid:1.0.3'
-    implementation "com.jcabi:jcabi-jdbc:0.16"
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
 
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.xerial:sqlite-jdbc:3.20.1'
 
     // Having this dependency gets us Flyway logs from failed unit tests
     testImplementation 'org.slf4j:slf4j-simple:1.7.25'
