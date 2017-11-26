@@ -2,11 +2,14 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import android.content.Context;
 
+import com.jcabi.jdbc.JdbcSession;
+
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.android.ContextHolder;
 import org.sqldroid.DroidDataSource;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -53,14 +56,50 @@ public class DatabaseUtils {
 
     }
 
-    public static void cacheNames(DataSource dataSource, List<Launchable> launchables) {
-        // FIXME: Start a transaction
+    public static void cacheNames(DataSource dataSource, List<Launchable> launchables)
+            throws SQLException
+    {
+        SQLException error = null;
 
-        // FIXME: Empty the name cache table
+        JdbcSession session = new JdbcSession(dataSource);
+        try {
+            // Start a transaction
+            session.autocommit(false);
 
-        // FIXME: Add all the non-null non-empty names to the cache
+            // Empty the name cache table
+            session
+                    .sql("DELETE FROM names_cache")
+                    .execute();
 
-        // FIXME: Close the transaction
-
+            // Add all the non-null non-empty names to the cache
+            for (Launchable launchable: launchables) {
+                if (launchable.id == null) {
+                    continue;
+                }
+                if (launchable.getName() == null) {
+                    continue;
+                }
+                session
+                        .sql("INSERT INTO names_cache (id, name) VALUES (?, ?)")
+                        .set(launchable.id)
+                        .set(launchable.getName())
+                        .execute();
+            }
+        } catch (SQLException e) {
+            error = e;
+        } finally {
+            if (error == null) {
+                session.commit();
+            } else {
+                try {
+                    session
+                            .sql("ROLLBACK TRANSACTION")
+                            .execute();
+                } catch (SQLException e) {
+                    Timber.e(e, "Cache update rollback failed");
+                }
+                throw error;
+            }
+        }
     }
 }

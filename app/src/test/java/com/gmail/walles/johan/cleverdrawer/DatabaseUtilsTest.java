@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 
 import javax.sql.DataSource;
@@ -18,7 +17,7 @@ public class DatabaseUtilsTest {
     public TemporaryFolder tempdir = new TemporaryFolder();
 
     @Test
-    public void testNameCaching() throws IOException {
+    public void testNameCaching() throws Exception {
         // Create an empty database
         File dbFile = tempdir.newFile("testNameCache.sqlite");
         DataSource dataSource = TestUtils.getMigratedFileDataSource(dbFile);

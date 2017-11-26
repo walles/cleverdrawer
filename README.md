@@ -6,12 +6,8 @@ It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
 # TODO Startup Time
-* Add a `cache` database table, mapping IDs to app labels
 * After loading the launchables, fill in all names we have from the
 cache
-* After loading the launchables, update the cache with all new IDs
-* After loading the launchables, remove not-found launchable IDs from
-the cache
 * In the background, after we're done with the cache, load all actual
 app labels from the system and update all cache lines that have changed
 
@@ -79,3 +75,7 @@ track of when we last did a re-labling scan.
 * Sort list based on saved per-app stats
 * Reload statistics each time the user re-activates us
 * Log startup time
+* Add a `cache` database table, mapping IDs to app labels
+* After loading the launchables, update the cache with all new IDs
+* After loading the launchables, remove not-found launchable IDs from
+the cache

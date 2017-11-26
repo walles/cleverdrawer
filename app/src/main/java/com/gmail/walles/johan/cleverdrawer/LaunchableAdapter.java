@@ -11,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,7 +34,11 @@ class LaunchableAdapter extends BaseAdapter {
 
         timer.addLeg("Sorting Launchables");
         Collections.sort(launchables, comparator);
-        DatabaseUtils.cacheNames(dataSource, launchables);
+        try {
+            DatabaseUtils.cacheNames(dataSource, launchables);
+        } catch (SQLException e) {
+            Timber.w(e, "Caching names failed");
+        }
 
         Timber.i("LaunchableAdapter timings: %s", timer);
     }
