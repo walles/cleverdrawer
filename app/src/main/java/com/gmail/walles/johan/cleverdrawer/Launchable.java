@@ -56,6 +56,10 @@ public class Launchable {
         return null;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @TestOnly
     public Launchable(String id, @Nullable String name) {
         this.id = id;

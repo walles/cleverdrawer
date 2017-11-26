@@ -52,11 +52,30 @@ public class DatabaseUtils {
 
     public static void nameLaunchablesFromCache(
             DataSource dataSource, List<Launchable> launchables)
+            throws SQLException
     {
-        // FIXME: Load the launchables table into an id->name map
+        // Load the launchables table into an id->name map
+        Map<String, String> cache = new HashMap<>();
+        new JdbcSession(dataSource).
+                sql("SELECT id, name FROM names_cache").
+                select((rset, stmt) -> {
+                    for (rset.next(); !rset.isAfterLast(); rset.next()) {
+                        String id = rset.getString(1);
+                        String name = rset.getString(2);
 
-        // FIXME: Update all launchable names from the map
+                        cache.put(id, name);
+                    }
+                    return cache;
+                });
 
+        // Update all launchable names from the map
+        for (Launchable launchable: launchables) {
+            String name = cache.get(launchable.id);
+            if (name == null) {
+                continue;
+            }
+            launchable.setName(name);
+        }
     }
 
     public static void cacheNames(DataSource dataSource, List<Launchable> launchables)

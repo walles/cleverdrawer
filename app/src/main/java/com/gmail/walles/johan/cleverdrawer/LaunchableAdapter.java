@@ -30,7 +30,11 @@ class LaunchableAdapter extends BaseAdapter {
         Timer timer = new Timer();
         timer.addLeg("Getting Launchables");
         launchables = getLaunchables(context);
-        DatabaseUtils.nameLaunchablesFromCache(dataSource, launchables);
+        try {
+            DatabaseUtils.nameLaunchablesFromCache(dataSource, launchables);
+        } catch (SQLException e) {
+            Timber.w(e, "Updating names from cache failed");
+        }
 
         timer.addLeg("Sorting Launchables");
         Collections.sort(launchables, comparator);
