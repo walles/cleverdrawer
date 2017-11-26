@@ -3,6 +3,7 @@ package com.gmail.walles.johan.cleverdrawer;
 import android.content.Context;
 
 import com.jcabi.jdbc.JdbcSession;
+import com.jcabi.jdbc.SingleOutcome;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.android.ContextHolder;
@@ -10,7 +11,9 @@ import org.sqldroid.DroidDataSource;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -59,6 +62,7 @@ public class DatabaseUtils {
     public static void cacheNames(DataSource dataSource, List<Launchable> launchables)
             throws SQLException
     {
+        Timer timer = new Timer();
         SQLException error = null;
 
         JdbcSession session = new JdbcSession(dataSource);
@@ -100,6 +104,56 @@ public class DatabaseUtils {
                 }
                 throw error;
             }
+        }
+
+        Timber.i("Caching names took: %s", timer.toString());
+    }
+
+    public static Map<String, Double> getIdToScoreMap(DataSource dataSource) throws SQLException {
+        final long nowSeconds = System.currentTimeMillis() / 1000L;
+        return new JdbcSession(dataSource).
+                sql("SELECT id, launch_count, latest_launch FROM statistics").
+                select((rset, stmt) -> {
+                    Map<String, Double> returnMe = new HashMap<>();
+                    for (rset.next(); !rset.isAfterLast(); rset.next()) {
+                        String id = rset.getString(1);
+                        int launch_count = rset.getInt(2);
+                        long latest_launch = rset.getLong(3);
+
+                        double score = launch_count / (double)(nowSeconds - latest_launch);
+                        returnMe.put(id, score);
+                    }
+                    return returnMe;
+                });
+    }
+
+    /**
+     * Register that this launchable has been launched.
+     */
+    public static void registerLaunch(DataSource dataSource, Launchable launchable) throws SQLException {
+        boolean rowExists = 0 < new JdbcSession(dataSource).
+                sql("SELECT COUNT(*) FROM statistics WHERE id = ?").
+                set(launchable.id).
+                select(new SingleOutcome<>(Long.class));
+
+        long now = System.currentTimeMillis() / 1000L;
+
+        // If the launchable already has a row...
+        if (rowExists) {
+            // ... then update the stats on that row.
+            new JdbcSession(dataSource).
+                    sql("UPDATE statistics SET launch_count = launch_count + 1, latest_launch = ? WHERE id = ?").
+                    set(launchable.id).
+                    execute();
+        } else {
+            // No row exists, create a new one
+            new JdbcSession(dataSource).
+                    sql("INSERT INTO statistics (id, launch_count, first_launch, latest_launch) VALUES (?, ?, ?, ?)").
+                    set(launchable.id).
+                    set(1).
+                    set(now).
+                    set(now).
+                    execute();
         }
     }
 }

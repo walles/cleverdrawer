@@ -29,7 +29,6 @@ public class MainActivityFragment extends Fragment {
         Timer timer = new Timer();
         timer.addLeg("Instantiating Statistics");
         final DataSource dataSource = DatabaseUtils.getMigratedAndroidDataSource(getContext());
-        final Statistics statistics = new Statistics(dataSource);
 
         timer.addLeg("Inflating View");
         View view = inflater.inflate(R.layout.fragment_main, container, false);
@@ -37,7 +36,7 @@ public class MainActivityFragment extends Fragment {
         timer.addLeg("Getting Comparator");
         Comparator<Launchable> comparator;
         try {
-            comparator = statistics.getComparator();
+            comparator = Statistics.getComparator(dataSource);
         } catch (SQLException e) {
             throw new RuntimeException("Getting comparator failed", e);
         }
@@ -52,7 +51,7 @@ public class MainActivityFragment extends Fragment {
             Timber.i("Launching %s...", launchable.getName());
             getContext().startActivity(launchable.launchIntent);
             try {
-                statistics.registerLaunch(launchable);
+                DatabaseUtils.registerLaunch(dataSource, launchable);
             } catch (SQLException e) {
                 Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.id);
             }
