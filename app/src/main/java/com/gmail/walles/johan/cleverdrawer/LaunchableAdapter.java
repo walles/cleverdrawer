@@ -36,7 +36,7 @@ class LaunchableAdapter extends BaseAdapter {
         }
 
         timer.addLeg("Sorting Launchables");
-        Comparator<Launchable> comparator = null;
+        Comparator<Launchable> comparator;
         try {
             comparator = Statistics.getComparator(statsFile);
         } catch (IOException e) {

@@ -55,8 +55,12 @@ public class DatabaseUtils {
             cache.put(launchable.id, launchable.getName());
         }
 
-        // FIXME: For atomicity, write to temporary file, then rename
-        objectMapper.writeValue(file, cache);
+        // For atomicity, write to temporary file, then rename
+        File tempfile = new File(file.getAbsolutePath() + ".tmp");
+        objectMapper.writeValue(tempfile, cache);
+        if (!tempfile.renameTo(file)) {
+            throw new IOException("Updating cache file failed");
+        }
     }
 
     public static List<Metadata> getMetadata(File file) throws IOException {
@@ -71,7 +75,11 @@ public class DatabaseUtils {
     }
 
     public static void saveMetadata(File file, List<Metadata> metadata) throws IOException {
-        // FIXME: For atomicity, write to temporary file, then rename
-        objectMapper.writeValue(file, metadata);
+        // For atomicity, write to temporary file, then rename
+        File tempfile = new File(file.getAbsolutePath() + ".tmp");
+        objectMapper.writeValue(tempfile, metadata);
+        if (!tempfile.renameTo(file)) {
+            throw new IOException("Updating cache file failed");
+        }
     }
 }
