@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +26,34 @@ import timber.log.Timber;
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
     private final List<Launchable> launchables;
+
+    /**
+     * Load a {@link Drawable} from a {@link Launchable} and update the {@link ImageView}.
+     * <p>
+     * Getting the Drawable from the Launchable can be slow, this class helps doing that in the
+     * background.
+     */
+    private static class AsyncSetImageDrawable extends AsyncTask<Launchable, Void, Drawable> {
+        private final WeakReference<ImageView> imageViewReference;
+
+        public AsyncSetImageDrawable(ImageView imageView) {
+            this.imageViewReference = new WeakReference<>(imageView);
+        }
+
+        @Override
+        protected Drawable doInBackground(Launchable... launchables) {
+            return launchables[0].getIcon();
+        }
+
+        @Override
+        protected void onPostExecute(Drawable drawable) {
+            ImageView imageView = imageViewReference.get();
+            if (imageView == null) {
+                return;
+            }
+            imageView.setImageDrawable(drawable);
+        }
+    }
 
     public LaunchableAdapter(Context context, File statsFile, File nameCacheFile) {
         this.context = context;
@@ -91,7 +122,7 @@ class LaunchableAdapter extends BaseAdapter {
         TextView textView = view.findViewById(R.id.launchableName);
         textView.setText(launchable.getName());
         ImageView imageView = view.findViewById(R.id.launchableIcon);
-        imageView.setImageDrawable(launchable.getIcon());
+        new AsyncSetImageDrawable(imageView).execute(launchable);
 
         return view;
     }
