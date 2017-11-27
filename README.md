@@ -9,7 +9,6 @@ the things you are most likely to launch first.
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
 * Don't crash if user rotates the device
-* Use a dark background
 * Add a search button that filters the app list as you type
 * Test grid with different font sizes and app name lengths
 * Create a release process with automated release numbering
@@ -70,3 +69,4 @@ cache
 app labels from the system and update all cache lines that have changed
 * Fix startup time
 * Four icons per row on my phone
+* Use a dark background
