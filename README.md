@@ -6,7 +6,6 @@ It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
 # TODO Before Getting Beta Testers
-* Four icons per row on my phone
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
 * Don't crash if user rotates the device
@@ -70,3 +69,4 @@ cache
 * In the background, after we're done with the cache, load all actual
 app labels from the system and update all cache lines that have changed
 * Fix startup time
+* Four icons per row on my phone
