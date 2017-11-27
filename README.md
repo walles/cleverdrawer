@@ -14,6 +14,8 @@ the things you are most likely to launch first.
 * Create a release process with automated release numbering
 
 # TODO Before First Public Release
+* Fix icon loading so that rapid scrolling after start screen loaded
+doesn't look weird
 
 # TODO Misc
 * Sort recently installed apps earlier
