@@ -107,7 +107,7 @@ class LaunchableAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View convertView, ViewGroup viewGroup) {
+    public View getView(int i, View convertView, ViewGroup parent) {
         View view;
         if (convertView != null) {
             view = convertView;
@@ -115,7 +115,7 @@ class LaunchableAdapter extends BaseAdapter {
             LayoutInflater inflater =
                     (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             assert inflater != null;
-            view = inflater.inflate(R.layout.launchable, null, false);
+            view = inflater.inflate(R.layout.launchable, parent, false);
         }
 
         Launchable launchable = (Launchable)getItem(i);
