@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import timber.log.Timber;
+
 public class DatabaseUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -42,25 +44,36 @@ public class DatabaseUtils {
         }
     }
 
-    public static void cacheNames(File file, List<Launchable> launchables) throws IOException {
+    /**
+     * Update names cache with the true Launchable names.
+     * <p>
+     * This method can be slow!
+     */
+    public static void cacheTrueNames(File file, List<Launchable> launchables) throws IOException {
         // Add all the non-null non-empty names to the cache
+        Timer timer = new Timer();
+        timer.addLeg("Collecting id->name map");
         Map<String, String> cache = new HashMap<>();
         for (Launchable launchable: launchables) {
             if (launchable.id == null) {
                 continue;
             }
-            if (launchable.getName() == null) {
+            String name = launchable.getTrueName();
+            if (name == null) {
                 continue;
             }
-            cache.put(launchable.id, launchable.getName());
+            cache.put(launchable.id, name);
         }
 
         // For atomicity, write to temporary file, then rename
+        timer.addLeg("Writing to disk");
         File tempfile = new File(file.getAbsolutePath() + ".tmp");
         objectMapper.writeValue(tempfile, cache);
         if (!tempfile.renameTo(file)) {
             throw new IOException("Updating cache file failed");
         }
+
+        Timber.i("Caching true names took: %s", timer.toString());
     }
 
     public static List<Metadata> getMetadata(File file) throws IOException {

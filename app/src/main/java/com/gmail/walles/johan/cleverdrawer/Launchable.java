@@ -15,6 +15,7 @@ public class Launchable {
     private PackageManager packageManager;
 
     private Drawable icon;
+
     private String name;
 
     public final String id;
@@ -47,13 +48,21 @@ public class Launchable {
             return name;
         }
 
+        name = getTrueName();
+        return name;
+    }
+
+    /**
+     * Get true name from system, calling this can be slow!
+     */
+    @Nullable
+    public String getTrueName() {
         if (resolveInfo != null) {
             // Slow!
-            name = resolveInfo.loadLabel(packageManager).toString();
-            return name;
+            return resolveInfo.loadLabel(packageManager).toString();
         }
 
-        return null;
+        return name;
     }
 
     public void setName(String name) {

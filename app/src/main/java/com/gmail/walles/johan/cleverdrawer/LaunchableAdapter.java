@@ -42,14 +42,22 @@ class LaunchableAdapter extends BaseAdapter {
         } catch (IOException e) {
             throw new RuntimeException("Failed loading statistics", e);
         }
+
         Collections.sort(launchables, comparator);
-        try {
-            DatabaseUtils.cacheNames(nameCacheFile, launchables);
-        } catch (IOException e) {
-            Timber.w(e, "Caching names failed");
-        }
+
+        updateNamesCache(nameCacheFile);
 
         Timber.i("LaunchableAdapter timings: %s", timer);
+    }
+
+    private void updateNamesCache(File nameCacheFile) {
+        new Thread(() -> {
+            try {
+                DatabaseUtils.cacheTrueNames(nameCacheFile, launchables);
+            } catch (IOException e) {
+                Timber.w(e, "Caching names failed");
+            }
+        }, "Name Cache Updater").start();
     }
 
     @Override

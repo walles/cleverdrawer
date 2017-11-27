@@ -22,7 +22,7 @@ public class DatabaseUtilsTest {
         // Populate cache with some mappings
         Launchable l1 = new Launchable("id: 1", "name: One");
         Launchable l2 = new Launchable("id: 2", "name: Two");
-        DatabaseUtils.cacheNames(dbFile, Arrays.asList(l1, l2));
+        DatabaseUtils.cacheTrueNames(dbFile, Arrays.asList(l1, l2));
 
         // Populate some new launchables with those mappings, from a new data source to simulate
         // app restart

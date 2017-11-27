@@ -5,18 +5,6 @@ App drawer that reads your mind.
 It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
-# TODO Startup Time
-* In the background, after we're done with the cache, load all actual
-app labels from the system and update all cache lines that have changed
-
-This scheme would mean that if an app label changes it would take us
-two launches to notice. I think that's good enough.
-
-Another thing to consider could be to look at [the most recent install
-date of each app](https://stackoverflow.com/a/5311852/473672), and only
-consider newly installed apps for updating. Then we'd need also to keep
-track of when we last did a re-labling scan.
-
 # TODO Before Getting Beta Testers
 * Fix startup time
 * Four icons per row on my phone
@@ -31,6 +19,7 @@ track of when we last did a re-labling scan.
 # TODO Before First Public Release
 
 # TODO Misc
+* Sort recently installed apps earlier
 * Run unit tests in [Travis](https://travis-ci.org/)
 * Make a pre-commit hook that runs `gradlew check --continue`
 * Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
@@ -79,3 +68,5 @@ track of when we last did a re-labling scan.
 the cache
 * After loading the launchables, fill in all names we have from the
 cache
+* In the background, after we're done with the cache, load all actual
+app labels from the system and update all cache lines that have changed
