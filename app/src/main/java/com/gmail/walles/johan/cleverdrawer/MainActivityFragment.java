@@ -2,9 +2,12 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.GridView;
 
 import java.io.File;
@@ -46,6 +49,26 @@ public class MainActivityFragment extends Fragment {
                 Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.id);
             }
             getActivity().finish();
+        });
+
+        timer.addLeg("Finding Search Box");
+        EditText searchBox = view.findViewById(R.id.searchBox);
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // This block intentionally left blank
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // This block intentionally left blank
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // FIXME: Actually search here, don't just log
+                Timber.d("Search string: <%s>", s.toString());
+            }
         });
 
         Timber.i("onCreateView() timings: %s", timer.toString());
