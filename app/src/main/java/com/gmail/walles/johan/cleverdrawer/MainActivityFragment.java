@@ -32,7 +32,7 @@ public class MainActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         timer.addLeg("Finding GridView");
-        GridView gridView = view.findViewById(R.id.grid_view);
+        GridView gridView = view.findViewById(R.id.iconGrid);
         timer.addLeg("Constructing Adapter");
         gridView.setAdapter(new LaunchableAdapter(getContext(), statsFile, cacheFile));
         timer.addLeg("Setting up Listener");
