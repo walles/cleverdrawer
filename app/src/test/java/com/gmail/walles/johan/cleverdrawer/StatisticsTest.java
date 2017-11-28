@@ -46,7 +46,7 @@ public class StatisticsTest {
 
         Launchable[] launchables = new Launchable[]{ape, zebra};
         Statistics.registerLaunch(dbFile, ape);
-        Thread.sleep(1200);  // Yes, I know
+        Thread.sleep(200);  // Yes, I know
         Statistics.registerLaunch(dbFile, zebra);
 
         Arrays.sort(launchables, Statistics.getComparator(dbFile));
