@@ -74,3 +74,4 @@ app labels from the system and update all cache lines that have changed
 * Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
 * Run unit tests in [Travis](https://travis-ci.org/)
 * Add a search button that filters the app list as you type
+* Set search box IME Action flag

@@ -17,6 +17,7 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="@android:string/search_go"
+        android:imeOptions="actionDone|flagNoPersonalizedLearning"
         android:inputType="text"
         android:textSize="24sp"
         android:visibility="gone"
