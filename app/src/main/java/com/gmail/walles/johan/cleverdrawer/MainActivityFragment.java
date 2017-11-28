@@ -37,7 +37,8 @@ public class MainActivityFragment extends Fragment {
         timer.addLeg("Finding GridView");
         GridView gridView = view.findViewById(R.id.iconGrid);
         timer.addLeg("Constructing Adapter");
-        gridView.setAdapter(new LaunchableAdapter(getContext(), statsFile, cacheFile));
+        LaunchableAdapter adapter = new LaunchableAdapter(getContext(), statsFile, cacheFile);
+        gridView.setAdapter(adapter);
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
@@ -66,8 +67,7 @@ public class MainActivityFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // FIXME: Actually search here, don't just log
-                Timber.d("Search string: <%s>", s.toString());
+                adapter.setFilter(s);
             }
         });
 

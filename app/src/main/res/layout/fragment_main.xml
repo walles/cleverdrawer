@@ -18,6 +18,7 @@
         android:ems="10"
         android:hint="@android:string/search_go"
         android:inputType="text"
+        android:textSize="24sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

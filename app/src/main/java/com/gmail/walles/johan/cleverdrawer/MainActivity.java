@@ -44,19 +44,20 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_search) {
             // Toggle the MainActivityFragment search bar
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            assert imm != null;
             if (searchBox.getVisibility() == View.VISIBLE) {
                 searchBox.setVisibility(View.GONE);
+                searchBox.setText("");
 
                 // Close soft keyboard if open, from: https://stackoverflow.com/a/1109108/473672
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchBox.getWindowToken(), 0);
             } else {
+                searchBox.setText("");
                 searchBox.setVisibility(View.VISIBLE);
                 searchBox.requestFocus();
 
                 // From: https://stackoverflow.com/a/8991563/473672
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                assert imm != null;
                 imm.showSoftInput(searchBox, InputMethodManager.SHOW_IMPLICIT);
             }
 

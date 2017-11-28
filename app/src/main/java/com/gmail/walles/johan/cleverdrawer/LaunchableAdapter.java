@@ -19,13 +19,16 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import timber.log.Timber;
 
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
-    private final List<Launchable> launchables;
+    private final List<Launchable> allLaunchables;
+    private List<Launchable> filteredLaunchables;
 
     /**
      * Load a {@link Drawable} from a {@link Launchable} and update the {@link ImageView}.
@@ -59,9 +62,9 @@ class LaunchableAdapter extends BaseAdapter {
         this.context = context;
         Timer timer = new Timer();
         timer.addLeg("Getting Launchables");
-        launchables = getLaunchables(context);
+        allLaunchables = loadLaunchables(context);
         try {
-            DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, launchables);
+            DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, allLaunchables);
         } catch (IOException e) {
             Timber.w(e, "Updating names from cache failed");
         }
@@ -74,17 +77,19 @@ class LaunchableAdapter extends BaseAdapter {
             throw new RuntimeException("Failed loading statistics", e);
         }
 
-        Collections.sort(launchables, comparator);
+        Collections.sort(allLaunchables, comparator);
 
         updateNamesCache(nameCacheFile);
 
         Timber.i("LaunchableAdapter timings: %s", timer);
+
+        filteredLaunchables = allLaunchables;
     }
 
     private void updateNamesCache(File nameCacheFile) {
         new Thread(() -> {
             try {
-                DatabaseUtils.cacheTrueNames(nameCacheFile, launchables);
+                DatabaseUtils.cacheTrueNames(nameCacheFile, allLaunchables);
             } catch (IOException e) {
                 Timber.w(e, "Caching names failed");
             }
@@ -93,12 +98,12 @@ class LaunchableAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return launchables.size();
+        return filteredLaunchables.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return launchables.get(i);
+        return filteredLaunchables.get(i);
     }
 
     @Override
@@ -127,7 +132,7 @@ class LaunchableAdapter extends BaseAdapter {
         return view;
     }
 
-    private static List<Launchable> getLaunchables(Context context) {
+    private static List<Launchable> loadLaunchables(Context context) {
         Timer timer = new Timer();
         final PackageManager packageManager = context.getPackageManager();
 
@@ -144,5 +149,22 @@ class LaunchableAdapter extends BaseAdapter {
 
         Timber.i("getLaunchables() timings: %s", timer);
         return launchables;
+    }
+
+    public void setFilter(CharSequence search) {
+        if (search.length() == 0) {
+            filteredLaunchables = allLaunchables;
+        }
+
+        List<Launchable> newFilteredList = new LinkedList<>();
+        for (Launchable launchable: allLaunchables) {
+            if (launchable.matches(search.toString().toLowerCase(Locale.getDefault()))) {
+                newFilteredList.add(launchable);
+            }
+        }
+
+        filteredLaunchables = newFilteredList;
+
+        notifyDataSetChanged();
     }
 }

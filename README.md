@@ -11,7 +11,6 @@ the things you are most likely to launch first.
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
 * Don't crash if user rotates the device
-* Add a search button that filters the app list as you type
 * Test grid with different font sizes and app name lengths
 * Create a release process with automated release numbering
 
@@ -74,3 +73,4 @@ app labels from the system and update all cache lines that have changed
 * Use a dark background
 * Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
 * Run unit tests in [Travis](https://travis-ci.org/)
+* Add a search button that filters the app list as you type

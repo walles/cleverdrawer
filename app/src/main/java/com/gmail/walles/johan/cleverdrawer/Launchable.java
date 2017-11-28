@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
 
+import java.util.Locale;
+
 public class Launchable {
     private ResolveInfo resolveInfo;
     private PackageManager packageManager;
@@ -17,6 +19,17 @@ public class Launchable {
     private Drawable icon;
 
     private String name;
+
+    /**
+     * This is what we have lowercased. Managed by {@link #getLowercaseName()}.
+     */
+    @Nullable
+    private String lowercaseBase;
+
+    /**
+     * This is the lower case name. Access through {@link #getLowercaseName()}.
+     */
+    private String lowercased;
 
     public final String id;
     public final Intent launchIntent;
@@ -96,5 +109,32 @@ public class Launchable {
     @Override
     public String toString() {
         return id;
+    }
+
+    /**
+     * @param search This should be a lowercase search string.
+     */
+    public boolean matches(CharSequence search) {
+        String name = getLowercaseName();
+        if (name == null) {
+            throw new UnsupportedOperationException("My name is null, can't match that, id: " + id);
+        }
+
+        return name.toLowerCase(Locale.getDefault()).contains(search);
+    }
+
+    @Nullable
+    private String getLowercaseName() {
+        String name = getName();
+        if (name == null) {
+            return null;
+        }
+
+        if (!name.equals(lowercaseBase)) {
+            lowercased = name.toLowerCase(Locale.getDefault());
+            lowercaseBase = name;
+        }
+
+        return lowercased;
     }
 }
