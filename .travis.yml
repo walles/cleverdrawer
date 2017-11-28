@@ -1,0 +1,33 @@
+language: android
+jdk: oraclejdk8
+
+before_script: echo apiKey=0 > app/fabric.properties
+
+script: ./gradlew check --continue
+
+env:
+  - GRADLE_OPTS="-Xmx512m"
+
+android:
+  components:
+    # From: https://docs.travis-ci.com/user/languages/android#Overview
+    # Use the latest revision of Android SDK Tools
+    #
+    # NOTICE: Must come before the buildtools and sdk settings below
+    #
+    # NOTICE: Having "tools" here twice is required:
+    #   https://docs.travis-ci.com/user/languages/android/#Installing-a-newer-SDK-Platform-Tools-revision
+    - tools
+    - platform-tools
+    - tools
+
+    # The BuildTools version used by your project
+    # NOTICE: Must match the values in app/build.gradle
+    - build-tools-26.0.2
+
+    # The SDK version used to compile your project
+    # NOTICE: Must match the compileSdkVersion value in app/build.gradle
+    - android-26
+
+    # For appcompat-v7 support library
+    - extra-android-m2repository

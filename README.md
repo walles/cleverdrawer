@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/walles/cleverdrawer.svg?branch=master)](https://travis-ci.org/walles/cleverdrawer)
+
 # CleverDrawer
 
 App drawer that reads your mind.
@@ -19,9 +21,7 @@ doesn't look weird
 
 # TODO Misc
 * Sort recently installed apps earlier
-* Run unit tests in [Travis](https://travis-ci.org/)
 * Make a pre-commit hook that runs `gradlew check --continue`
-* Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
 * Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
 * Add system settings to the list.
@@ -72,3 +72,5 @@ app labels from the system and update all cache lines that have changed
 * Fix startup time
 * Four icons per row on my phone
 * Use a dark background
+* Run [Android Lint](http://tools.android.com/tips/lint-checks) in Travis
+* Run unit tests in [Travis](https://travis-ci.org/)
