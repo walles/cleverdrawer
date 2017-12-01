@@ -133,7 +133,7 @@ class LaunchableAdapter extends BaseAdapter {
         return view;
     }
 
-    private static List<Launchable> loadLaunchables(Context context) {
+    static List<Launchable> loadLaunchables(Context context) {
         Timer timer = new Timer();
         final PackageManager packageManager = context.getPackageManager();
 

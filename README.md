@@ -14,7 +14,8 @@ the things you are most likely to launch first.
 * Create a release process with automated release numbering
 
 # TODO Before First Public Release
-* Verify there are no dups in the launchables list
+* Verify there are no duplicate IDs in the launchables list
+* Verify there are no duplicate labels in the launchables list
 * Give settings a lower score than apps
 * Count time-since-last-launch in number of whole days, not milliseconds
 * Fix icon loading so that rapid scrolling after start screen loaded
