@@ -20,9 +20,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -133,6 +135,10 @@ class LaunchableAdapter extends BaseAdapter {
         return view;
     }
 
+    /**
+     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
+     * empty names.
+     */
     static List<Launchable> loadLaunchables(Context context) {
         Timer timer = new Timer();
         final PackageManager packageManager = context.getPackageManager();
@@ -145,8 +151,17 @@ class LaunchableAdapter extends BaseAdapter {
 
         timer.addLeg("Creating Launchables");
         List<Launchable> launchables = new ArrayList<>();
+        Set<String> doneIds = new HashSet<>();
         for(ResolveInfo resolveInfo : resInfos) {
-            launchables.add(new Launchable(resolveInfo, packageManager));
+            Launchable launchable = new Launchable(resolveInfo, packageManager);
+            if (doneIds.contains(launchable.id)) {
+                // Should we print a warning here? All dups we have looked at have been identical,
+                // so just dropping these should be fine.
+                continue;
+            }
+
+            launchables.add(launchable);
+            doneIds.add(launchable.id);
         }
 
         Timber.i("getLaunchables() timings: %s", timer);

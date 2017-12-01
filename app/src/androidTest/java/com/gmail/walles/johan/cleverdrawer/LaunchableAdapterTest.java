@@ -23,10 +23,8 @@ import java.util.Map;
 @RunWith(AndroidJUnit4.class)
 public class LaunchableAdapterTest {
     @Test
-    public void testLoadLaunchables() throws Exception {
-        // Context of the app under test.
+    public void testLoadLaunchablesNoDuplicateIds() throws Exception {
         Context appContext = InstrumentationRegistry.getTargetContext();
-
         List<Launchable> launchables = LaunchableAdapter.loadLaunchables(appContext);
 
         // Map all IDs to the launchables with that ID
