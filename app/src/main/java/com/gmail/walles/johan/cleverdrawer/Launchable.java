@@ -155,6 +155,11 @@ public class Launchable implements Comparable<Launchable> {
             latestLaunch = 0;
         }
 
+        // Clamping ages this way makes changes the age factor from zero to infinite into from
+        // lower bound to upper bound.
+        //
+        // Or in other words, launching an app and then relaunching CleverDrawer won't always put
+        // the most recently launched app first.
         long msSinceLatestLaunch = System.currentTimeMillis() - latestLaunch;
         if (msSinceLatestLaunch < LAST_LAUNCH_MS_MIN) {
             msSinceLatestLaunch = LAST_LAUNCH_MS_MIN;
@@ -162,7 +167,17 @@ public class Launchable implements Comparable<Launchable> {
         if (msSinceLatestLaunch > LAST_LAUNCH_MS_MAX) {
             msSinceLatestLaunch = LAST_LAUNCH_MS_MAX;
         }
-        score = (launchCount + 1) / (double)msSinceLatestLaunch;
+
+        double factor = 1.0;
+        if (id.startsWith("com.android.settings.")) {
+            // Put settings after apps. Multiple reasons really:
+            // * People expect apps, not settings, so put what people expect first
+            // * All the settings have the same icon, mixing this with the apps makes both apps and
+            //  settings harder to find
+            factor = 0.99;
+        }
+
+        score = factor * (launchCount + 1) / (double)msSinceLatestLaunch;
     }
 
     @Override
