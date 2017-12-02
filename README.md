@@ -8,19 +8,21 @@ It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
 # TODO Before Getting Beta Testers
+* Move scoring logic into Launchable.java
+* Give settings a lower score than apps
+* Count time-since-last-launch in number of whole weeks, not milliseconds
+* Don't show Launchables with empty labels
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
 * Don't crash if user rotates the device
 * Create a release process with automated release numbering
 
 # TODO Before First Public Release
-* Give settings a lower score than apps
-* Count time-since-last-launch in number of whole days, not milliseconds
-* Verify there are no duplicate labels in the launchables list
 * Fix icon loading so that rapid scrolling after start screen loaded
 doesn't look weird
 
 # TODO Misc
+* Verify there are no duplicate labels in the launchables list
 * Make Travis run the instrumented tests
 * Sort recently installed apps earlier
 * Make a pre-commit hook that runs `gradlew check --continue`
