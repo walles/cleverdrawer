@@ -45,7 +45,7 @@ public class MainActivityFragment extends Fragment {
             Timber.i("Launching %s...", launchable.getName());
             getContext().startActivity(launchable.launchIntent);
             try {
-                Statistics.registerLaunch(statsFile, launchable);
+                DatabaseUtils.registerLaunch(statsFile, launchable);
             } catch (IOException e) {
                 Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.id);
             }

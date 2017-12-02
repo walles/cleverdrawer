@@ -15,6 +15,60 @@ import timber.log.Timber;
 public class DatabaseUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static Map<String, Metadata> getIdToMetadataMap(File file) throws IOException {
+        List<Metadata> stats = getMetadata(file);
+
+        Map<String, Metadata> returnMe = new HashMap<>();
+        for (Metadata stat: stats) {
+            returnMe.put(stat.id, stat);
+        }
+
+        return returnMe;
+    }
+
+    /**
+     * Register that this launchable has been launched.
+     */
+    public static void registerLaunch(File file, Launchable launchable) throws IOException {
+        registerLaunch(file, launchable, System.currentTimeMillis());
+    }
+
+    /**
+     * Register that this launchable has been launched.
+     */
+    static void registerLaunch(File file, Launchable launchable, long timestamp) throws IOException {
+        List<Metadata> metadata = getMetadata(file);
+        for (Metadata candidate: metadata) {
+            if (!candidate.id.equals(launchable.id)) {
+                continue;
+            }
+
+            candidate.latestLaunch = timestamp;
+            candidate.launchCount++;
+            saveMetadata(file, metadata);
+            return;
+        }
+
+        Metadata newEntry = new Metadata();
+        newEntry.id = launchable.id;
+        newEntry.launchCount = 1;
+        newEntry.latestLaunch = timestamp;
+        metadata.add(newEntry);
+        saveMetadata(file, metadata);
+    }
+
+    public static void scoreLaunchables(File statsFile, Iterable<Launchable> allLaunchables) {
+        Map<String, Metadata> idToMetadata;
+        try {
+            idToMetadata = getIdToMetadataMap(statsFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed loading statistics", e);
+        }
+        for (Launchable launchable: allLaunchables) {
+            launchable.setScore(idToMetadata.get(launchable.id));
+        }
+    }
+
     public static final class Metadata {
         public String id;
 
@@ -76,7 +130,7 @@ public class DatabaseUtils {
         Timber.i("Caching true names took: %s", timer.toString());
     }
 
-    public static List<Metadata> getMetadata(File file) throws IOException {
+    private static List<Metadata> getMetadata(File file) throws IOException {
         if (!file.exists()) {
             return new LinkedList<>();
         }
@@ -87,7 +141,7 @@ public class DatabaseUtils {
         return objectMapper.readValue(file, typeRef);
     }
 
-    public static void saveMetadata(File file, List<Metadata> metadata) throws IOException {
+    private static void saveMetadata(File file, List<Metadata> metadata) throws IOException {
         // For atomicity, write to temporary file, then rename
         File tempfile = new File(file.getAbsolutePath() + ".tmp");
         objectMapper.writeValue(tempfile, metadata);

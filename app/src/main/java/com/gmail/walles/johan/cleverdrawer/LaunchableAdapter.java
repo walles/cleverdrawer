@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,15 +72,10 @@ class LaunchableAdapter extends BaseAdapter {
         }
 
         timer.addLeg("Sorting Launchables");
-        Comparator<Launchable> comparator;
-        try {
-            comparator = Statistics.getComparator(statsFile);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed loading statistics", e);
-        }
+        DatabaseUtils.scoreLaunchables(statsFile, allLaunchables);
+        Collections.sort(allLaunchables);
 
-        Collections.sort(allLaunchables, comparator);
-
+        timer.addLeg("Updating names cache");
         updateNamesCache(nameCacheFile);
 
         Timber.i("LaunchableAdapter timings: %s", timer);

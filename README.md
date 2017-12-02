@@ -8,9 +8,7 @@ It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
 # TODO Before Getting Beta Testers
-* Move scoring logic into Launchable.java
 * Give settings a lower score than apps
-* Count time-since-last-launch in number of whole weeks, not milliseconds
 * Don't show Launchables with empty labels
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
@@ -82,3 +80,4 @@ app labels from the system and update all cache lines that have changed
 * Set search box IME Action flag
 * Test grid with different font sizes and app name lengths
 * Verify there are no duplicate IDs in the launchables list
+* Move scoring logic into Launchable.java
