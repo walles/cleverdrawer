@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -71,6 +72,8 @@ class LaunchableAdapter extends BaseAdapter {
             Timber.w(e, "Updating names from cache failed");
         }
 
+        dropUnnamed(allLaunchables);
+
         timer.addLeg("Sorting Launchables");
         DatabaseUtils.scoreLaunchables(statsFile, allLaunchables);
         Collections.sort(allLaunchables);
@@ -81,6 +84,16 @@ class LaunchableAdapter extends BaseAdapter {
         Timber.i("LaunchableAdapter timings: %s", timer);
 
         filteredLaunchables = allLaunchables;
+    }
+
+    private static void dropUnnamed(List<Launchable> launchables) {
+        Iterator<Launchable> iterator = launchables.iterator();
+        while (iterator.hasNext()) {
+            Launchable launchable = iterator.next();
+            if (launchable.getName().isEmpty()) {
+                iterator.remove();
+            }
+        }
     }
 
     private void updateNamesCache(File nameCacheFile) {
