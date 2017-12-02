@@ -11,14 +11,17 @@ the things you are most likely to launch first.
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
 * Point Timber logs to Crashlytics
 * Don't crash if user rotates the device
-* Test grid with different font sizes and app name lengths
 * Create a release process with automated release numbering
 
 # TODO Before First Public Release
+* Give settings a lower score than apps
+* Count time-since-last-launch in number of whole days, not milliseconds
+* Verify there are no duplicate labels in the launchables list
 * Fix icon loading so that rapid scrolling after start screen loaded
 doesn't look weird
 
 # TODO Misc
+* Make Travis run the instrumented tests
 * Sort recently installed apps earlier
 * Make a pre-commit hook that runs `gradlew check --continue`
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
@@ -75,3 +78,5 @@ app labels from the system and update all cache lines that have changed
 * Run unit tests in [Travis](https://travis-ci.org/)
 * Add a search button that filters the app list as you type
 * Set search box IME Action flag
+* Test grid with different font sizes and app name lengths
+* Verify there are no duplicate IDs in the launchables list

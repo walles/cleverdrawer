@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +20,11 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import timber.log.Timber;
 
@@ -132,23 +135,93 @@ class LaunchableAdapter extends BaseAdapter {
         return view;
     }
 
-    private static List<Launchable> loadLaunchables(Context context) {
+    /**
+     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
+     * empty names.
+     */
+    static List<Launchable> loadLaunchables(Context context) {
         Timer timer = new Timer();
         final PackageManager packageManager = context.getPackageManager();
 
-        Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
-        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        queryIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        List<ResolveInfo> resInfos = packageManager.queryIntentActivities(queryIntent, 0);
+        timer.addLeg("Listing Query Intents");
+        List<ResolveInfo> resInfos = new LinkedList<>();
+        for (Intent intent: getQueryIntents()) {
+            resInfos.addAll(packageManager.queryIntentActivities(intent, 0));
+        }
 
         timer.addLeg("Creating Launchables");
         List<Launchable> launchables = new ArrayList<>();
+        Set<String> doneIds = new HashSet<>();
         for(ResolveInfo resolveInfo : resInfos) {
-            launchables.add(new Launchable(resolveInfo, packageManager));
+            Launchable launchable = new Launchable(resolveInfo, packageManager);
+            if (doneIds.contains(launchable.id)) {
+                // Should we print a warning here? All dups we have looked at have been identical,
+                // so just dropping these should be fine.
+                continue;
+            }
+
+            launchables.add(launchable);
+            doneIds.add(launchable.id);
         }
 
         Timber.i("getLaunchables() timings: %s", timer);
         return launchables;
+    }
+
+    private static Iterable<Intent> getQueryIntents() {
+        List<Intent> queryIntents = new LinkedList<>();
+
+        Intent appIntent = new Intent(Intent.ACTION_MAIN, null);
+        appIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        queryIntents.add(appIntent);
+
+        // List from decompiling Settings.java and filtering it:
+        //
+        // grep "public static final String ACTION_" Settings.java |sort|grep _SETTINGS|awk '{print "        queryIntents.add(new Intent(Settings." $5 "));"}'
+        //
+        // Then I manually removed the ones that Android Studio complained about.
+        //
+        // FIXME: Maybe get these through reflection instead?
+        queryIntents.add(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_APN_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_APPLICATION_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_CAPTIONING_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_DATE_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_DEVICE_INFO_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_DISPLAY_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_DREAM_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_INPUT_METHOD_SUBTYPE_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_LOCALE_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_MANAGE_ALL_APPLICATIONS_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_MEMORY_CARD_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_NFCSHARING_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_NFC_PAYMENT_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_NFC_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_PRINT_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_PRIVACY_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_QUICK_LAUNCH_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_SEARCH_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_SECURITY_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_SOUND_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_SYNC_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_USER_DICTIONARY_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_WIFI_SETTINGS));
+        queryIntents.add(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+
+        return queryIntents;
     }
 
     public void setFilter(CharSequence search) {
