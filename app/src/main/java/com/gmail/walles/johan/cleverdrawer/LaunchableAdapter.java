@@ -94,6 +94,10 @@ class LaunchableAdapter extends BaseAdapter {
             Launchable launchable = iterator.next();
             if (launchable.getName().isEmpty()) {
                 iterator.remove();
+            } else if (launchable.id.equals("com.android.settings.com.samsung.android.settings.powersaving.PowerModeChangeDialogActivity")) {
+                // This just unconditionally disables battery saving mode on my Galaxy S6, and it's
+                // called "Battery" so having this in the list is just confusing.
+                iterator.remove();
             }
         }
     }
