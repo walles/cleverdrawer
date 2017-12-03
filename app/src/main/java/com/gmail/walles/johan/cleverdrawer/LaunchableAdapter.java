@@ -17,6 +17,8 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -171,64 +173,64 @@ class LaunchableAdapter extends BaseAdapter {
             doneIds.add(launchable.id);
         }
 
-        Timber.i("getLaunchables() timings: %s", timer);
+        Timber.i("loadLaunchables() timings: %s", timer);
         return launchables;
     }
 
     private static Iterable<Intent> getQueryIntents() {
         List<Intent> queryIntents = new LinkedList<>();
 
-        Intent appIntent = new Intent(Intent.ACTION_MAIN, null);
-        appIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        appIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        queryIntents.add(appIntent);
+        Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
+        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        queryIntents.add(queryIntent);
 
-        // List from decompiling Settings.java and filtering it:
-        //
-        // grep "public static final String ACTION_" Settings.java |sort|grep _SETTINGS|awk '{print "        queryIntents.add(new Intent(Settings." $5 "));"}'
-        //
-        // Then I manually removed the ones that Android Studio complained about.
-        //
-        // FIXME: Maybe get these through reflection instead?
-        queryIntents.add(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_APN_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_APPLICATION_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_CAPTIONING_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_DATA_ROAMING_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_DATE_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_DEVICE_INFO_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_DISPLAY_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_DREAM_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_INPUT_METHOD_SUBTYPE_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_LOCALE_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_MANAGE_ALL_APPLICATIONS_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_MEMORY_CARD_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_NFCSHARING_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_NFC_PAYMENT_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_NFC_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_PRINT_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_PRIVACY_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_QUICK_LAUNCH_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_SEARCH_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_SECURITY_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_SOUND_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_SYNC_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_USER_DICTIONARY_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_WIFI_SETTINGS));
-        queryIntents.add(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+        for (String action: getActions(Settings.class)) {
+            queryIntent = new Intent(action);
+            queryIntents.add(queryIntent);
+        }
+
+        // Battery screen on my Galaxy S6, I want to find this when searching for "battery"
+        queryIntents.add(new Intent(Intent.ACTION_POWER_USAGE_SUMMARY));
 
         return queryIntents;
+    }
+
+    private static Iterable<String> getActions(Class<?> classWithConstants) {
+        List<String> actions = new LinkedList<>();
+        for (Field field: classWithConstants.getFields()) {
+            if (!Modifier.isFinal(field.getModifiers())) {
+                continue;
+            }
+            if (!Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+            if (!Modifier.isPublic(field.getModifiers())) {
+                continue;
+            }
+            if (field.getType() != String.class) {
+                continue;
+            }
+            if (!field.getName().startsWith("ACTION_")) {
+                continue;
+            }
+
+            String value;
+            try {
+                value = (String)field.get(null);
+            } catch (IllegalAccessException e) {
+                Timber.w(e, "Unable to get field value of %s.%s",
+                        classWithConstants.getName(), field.getName());
+                continue;
+            }
+
+            if (!value.endsWith("_SETTINGS")) {
+                continue;
+            }
+
+            actions.add(value);
+        }
+
+        return actions;
     }
 
     public void setFilter(CharSequence search) {

@@ -169,7 +169,7 @@ public class Launchable implements Comparable<Launchable> {
         }
 
         double factor = 1.0;
-        if (id.startsWith("com.android.settings.")) {
+        if (id.startsWith("com.android.settings.") || id.startsWith("android.settings.")) {
             // Put settings after apps. Multiple reasons really:
             // * People expect apps, not settings, so put what people expect first
             // * All the settings have the same icon, mixing this with the apps makes both apps and

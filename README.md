@@ -14,6 +14,9 @@ the things you are most likely to launch first.
 * Create a release process with automated release numbering
 
 # TODO Before First Public Release
+* Add contacts as launchables
+* Back button should cancel ongoing search
+* Make an icon
 * Fix icon loading so that rapid scrolling after start screen loaded
 doesn't look weird
 
@@ -25,7 +28,6 @@ doesn't look weird
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
 * Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
 * Add system settings to the list.
-* Add contacts to the list. Multiply contact scores by 0.5.
 * Use weekday vs weekend as scoring factor
 * Use time of day as a scoring factor
 * Use most recently used other app as scoring factor
@@ -81,3 +83,4 @@ app labels from the system and update all cache lines that have changed
 * Move scoring logic into Launchable.java
 * Don't show Launchables with empty labels
 * Give settings a lower score than apps
+* Make sure the System Battery Settings is in the list on my Galaxy S6

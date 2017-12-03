@@ -42,7 +42,7 @@ public class MainActivityFragment extends Fragment {
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
-            Timber.i("Launching %s...", launchable.getName());
+            Timber.i("Launching %s (%s)...", launchable.getName(), launchable.id);
             getContext().startActivity(launchable.launchIntent);
             try {
                 DatabaseUtils.registerLaunch(statsFile, launchable);
