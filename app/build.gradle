@@ -1,4 +1,25 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        // These docs use an open ended version so that our plugin
+        // can be updated quickly in response to Android tooling updates
+
+        // We recommend changing it to the latest version from our changelog:
+        // https://docs.fabric.io/android/changelog.html#fabric-gradle-plugin
+        classpath 'io.fabric.tools:gradle:1.24.5'
+    }
+}
+
 apply plugin: 'com.android.application'
+
+// Fabric / Crashlytics must come after the Android plugin
+apply plugin: 'io.fabric'
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 26
@@ -39,6 +60,10 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.6.0'
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
+
+    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true
+    }
 
     testImplementation 'junit:junit:4.12'
 
