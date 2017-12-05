@@ -100,3 +100,4 @@ app labels from the system and update all cache lines that have changed
 * Don't log to Crashlytics while running in the emulator
 * Don't log to Crashlytics while unit testing
 * Point Timber logs to Crashlytics
+* Log non-fatal exceptions to Crashlytics

@@ -106,6 +106,7 @@ class LaunchableAdapter extends BaseAdapter {
         new Thread(() -> {
             try {
                 DatabaseUtils.cacheTrueNames(nameCacheFile, allLaunchables);
+                Timber.i("True names cached into %s", nameCacheFile.getAbsolutePath());
             } catch (IOException e) {
                 Timber.w(e, "Caching names failed");
             }

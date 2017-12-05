@@ -89,13 +89,17 @@ public class DatabaseUtils {
         Map<String, String> cache = objectMapper.readValue(file, typeRef);
 
         // Update all launchable names from the map
+        int updateCount = 0;
         for (Launchable launchable: launchables) {
             String name = cache.get(launchable.id);
             if (name == null) {
                 continue;
             }
             launchable.setName(name);
+            updateCount++;
         }
+
+        Timber.i("%d/%d launchable names updated from cache", updateCount, launchables.size());
     }
 
     /**
