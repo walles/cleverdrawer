@@ -21,8 +21,6 @@ instructions](https://docs.fabric.io/android/fabric/settings/working-in-teams.ht
 also a good way of researching Travis problems locally.
 
 # TODO Before Getting Beta Testers
-* Don't log to Crashlytics while running Instrumented Tests
-* Point Timber logs to Crashlytics
 * Don't crash if user rotates the device
 * Create a release process with automated release numbering
 
@@ -98,3 +96,7 @@ app labels from the system and update all cache lines that have changed
 * Give settings a lower score than apps
 * Make sure the System Battery Settings is in the list on my Galaxy S6
 * Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
+* Don't log to Crashlytics while running Instrumented Tests
+* Don't log to Crashlytics while running in the emulator
+* Don't log to Crashlytics while unit testing
+* Point Timber logs to Crashlytics
