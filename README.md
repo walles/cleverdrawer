@@ -7,9 +7,20 @@ App drawer that reads your mind.
 It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
+# Hacking
+* `git clone git@github.com:walles/cleverdrawer.git`
+* [Download and install Android Studio](https://developer.android.com/sdk/index.html)
+* Start Android Studio
+* "Open an existing Android Studio project" and point it to where you cloned the source code
+* Add an `app/fabric.properties` file with one line: "`apiKey=0`" (or follow the [official Crashlytics
+instructions](https://docs.fabric.io/android/fabric/settings/working-in-teams.html#android-projects))
+* Next to the green play button in the top toolbar, make sure the dropdown says "CleverDrawer"
+* Click the green play button to build / launch, install any requested components
+* Do `./gradlew check` to test and lint code before making a pull request. This is
+[what Travis does](https://github.com/walles/exactype/blob/master/.travis.yml) anyway, so this is
+also a good way of researching Travis problems locally.
+
 # TODO Before Getting Beta Testers
-* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
-* Point Timber logs to Crashlytics
 * Don't crash if user rotates the device
 * Create a release process with automated release numbering
 
@@ -84,3 +95,8 @@ app labels from the system and update all cache lines that have changed
 * Don't show Launchables with empty labels
 * Give settings a lower score than apps
 * Make sure the System Battery Settings is in the list on my Galaxy S6
+* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
+* Don't log to Crashlytics while running Instrumented Tests
+* Don't log to Crashlytics while running in the emulator
+* Don't log to Crashlytics while unit testing
+* Point Timber logs to Crashlytics
