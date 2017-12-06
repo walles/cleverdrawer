@@ -7,6 +7,8 @@ App drawer that reads your mind.
 It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
+<img src="screenshot_2017dec6.png" width="216" height="384">
+
 # Hacking
 * `git clone git@github.com:walles/cleverdrawer.git`
 * [Download and install Android Studio](https://developer.android.com/sdk/index.html)
@@ -21,11 +23,11 @@ instructions](https://docs.fabric.io/android/fabric/settings/working-in-teams.ht
 also a good way of researching Travis problems locally.
 
 ## Releasing
-1. Do ```git tag``` and think about what the next version number should be.
-2. Do ```git tag 1.2.3``` to set the next version number.
-3. ```env JAVA_OPTS=-Xmx512m ./gradlew --no-daemon build```
-4. Upload ```app/build/outputs/apk/app-release.apk``` to Google Play
-5. ```git push --tags```
+1. Do `git tag` and think about what the next version number should be.
+2. Do `git tag 1.2.3` to set the next version number.
+3. `env JAVA_OPTS=-Xmx512m ./gradlew --no-daemon build`
+4. Upload `app/build/outputs/apk/app-release.apk` to Google Play
+5. `git push --tags`
 
 # TODO Before First Public Release
 * Release a beta on Google Play
