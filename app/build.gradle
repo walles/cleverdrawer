@@ -21,14 +21,50 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
+// During git hook execution some GIT_ variables are set which make our commands fail unless we
+// strip those variables out
+def getNoGitEnv = { ->
+    def noGitEnv = new HashMap<String, String>(System.getenv())
+    def iterator = noGitEnv.entrySet().iterator()
+    while (iterator.hasNext()) {
+        def entry = iterator.next()
+        if (entry.key.startsWith("GIT_")) {
+            iterator.remove()
+        }
+    }
+
+    return noGitEnv
+}
+
+// From: http://stackoverflow.com/questions/17097263/automatically-versioning-android-project-from-git-describe-with-android-studio-g
+def getVersionCode = { ->
+    def output = new ByteArrayOutputStream()
+    exec {
+        environment = getNoGitEnv()
+        standardOutput = output
+        commandLine 'git', 'tag', '--list'
+    }
+    return output.toString().split("\n").size()
+}
+
+def getVersionName = { ->
+    def output = new ByteArrayOutputStream()
+    exec {
+        environment = getNoGitEnv()
+        standardOutput = output
+        commandLine 'git', 'describe', '--tags', '--dirty', '--first-parent'
+    }
+    return output.toString().trim()
+}
+
 android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.gmail.walles.johan.cleverdrawer"
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode getVersionCode()
+        versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -61,7 +97,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.2'
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
         transitive = true
     }
 

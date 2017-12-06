@@ -20,11 +20,18 @@ instructions](https://docs.fabric.io/android/fabric/settings/working-in-teams.ht
 [what Travis does](https://github.com/walles/exactype/blob/master/.travis.yml) anyway, so this is
 also a good way of researching Travis problems locally.
 
-# TODO Before Getting Beta Testers
-* Don't crash if user rotates the device
-* Create a release process with automated release numbering
+## Releasing
+1. Do ```git tag``` and think about what the next version number should be.
+2. Do ```git tag 1.2.3``` to set the next version number.
+3. ```env JAVA_OPTS=-Xmx512m ./gradlew --no-daemon build```
+4. Upload ```app/build/outputs/apk/app-release.apk``` to Google Play
+5. ```git push --tags```
 
 # TODO Before First Public Release
+* Release a beta on Google Play
+* Get somebody to install + start using the beta
+* Add an About entry in the ... menu
+* Add a Contact Developer entry in the ... menu
 * Add contacts as launchables
 * Back button should cancel ongoing search
 * Make an icon
@@ -32,6 +39,7 @@ also a good way of researching Travis problems locally.
 doesn't look weird
 
 # TODO Misc
+* Swipe down for search
 * Verify there are no duplicate labels in the launchables list
 * Make Travis run the instrumented tests
 * Sort recently installed apps earlier
@@ -101,3 +109,6 @@ app labels from the system and update all cache lines that have changed
 * Don't log to Crashlytics while unit testing
 * Point Timber logs to Crashlytics
 * Log non-fatal exceptions to Crashlytics
+* Don't crash if user rotates the device (may or may not be done, let's
+see if we get crash reports)
+* Create a release process with automated release numbering
