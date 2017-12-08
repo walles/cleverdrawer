@@ -7,7 +7,7 @@ App drawer that reads your mind.
 It then uses that information to sort everything launchable with
 the things you are most likely to launch first.
 
-<img src="screenshot_2017dec6.png" width="216" height="384">
+<img src="media/screenshot_2017dec6.png" width="216" height="384">
 
 # Hacking
 * `git clone git@github.com:walles/cleverdrawer.git`
@@ -32,7 +32,6 @@ also a good way of researching Travis problems locally.
 # TODO Before First Beta Release
 * Create a second screenshot
 * Create a 512x512 transparent PNG icon, consider the brand color
-* Create a 1024x500 JPEG feature image, consider the brand color
 * Release
 
 # TODO Before First Public Release
@@ -123,3 +122,4 @@ see if we get crash reports)
 * Create a release process with automated release numbering
 * Decide on a brand color: It's the `colorPrimary` in
 [`colors.xml`](app/src/main/res/values/colors.xml).
+* Create a 1024x500 JPEG feature image, consider the brand color
