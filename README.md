@@ -29,8 +29,15 @@ also a good way of researching Travis problems locally.
 4. Upload `app/build/outputs/apk/app-release.apk` to Google Play
 5. `git push --tags`
 
+# TODO Before First Beta Release
+* Create a second screenshot
+* Create a 512x512 transparent PNG icon, consider the brand color
+* Create a 1024x500 JPEG feature image, consider the brand color
+* Release
+
 # TODO Before First Public Release
 * Release a beta on Google Play
+* Update UI to match the brand color
 * Get somebody to install + start using the beta
 * Add an About entry in the ... menu
 * Add a Contact Developer entry in the ... menu
@@ -114,3 +121,5 @@ app labels from the system and update all cache lines that have changed
 * Don't crash if user rotates the device (may or may not be done, let's
 see if we get crash reports)
 * Create a release process with automated release numbering
+* Decide on a brand color: It's the `colorPrimary` in
+[`colors.xml`](app/src/main/res/values/colors.xml).
