@@ -78,6 +78,18 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
+        // These tests can be fine one day and not fine the next without us changing anything. Not
+        // reliable enough, disable.
+        //
+        // Docs at http://tools.android.com/tips/lint-checks
+        disable("GradleDependency")
+        disable("NewerVersionAvailable")
+        disable("OldTargetApi")
+
+        // Johan doesn't want to generate multiple icon sizes; most phones can resize an icon just
+        // fine by itself.
+        disable("IconMissingDensityFolder")
+
         abortOnError true
         checkAllWarnings true
         warningsAsErrors true
