@@ -32,6 +32,8 @@ also a good way of researching Travis problems locally.
 # TODO Before First Beta Release
 * Create a second screenshot
 * Create a 512x512 transparent PNG icon, consider the brand color
+* Think about whether the feature image should be somehow modified to better
+match the icon
 * Release
 
 # TODO Before First Public Release
@@ -42,7 +44,6 @@ also a good way of researching Travis problems locally.
 * Add a Contact Developer entry in the ... menu
 * Add contacts as launchables
 * Back button should cancel ongoing search
-* Make an icon
 * Fix icon loading so that rapid scrolling after start screen loaded
 doesn't look weird
 
