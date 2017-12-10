@@ -30,6 +30,7 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Beta Release
+* Add a `LICENSE` file
 * Release
 
 # TODO Before First Public Release
