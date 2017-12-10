@@ -30,10 +30,7 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Beta Release
-* Make sure our app uses the icon
 * Create a second screenshot
-* Think about whether the feature image should be somehow modified to better
-match the icon
 * Release
 
 # TODO Before First Public Release
@@ -48,6 +45,7 @@ match the icon
 doesn't look weird
 
 # TODO Misc
+* Rework icon and feature image. Still consider the brand color.
 * Swipe down for search
 * Verify there are no duplicate labels in the launchables list
 * Make Travis run the instrumented tests
@@ -125,3 +123,4 @@ see if we get crash reports)
 [`colors.xml`](app/src/main/res/values/colors.xml).
 * Create a 1024x500 JPEG feature image, consider the brand color
 * Create a 512x512 transparent PNG icon, consider the brand color
+* Make sure our app uses the icon
