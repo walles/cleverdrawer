@@ -84,6 +84,7 @@ def getVersionName = { ->
 
 android {
     compileSdkVersion 26
+
     defaultConfig {
         applicationId "com.gmail.walles.johan.cleverdrawer"
         minSdkVersion 19
@@ -92,16 +93,19 @@ android {
         versionName getVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
     lintOptions {
         // These tests can be fine one day and not fine the next without us changing anything. Not
         // reliable enough, disable.
@@ -122,6 +126,29 @@ android {
         textReport true
         textOutput "stdout"
         explainIssues false
+    }
+
+    // Read signing properties from ~/.gradle/cleverdrawer.properties
+    //
+    // From: https://www.timroes.de/2013/09/22/handling-signing-configs-with-gradle/
+    if (new File("${gradle.gradleUserHomeDir}/cleverdrawer.properties").exists()) {
+        Properties props = new Properties()
+        props.load(new FileInputStream(file("${gradle.gradleUserHomeDir}/cleverdrawer.properties")))
+
+        signingConfigs {
+            release {
+                storeFile file(props['keystore'])
+                storePassword props['keystore.password']
+                keyAlias props['keyAlias']
+                keyPassword props['keyPassword']
+            }
+        }
+
+        buildTypes {
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
     }
 }
 
