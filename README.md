@@ -30,7 +30,6 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Beta Release
-* Add a `LICENSE` file
 * Release
 
 # TODO Before First Public Release
@@ -125,3 +124,4 @@ see if we get crash reports)
 * Create a 512x512 transparent PNG icon, consider the brand color
 * Make sure our app uses the icon
 * Create a second screenshot
+* Add a `LICENSE` file
