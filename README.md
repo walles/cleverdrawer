@@ -29,21 +29,20 @@ also a good way of researching Travis problems locally.
 4. Upload `app/build/outputs/apk/app-release.apk` to Google Play
 5. `git push --tags`
 
-# TODO Before First Beta Release
-* Release
-
 # TODO Before First Public Release
-* Release a beta on Google Play
-* Update UI to match the brand color
+* Report duplicate labels to Crashlytics
 * Get somebody to install + start using the beta
 * Add an About entry in the ... menu
 * Add a Contact Developer entry in the ... menu
+* Remove Settings entry in the ... menu if we don't need it
 * Add contacts as launchables
 * Back button should cancel ongoing search
 * Fix icon loading so that rapid scrolling after start screen loaded
 doesn't look weird
 
 # TODO Misc
+* Get a real-world launch history and test the prediction algorithm
+using that
 * Rework icon and feature image. Still consider the brand color.
 * Swipe down for search
 * Verify there are no duplicate labels in the launchables list
@@ -125,3 +124,6 @@ see if we get crash reports)
 * Make sure our app uses the icon
 * Create a second screenshot
 * Add a `LICENSE` file
+* Release a beta on Google Play
+* How can I test the prediction algorithm?
+* Update UI to match the brand color
