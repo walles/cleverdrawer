@@ -45,7 +45,7 @@ import timber.log.Timber;
 // Can't use Timber before logging set up
 @SuppressLint("LogNotTimber")
 public class Application extends android.app.Application {
-    public static final boolean IS_CRASHLYTICS_ENABLED = isCrashlyticsEnabled();
+    private static final boolean IS_CRASHLYTICS_ENABLED = isCrashlyticsEnabled();
 
     private static final String TAG = "CleverDrawer";
 

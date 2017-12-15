@@ -39,9 +39,6 @@ import org.jetbrains.annotations.TestOnly;
 import java.util.Locale;
 
 public class Launchable implements Comparable<Launchable> {
-    private static final long LAST_LAUNCH_MS_MIN =     7 * 86400 * 1000L; // One week
-    private static final long LAST_LAUNCH_MS_MAX = 6 * 7 * 86400 * 1000L; // Six weeks
-
     private ResolveInfo resolveInfo;
     private PackageManager packageManager;
 
@@ -169,28 +166,10 @@ public class Launchable implements Comparable<Launchable> {
         return lowercased;
     }
 
-    public void setScore(@Nullable DatabaseUtils.Metadata metadata) {
-        int launchCount;
-        long latestLaunch;
-        if (metadata != null) {
-            launchCount = metadata.launchCount;
-            latestLaunch = metadata.latestLaunch;
-        } else {
-            launchCount = 0;
-            latestLaunch = 0;
-        }
-
-        // Clamping ages this way makes changes the age factor from zero to infinite into from
-        // lower bound to upper bound.
-        //
-        // Or in other words, launching an app and then relaunching CleverDrawer won't always put
-        // the most recently launched app first.
-        long msSinceLatestLaunch = System.currentTimeMillis() - latestLaunch;
-        if (msSinceLatestLaunch < LAST_LAUNCH_MS_MIN) {
-            msSinceLatestLaunch = LAST_LAUNCH_MS_MIN;
-        }
-        if (msSinceLatestLaunch > LAST_LAUNCH_MS_MAX) {
-            msSinceLatestLaunch = LAST_LAUNCH_MS_MAX;
+    public void setScore(double score) {
+        if (score <= 0.0) {
+            // Score must be > 0 so that we can multiply it by a factor below
+            throw new IllegalArgumentException("score must be > 0, was " + score);
         }
 
         double factor = 1.0;
@@ -202,7 +181,7 @@ public class Launchable implements Comparable<Launchable> {
             factor = 0.99;
         }
 
-        score = factor * (launchCount + 1) / (double)msSinceLatestLaunch;
+        this.score = score * factor;
     }
 
     @Override

@@ -38,8 +38,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class LaunchableTest {
-    private static final long ONE_WEEK_MS = 7 * 86400L * 1000L;
-
+    @SuppressWarnings("CanBeFinal")
     @Rule
     public TemporaryFolder tempdir = new TemporaryFolder();
 
@@ -80,22 +79,6 @@ public class LaunchableTest {
 
         List<Launchable> launchables = Arrays.asList(ape, zebra);
         DatabaseUtils.registerLaunch(dbFile, zebra);
-
-        DatabaseUtils.scoreLaunchables(dbFile, launchables);
-        Collections.sort(launchables);
-
-        Assert.assertThat(launchables, is(Arrays.asList(zebra, ape)));
-    }
-
-    @Test
-    public void testRecentLaunchesAreBetter() throws Exception {
-        File dbFile = new File(tempdir.getRoot(), "testFile");
-        Launchable ape = new Launchable("Ape", "Ape");
-        Launchable zebra = new Launchable("Zebra", "Zebra");
-
-        List<Launchable> launchables = Arrays.asList(ape, zebra);
-        DatabaseUtils.registerLaunch(dbFile,   ape, System.currentTimeMillis() - 3 * ONE_WEEK_MS);
-        DatabaseUtils.registerLaunch(dbFile, zebra, System.currentTimeMillis() - 2 * ONE_WEEK_MS);
 
         DatabaseUtils.scoreLaunchables(dbFile, launchables);
         Collections.sort(launchables);

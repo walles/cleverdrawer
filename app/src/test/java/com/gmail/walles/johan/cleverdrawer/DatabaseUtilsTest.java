@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.Arrays;
 
 public class DatabaseUtilsTest {
+    @SuppressWarnings("CanBeFinal")
     @Rule
     public TemporaryFolder tempdir = new TemporaryFolder();
 

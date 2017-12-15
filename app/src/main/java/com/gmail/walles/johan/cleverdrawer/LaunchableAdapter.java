@@ -93,11 +93,7 @@ class LaunchableAdapter extends BaseAdapter {
         Timer timer = new Timer();
         timer.addLeg("Getting Launchables");
         allLaunchables = loadLaunchables(context);
-        try {
-            DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, allLaunchables);
-        } catch (IOException e) {
-            Timber.w(e, "Updating names from cache failed");
-        }
+        DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, allLaunchables);
 
         dropUnnamed(allLaunchables);
 

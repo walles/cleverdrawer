@@ -40,78 +40,33 @@ import timber.log.Timber;
 public class DatabaseUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static Map<String, Metadata> getIdToMetadataMap(File file) throws IOException {
-        List<Metadata> stats = getMetadata(file);
-
-        Map<String, Metadata> returnMe = new HashMap<>();
-        for (Metadata stat: stats) {
-            returnMe.put(stat.id, stat);
-        }
-
-        return returnMe;
-    }
+    /**
+     * Keep track of at most this many launches.
+     */
+    private static final int MAX_LAUNCHES = 1000;
 
     /**
-     * Register that this launchable has been launched.
+     * Ignore all launches older than three weeks.
      */
-    public static void registerLaunch(File file, Launchable launchable) throws IOException {
-        registerLaunch(file, launchable, System.currentTimeMillis());
-    }
+    private static final long ONE_WEEK_MS = 7 * 86400L * 1000L;
+    private static final long MAX_LAUNCH_AGE_MS = ONE_WEEK_MS * 3L;
 
-    /**
-     * Register that this launchable has been launched.
-     */
-    static void registerLaunch(File file, Launchable launchable, long timestamp) throws IOException {
-        List<Metadata> metadata = getMetadata(file);
-        for (Metadata candidate: metadata) {
-            if (!candidate.id.equals(launchable.id)) {
-                continue;
-            }
-
-            candidate.latestLaunch = timestamp;
-            candidate.launchCount++;
-            saveMetadata(file, metadata);
+    public static void nameLaunchablesFromCache(File file, List<Launchable> launchables) {
+        if (!file.exists()) {
+            Timber.i("No names cache file found, guessing this is the first launch");
             return;
         }
 
-        Metadata newEntry = new Metadata();
-        newEntry.id = launchable.id;
-        newEntry.launchCount = 1;
-        newEntry.latestLaunch = timestamp;
-        metadata.add(newEntry);
-        saveMetadata(file, metadata);
-    }
-
-    public static void scoreLaunchables(File statsFile, Iterable<Launchable> allLaunchables) {
-        Map<String, Metadata> idToMetadata;
-        try {
-            idToMetadata = getIdToMetadataMap(statsFile);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed loading statistics", e);
-        }
-        for (Launchable launchable: allLaunchables) {
-            launchable.setScore(idToMetadata.get(launchable.id));
-        }
-    }
-
-    public static final class Metadata {
-        public String id;
-
-        public int launchCount;
-
-        /**
-         * Timestamp in milliseconds since epoch.
-         */
-        public long latestLaunch;
-    }
-
-    public static void nameLaunchablesFromCache(File file, List<Launchable> launchables)
-            throws IOException
-    {
         // Load the launchables table into an id->name map
         TypeReference<HashMap<String, String>> typeRef
                 = new TypeReference<HashMap<String, String>>() {};
-        Map<String, String> cache = objectMapper.readValue(file, typeRef);
+        Map<String, String> cache;
+        try {
+            cache = objectMapper.readValue(file, typeRef);
+        } catch (IOException e) {
+            Timber.w(e, "Error reading names cache, pretending it's empty");
+            return;
+        }
 
         // Update all launchable names from the map
         int updateCount = 0;
@@ -159,23 +114,99 @@ public class DatabaseUtils {
         Timber.i("Caching true names took: %s", timer.toString());
     }
 
-    private static List<Metadata> getMetadata(File file) throws IOException {
+    public static final class LaunchMetadata {
+        public String id;
+
+        /**
+         * Launch timestamp in milliseconds since epoch.
+         */
+        public long timestamp;
+    }
+
+    /**
+     * Register that this launchable has been launched.
+     */
+    public static void registerLaunch(File file, Launchable launchable) throws IOException {
+        registerLaunch(file, launchable, System.currentTimeMillis());
+    }
+
+    /**
+     * Register that this launchable has been launched.
+     */
+    private static void registerLaunch(File file, Launchable launchable, long timestamp)
+            throws IOException
+    {
+        List<LaunchMetadata> launches = loadLaunches(file);
+
+        LaunchMetadata newLaunch = new LaunchMetadata();
+        newLaunch.id = launchable.id;
+        newLaunch.timestamp = timestamp;
+        launches.add(newLaunch);
+
+        // Stay below the ceiling
+        while (launches.size() > MAX_LAUNCHES) {
+            launches.remove(0);
+        }
+
+        saveLaunches(file, launches);
+    }
+
+    /**
+     * Give all launchables a non-null score > 0
+     */
+    public static void scoreLaunchables(File file, Iterable<Launchable> allLaunchables) {
+        Map<String, Double> idToScore = new HashMap<>();
+        long now = System.currentTimeMillis();
+        for (LaunchMetadata launchMetadata : loadLaunches(file)) {
+            long ageMs = now - launchMetadata.timestamp;
+            if (ageMs >= MAX_LAUNCH_AGE_MS) {
+                continue;
+            }
+
+            Double score = idToScore.get(launchMetadata.id);
+            if (score == null) {
+                score = 1.0;
+            } else {
+                score++;
+            }
+            idToScore.put(launchMetadata.id, score);
+        }
+
+        for (Launchable launchable: allLaunchables) {
+            Double score = idToScore.get(launchable.id);
+
+            // Score should be non-zero so that it can be multiplied in later stages
+            if (score == null) {
+                score = 1.0;
+            } else {
+                score += 1.0;
+            }
+
+            launchable.setScore(score);
+        }
+    }
+
+    private static List<LaunchMetadata> loadLaunches(File file) {
         if (!file.exists()) {
             return new LinkedList<>();
         }
 
-        // Load the launchables table into an id->name map
-        TypeReference<LinkedList<Metadata>> typeRef
-                = new TypeReference<LinkedList<Metadata>>() {};
-        return objectMapper.readValue(file, typeRef);
+        TypeReference<LinkedList<LaunchMetadata>> typeRef
+                = new TypeReference<LinkedList<LaunchMetadata>>() {};
+        try {
+            return objectMapper.readValue(file, typeRef);
+        } catch (IOException e) {
+            Timber.w(e, "Error reading launches list, pretending it is empty");
+            return new LinkedList<>();
+        }
     }
 
-    private static void saveMetadata(File file, List<Metadata> metadata) throws IOException {
+    private static void saveLaunches(File file, List<LaunchMetadata> metadata) throws IOException {
         // For atomicity, write to temporary file, then rename
         File tempfile = new File(file.getAbsolutePath() + ".tmp");
         objectMapper.writeValue(tempfile, metadata);
         if (!tempfile.renameTo(file)) {
-            throw new IOException("Updating cache file failed");
+            throw new IOException("Updating launch history file failed: " + file.getAbsolutePath());
         }
     }
 }
