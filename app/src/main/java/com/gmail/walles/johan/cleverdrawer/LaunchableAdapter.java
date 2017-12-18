@@ -46,12 +46,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import timber.log.Timber;
 
@@ -97,6 +101,8 @@ class LaunchableAdapter extends BaseAdapter {
 
         dropUnnamed(allLaunchables);
 
+        logDuplicateNames(allLaunchables);
+
         timer.addLeg("Sorting Launchables");
         DatabaseUtils.scoreLaunchables(statsFile, allLaunchables);
         Collections.sort(allLaunchables);
@@ -107,6 +113,42 @@ class LaunchableAdapter extends BaseAdapter {
         Timber.i("LaunchableAdapter timings: %s", timer);
 
         filteredLaunchables = allLaunchables;
+    }
+
+    private static void logDuplicateNames(List<Launchable> launchables) {
+        Map<String, Integer> nameCounts = new HashMap<>();
+        for (Launchable launchable: launchables) {
+            Integer oldCount = nameCounts.get(launchable.getName());
+            if (oldCount == null) {
+                oldCount = 0;
+            }
+            nameCounts.put(launchable.getName(), oldCount + 1);
+        }
+
+        for (Map.Entry<String, Integer> nameCount: nameCounts.entrySet()) {
+            if (nameCount.getValue() == 1) {
+                continue;
+            }
+            String duplicateName = nameCount.getKey();
+
+            // We have a dup!
+            SortedSet<String> idsForName = new TreeSet<>();
+            for (Launchable launchable: launchables) {
+                if (duplicateName.equals(launchable.getName())) {
+                    idsForName.add(launchable.id);
+                }
+            }
+
+            StringBuilder message = new StringBuilder();
+            message.append("Multiple IDs share the same name: <");
+            message.append(duplicateName);
+            message.append(">");
+            for (String id: idsForName) {
+                message.append("\n-> ").append(id);
+            }
+
+            Timber.w(new RuntimeException(message.toString()));
+        }
     }
 
     private static void dropUnnamed(List<Launchable> launchables) {
