@@ -9,3 +9,5 @@
 .externalNativeBuild
 /app/fabric.properties
 *.blend[1-9]
+/.idea/runConfigurations/CleverDrawer.xml
+/.idea/runConfigurations/Instrumented_Tests.xml
