@@ -35,6 +35,8 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.GridView;
 
+import com.crashlytics.android.answers.CustomEvent;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -74,6 +76,9 @@ public class MainActivityFragment extends Fragment {
             } catch (IOException e) {
                 Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.id);
             }
+
+            LoggingUtils.logCustom(new CustomEvent("Launched Other App"));
+
             getActivity().finish();
         });
 

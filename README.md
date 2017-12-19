@@ -30,17 +30,16 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Public Release
-* Report duplicate labels to Crashlytics
-* Get somebody to install + start using the beta
+* Add contacts as launchables
 * Add an About entry in the ... menu
 * Add a Contact Developer entry in the ... menu
 * Remove Settings entry in the ... menu if we don't need it
-* Add contacts as launchables
 * Back button should cancel ongoing search
 * Fix icon loading so that rapid scrolling after start screen loaded
 doesn't look weird
 
 # TODO Misc
+* Disable launching ourselves?
 * Get a real-world launch history and test the prediction algorithm
 using that
 * Rework icon and feature image. Still consider the brand color.
@@ -127,3 +126,6 @@ see if we get crash reports)
 * Release a beta on Google Play
 * How can I test the prediction algorithm?
 * Update UI to match the brand color
+* Report duplicate labels to Crashlytics
+* Report launch counts to Crashlytics, use that as our KPI
+* Get somebody to install + start using the beta
