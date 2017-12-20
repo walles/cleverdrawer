@@ -33,7 +33,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
@@ -47,15 +46,11 @@ import java.util.Locale;
 
 import timber.log.Timber;
 
-public class IntentLaunchable implements Launchable {
+public class IntentLaunchable extends Launchable {
     private ResolveInfo resolveInfo;
     private PackageManager packageManager;
 
     private Drawable icon;
-
-    private String name;
-
-    private double score;
 
     /**
      * This is what we have lowercased. Managed by {@link #getLowercaseName()}.
@@ -68,19 +63,16 @@ public class IntentLaunchable implements Launchable {
      */
     private String lowercased;
 
-    private final String id;
     private final Intent launchIntent;
 
     private IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager) {
+        super(resolveInfo.activityInfo.applicationInfo.packageName + "." + resolveInfo.activityInfo.name);
+
         this.resolveInfo = resolveInfo;
         this.packageManager = packageManager;
 
         // Fast!
         this.launchIntent = createLaunchIntent(resolveInfo);
-
-        // Fast!
-        ActivityInfo activityInfo = resolveInfo.activityInfo;
-        this.id = activityInfo.applicationInfo.packageName + "." + activityInfo.name;
     }
 
     /**
@@ -173,36 +165,19 @@ public class IntentLaunchable implements Launchable {
     }
 
     @Nullable
-    public String getName() {
-        if (name != null) {
-            return name;
-        }
-
-        name = getTrueName();
-        return name;
-    }
-
-    /**
-     * Get true name from system, calling this can be slow!
-     */
-    @Nullable
     public String getTrueName() {
         if (resolveInfo != null) {
             // Slow!
             return resolveInfo.loadLabel(packageManager).toString();
         }
 
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return null;
     }
 
     @TestOnly
     public IntentLaunchable(String id, @Nullable String name) {
-        this.id = id;
-        this.name = name;
+        super(id);
+        setName(name);
         this.icon = null;
         this.launchIntent = null;
     }
@@ -223,18 +198,13 @@ public class IntentLaunchable implements Launchable {
         return intent;
     }
 
-    @Override
-    public String toString() {
-        return id;
-    }
-
     /**
      * @param search This should be a lowercase search string.
      */
     public boolean matches(CharSequence search) {
         String name = getLowercaseName();
         if (name == null) {
-            throw new UnsupportedOperationException("My name is null, can't match that, id: " + id);
+            throw new UnsupportedOperationException("My name is null, can't match that, id: " + getId());
         }
 
         return name.toLowerCase(Locale.getDefault()).contains(search);
@@ -255,45 +225,8 @@ public class IntentLaunchable implements Launchable {
         return lowercased;
     }
 
-    public double getScore() {
-        return score;
-    }
-
-    public void setScore(double score) {
-        if (score <= 0.0) {
-            // Score must be > 0 so that we can multiply it by a factor below
-            throw new IllegalArgumentException("score must be > 0, was " + score);
-        }
-
-        double factor = 1.0;
-        if (id.startsWith("com.android.settings.") || id.startsWith("android.settings.")) {
-            // Put settings after apps. Multiple reasons really:
-            // * People expect apps, not settings, so put what people expect first
-            // * All the settings have the same icon, mixing this with the apps makes both apps and
-            //  settings harder to find
-            factor = 0.99;
-        }
-
-        this.score = score * factor;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
     @Override
     public Intent getLaunchIntent() {
         return launchIntent;
-    }
-
-    @Override
-    public int compareTo(@NonNull Launchable o) {
-        int scoresCompare = Double.compare(o.getScore(), score);
-        if (scoresCompare != 0) {
-            return scoresCompare;
-        }
-
-        return getName().compareTo(o.getName());
     }
 }

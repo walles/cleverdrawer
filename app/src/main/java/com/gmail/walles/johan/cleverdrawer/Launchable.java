@@ -27,31 +27,88 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public interface Launchable extends Comparable<Launchable> {
-    Drawable getIcon();
+public abstract class Launchable implements Comparable<Launchable> {
+    private final String id;
+    private String name;
+    private double score;
+
+    public abstract Drawable getIcon();
+
+    protected Launchable(String id) {
+        this.id = id;
+    }
 
     @Nullable
-    String getName();
+    public String getName() {
+        if (name != null) {
+            return name;
+        }
+
+        name = getTrueName();
+        return name;
+    }
+
+    public void setName(@Nullable String name) {
+        this.name = name;
+    }
 
     /**
      * Get true name from system, calling this can be slow!
+     * <p>
+     * Depending on what type of launchable you are you may or may not need to override this method.
+     *
+     * @return null if true name unknown
      */
     @Nullable
-    String getTrueName();
+    public String getTrueName() {
+        return name;
+    }
 
-    void setName(String name);
 
     /**
      * @param search This should be a lowercase search string.
      */
-    boolean matches(CharSequence search);
+    public abstract boolean matches(CharSequence search);
 
-    double getScore();
-    void setScore(double score);
+    public void setScore(double score) {
+        if (score <= 0.0) {
+            // Score must be > 0 so that we can multiply it by a factor below
+            throw new IllegalArgumentException("score must be > 0, was " + score);
+        }
 
-    String getId();
+        double factor = 1.0;
+        if (id.startsWith("com.android.settings.") || id.startsWith("android.settings.")) {
+            // Put settings after apps. Multiple reasons really:
+            // * People expect apps, not settings, so put what people expect first
+            // * All the settings have the same icon, mixing this with the apps makes both apps and
+            //  settings harder to find
+            factor = 0.99;
+        }
 
-    Intent getLaunchIntent();
+        this.score = score * factor;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public abstract Intent getLaunchIntent();
+
+    @Override
+    public int compareTo(@NonNull Launchable o) {
+        int scoresCompare = Double.compare(o.score, score);
+        if (scoresCompare != 0) {
+            return scoresCompare;
+        }
+
+        return getName().compareTo(o.getName());
+    }
+
+    @Override
+    public String toString() {
+        return getId();
+    }
 }

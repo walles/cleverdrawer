@@ -27,7 +27,9 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.provider.ContactsContract;
 
 import java.util.Collection;
@@ -35,15 +37,19 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-class ContactLaunchable implements Launchable {
+class ContactLaunchable extends Launchable {
     // FIXME: Somehow read these as well:
     // * ContactsContract.CommonDataKinds.Organization.COMPANY,
     // * ContactsContract.CommonDataKinds.Nickname.NAME,
-
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
+
+    private ContactLaunchable(String id, String name) {
+        super("contacts." + id);
+        setName(name);
+    }
 
     public static Collection<Launchable> loadLaunchables(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
@@ -67,5 +73,23 @@ class ContactLaunchable implements Launchable {
 
             return launchables;
         }
+    }
+
+    @Override
+    public Drawable getIcon() {
+        // FIXME: Get some image for this person
+        return null;
+    }
+
+    @Override
+    public boolean matches(CharSequence search) {
+        // FIXME: Actually match some things
+        return true;
+    }
+
+    @Override
+    public Intent getLaunchIntent() {
+        // FIXME: Launch Contacts with this person
+        return null;
     }
 }
