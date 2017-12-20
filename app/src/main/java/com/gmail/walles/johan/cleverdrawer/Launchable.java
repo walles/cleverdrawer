@@ -57,14 +57,27 @@ public abstract class Launchable implements Comparable<Launchable> {
 
     /**
      * Get true name from system, calling this can be slow!
+     */
+    @Nullable
+    public final String getTrueName() {
+        String trueName = doGetTrueName();
+        if (trueName != null) {
+            return trueName;
+        }
+
+        return name;
+    }
+
+    /**
+     * Get true name from system, calling this can be slow!
      * <p>
      * Depending on what type of launchable you are you may or may not need to override this method.
      *
      * @return null if true name unknown
      */
     @Nullable
-    public String getTrueName() {
-        return name;
+    protected String doGetTrueName() {
+        return null;
     }
 
 

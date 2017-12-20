@@ -165,7 +165,7 @@ public class IntentLaunchable extends Launchable {
     }
 
     @Nullable
-    public String getTrueName() {
+    protected String doGetTrueName() {
         if (resolveInfo != null) {
             // Slow!
             return resolveInfo.loadLabel(packageManager).toString();
