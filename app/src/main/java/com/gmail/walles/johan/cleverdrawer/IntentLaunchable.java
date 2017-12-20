@@ -210,6 +210,19 @@ public class IntentLaunchable extends Launchable {
         return name.toLowerCase(Locale.getDefault()).contains(search);
     }
 
+    @Override
+    public double getScoreFactor() {
+        if (getId().startsWith("com.android.settings.") || getId().startsWith("android.settings.")) {
+            // Put settings after apps. Multiple reasons really:
+            // * People expect apps, not settings, so put what people expect first
+            // * All the settings have the same icon, mixing this with the apps makes both apps and
+            //  settings harder to find
+            return  0.99;
+        }
+
+        return 1.0;
+    }
+
     @Nullable
     private String getLowercaseName() {
         String name = getName();

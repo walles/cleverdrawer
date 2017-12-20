@@ -95,17 +95,10 @@ public abstract class Launchable implements Comparable<Launchable> {
             throw new IllegalArgumentException("score must be > 0, was " + score);
         }
 
-        double factor = 1.0;
-        if (id.startsWith("com.android.settings.") || id.startsWith("android.settings.")) {
-            // Put settings after apps. Multiple reasons really:
-            // * People expect apps, not settings, so put what people expect first
-            // * All the settings have the same icon, mixing this with the apps makes both apps and
-            //  settings harder to find
-            factor = 0.99;
-        }
-
-        this.score = score * factor;
+        this.score = score * getScoreFactor();
     }
+
+    public abstract double getScoreFactor();
 
     public String getId() {
         return id;

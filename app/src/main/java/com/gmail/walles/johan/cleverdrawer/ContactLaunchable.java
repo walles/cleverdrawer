@@ -92,6 +92,12 @@ class ContactLaunchable extends Launchable {
     }
 
     @Override
+    public double getScoreFactor() {
+        // Put contacts after settings, see the same method in IntentLaunchable.java
+        return 0.98;
+    }
+
+    @Override
     public Intent getLaunchIntent() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(id));
