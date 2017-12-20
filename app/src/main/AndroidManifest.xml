@@ -29,6 +29,7 @@
           package="com.gmail.walles.johan.cleverdrawer">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="false"
