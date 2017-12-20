@@ -55,10 +55,10 @@ public class LaunchableAdapterTest {
         // Map all IDs to the launchables with that ID
         HashMap<String, List<Launchable>> idToLaunchables = new HashMap<>();
         for (Launchable launchable: launchables) {
-            List<Launchable> launchablesForId = idToLaunchables.get(launchable.id);
+            List<Launchable> launchablesForId = idToLaunchables.get(launchable.getId());
             if (launchablesForId == null) {
                 launchablesForId = new LinkedList<>();
-                idToLaunchables.put(launchable.id, launchablesForId);
+                idToLaunchables.put(launchable.getId(), launchablesForId);
             }
             launchablesForId.add(launchable);
         }

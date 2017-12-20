@@ -71,7 +71,7 @@ public class DatabaseUtils {
         // Update all launchable names from the map
         int updateCount = 0;
         for (Launchable launchable: launchables) {
-            String name = cache.get(launchable.id);
+            String name = cache.get(launchable.getId());
             if (name == null) {
                 continue;
             }
@@ -93,14 +93,14 @@ public class DatabaseUtils {
         timer.addLeg("Collecting id->name map");
         Map<String, String> cache = new HashMap<>();
         for (Launchable launchable: launchables) {
-            if (launchable.id == null) {
+            if (launchable.getId() == null) {
                 continue;
             }
             String name = launchable.getTrueName();
             if (name == null) {
                 continue;
             }
-            cache.put(launchable.id, name);
+            cache.put(launchable.getId(), name);
         }
 
         // For atomicity, write to temporary file, then rename
@@ -139,7 +139,7 @@ public class DatabaseUtils {
         List<LaunchMetadata> launches = loadLaunches(file);
 
         LaunchMetadata newLaunch = new LaunchMetadata();
-        newLaunch.id = launchable.id;
+        newLaunch.id = launchable.getId();
         newLaunch.timestamp = timestamp;
         launches.add(newLaunch);
 
@@ -173,7 +173,7 @@ public class DatabaseUtils {
         }
 
         for (Launchable launchable: allLaunchables) {
-            Double score = idToScore.get(launchable.id);
+            Double score = idToScore.get(launchable.getId());
 
             // Score should be non-zero so that it can be multiplied in later stages
             if (score == null) {

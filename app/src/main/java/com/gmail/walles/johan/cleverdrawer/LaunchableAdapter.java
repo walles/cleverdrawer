@@ -135,7 +135,7 @@ class LaunchableAdapter extends BaseAdapter {
             SortedSet<String> idsForName = new TreeSet<>();
             for (Launchable launchable: launchables) {
                 if (duplicateName.equals(launchable.getName())) {
-                    idsForName.add(launchable.id);
+                    idsForName.add(launchable.getId());
                 }
             }
 
@@ -157,7 +157,7 @@ class LaunchableAdapter extends BaseAdapter {
             Launchable launchable = iterator.next();
             if (launchable.getName().isEmpty()) {
                 iterator.remove();
-            } else if (launchable.id.equals("com.android.settings.com.samsung.android.settings.powersaving.PowerModeChangeDialogActivity")) {
+            } else if (launchable.getId().equals("com.android.settings.com.samsung.android.settings.powersaving.PowerModeChangeDialogActivity")) {
                 // This just unconditionally disables battery saving mode on my Galaxy S6, and it's
                 // called "Battery" so having this in the list is just confusing.
                 iterator.remove();
@@ -230,15 +230,15 @@ class LaunchableAdapter extends BaseAdapter {
         List<Launchable> launchables = new ArrayList<>();
         Set<String> doneIds = new HashSet<>();
         for(ResolveInfo resolveInfo : resInfos) {
-            Launchable launchable = new Launchable(resolveInfo, packageManager);
-            if (doneIds.contains(launchable.id)) {
+            Launchable launchable = new IntentLaunchable(resolveInfo, packageManager);
+            if (doneIds.contains(launchable.getId())) {
                 // Should we print a warning here? All dups we have looked at have been identical,
                 // so just dropping these should be fine.
                 continue;
             }
 
             launchables.add(launchable);
-            doneIds.add(launchable.id);
+            doneIds.add(launchable.getId());
         }
 
         Timber.i("loadLaunchables() timings: %s", timer);

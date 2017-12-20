@@ -37,14 +37,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class LaunchableTest {
+public class IntentLaunchableTest {
     @SuppressWarnings("CanBeFinal")
     @Rule
     public TemporaryFolder tempdir = new TemporaryFolder();
 
     @Test
     public void testMatches() {
-        Launchable launchable = new Launchable("fot", "Gnu");
+        Launchable launchable = new IntentLaunchable("fot", "Gnu");
         Assert.assertThat(launchable.matches("g"), is(true));
         Assert.assertThat(launchable.matches("n"), is(true));
         Assert.assertThat(launchable.matches("u"), is(true));
@@ -60,8 +60,8 @@ public class LaunchableTest {
     @Test
     public void testAlphabeticFallback() throws Exception {
         File dbFile = new File(tempdir.getRoot(), "testFile");
-        Launchable ape = new Launchable("Ape", "Ape");
-        Launchable zebra = new Launchable("Zebra", "Zebra");
+        Launchable ape = new IntentLaunchable("Ape", "Ape");
+        Launchable zebra = new IntentLaunchable("Zebra", "Zebra");
 
         List<Launchable> launchables = Arrays.asList(zebra, ape);
 
@@ -74,8 +74,8 @@ public class LaunchableTest {
     @Test
     public void testLaunchedBetterThanNotLaunched() throws Exception {
         File dbFile = new File(tempdir.getRoot(), "testFile");
-        Launchable ape = new Launchable("Ape", "Ape");
-        Launchable zebra = new Launchable("Zebra", "Zebra");
+        Launchable ape = new IntentLaunchable("Ape", "Ape");
+        Launchable zebra = new IntentLaunchable("Zebra", "Zebra");
 
         List<Launchable> launchables = Arrays.asList(ape, zebra);
         DatabaseUtils.registerLaunch(dbFile, zebra);
