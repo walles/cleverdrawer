@@ -111,6 +111,7 @@ class LaunchableAdapter extends BaseAdapter {
     static List<Launchable> loadLaunchables(Context context) {
         List<Launchable> launchables = new ArrayList<>();
         launchables.addAll(IntentLaunchable.loadLaunchables(context));
+        launchables.addAll(ContactLaunchable.loadLaunchables(context));
 
         dropUnnamed(launchables);
         dropDuplicateIds(launchables);
