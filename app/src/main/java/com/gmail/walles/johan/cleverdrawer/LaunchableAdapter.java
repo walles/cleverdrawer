@@ -26,12 +26,8 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,8 +38,6 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,9 +91,8 @@ class LaunchableAdapter extends BaseAdapter {
         Timer timer = new Timer();
         timer.addLeg("Getting Launchables");
         allLaunchables = loadLaunchables(context);
-        DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, allLaunchables);
 
-        dropUnnamed(allLaunchables);
+        DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, allLaunchables);
 
         logDuplicateNames(allLaunchables);
 
@@ -108,11 +101,21 @@ class LaunchableAdapter extends BaseAdapter {
         Collections.sort(allLaunchables);
 
         timer.addLeg("Updating names cache");
-        updateNamesCache(nameCacheFile);
+        updateNamesCache(nameCacheFile, allLaunchables);
 
         Timber.i("LaunchableAdapter timings: %s", timer);
 
         filteredLaunchables = allLaunchables;
+    }
+
+    static List<Launchable> loadLaunchables(Context context) {
+        List<Launchable> launchables = new ArrayList<>();
+        launchables.addAll(IntentLaunchable.loadLaunchables(context));
+
+        dropUnnamed(launchables);
+        dropDuplicateIds(launchables);
+
+        return launchables;
     }
 
     private static void logDuplicateNames(List<Launchable> launchables) {
@@ -165,7 +168,22 @@ class LaunchableAdapter extends BaseAdapter {
         }
     }
 
-    private void updateNamesCache(File nameCacheFile) {
+    private static void dropDuplicateIds(List<Launchable> launchables) {
+        Set<String> seenIds = new HashSet<>();
+        Iterator<Launchable> iterator = launchables.iterator();
+        while (iterator.hasNext()) {
+            Launchable launchable = iterator.next();
+            if (seenIds.contains(launchable.getId())) {
+                // Should we print a warning here? All dups we have looked at have been identical,
+                // so just dropping these should be fine.
+                iterator.remove();
+            }
+
+            seenIds.add(launchable.getId());
+        }
+    }
+
+    private static void updateNamesCache(File nameCacheFile, List<Launchable> allLaunchables) {
         new Thread(() -> {
             try {
                 DatabaseUtils.cacheTrueNames(nameCacheFile, allLaunchables);
@@ -210,95 +228,6 @@ class LaunchableAdapter extends BaseAdapter {
         new AsyncSetImageDrawable(imageView).execute(launchable);
 
         return view;
-    }
-
-    /**
-     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
-     * empty names.
-     */
-    static List<Launchable> loadLaunchables(Context context) {
-        Timer timer = new Timer();
-        final PackageManager packageManager = context.getPackageManager();
-
-        timer.addLeg("Listing Query Intents");
-        List<ResolveInfo> resInfos = new LinkedList<>();
-        for (Intent intent: getQueryIntents()) {
-            resInfos.addAll(packageManager.queryIntentActivities(intent, 0));
-        }
-
-        timer.addLeg("Creating Launchables");
-        List<Launchable> launchables = new ArrayList<>();
-        Set<String> alreadyLoadedIds = new HashSet<>();
-        for(ResolveInfo resolveInfo : resInfos) {
-            Launchable launchable = new IntentLaunchable(resolveInfo, packageManager);
-            if (alreadyLoadedIds.contains(launchable.getId())) {
-                // Should we print a warning here? All dups we have looked at have been identical,
-                // so just dropping these should be fine.
-                continue;
-            }
-
-            launchables.add(launchable);
-            alreadyLoadedIds.add(launchable.getId());
-        }
-
-        Timber.i("loadLaunchables() timings: %s", timer);
-        return launchables;
-    }
-
-    private static Iterable<Intent> getQueryIntents() {
-        List<Intent> queryIntents = new LinkedList<>();
-
-        Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
-        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        queryIntents.add(queryIntent);
-
-        for (String action: getActions(Settings.class)) {
-            queryIntent = new Intent(action);
-            queryIntents.add(queryIntent);
-        }
-
-        // Battery screen on my Galaxy S6, I want to find this when searching for "battery"
-        queryIntents.add(new Intent(Intent.ACTION_POWER_USAGE_SUMMARY));
-
-        return queryIntents;
-    }
-
-    private static Iterable<String> getActions(Class<?> classWithConstants) {
-        List<String> actions = new LinkedList<>();
-        for (Field field: classWithConstants.getFields()) {
-            if (!Modifier.isFinal(field.getModifiers())) {
-                continue;
-            }
-            if (!Modifier.isStatic(field.getModifiers())) {
-                continue;
-            }
-            if (!Modifier.isPublic(field.getModifiers())) {
-                continue;
-            }
-            if (field.getType() != String.class) {
-                continue;
-            }
-            if (!field.getName().startsWith("ACTION_")) {
-                continue;
-            }
-
-            String value;
-            try {
-                value = (String)field.get(null);
-            } catch (IllegalAccessException e) {
-                Timber.w(e, "Unable to get field value of %s.%s",
-                        classWithConstants.getName(), field.getName());
-                continue;
-            }
-
-            if (!value.endsWith("_SETTINGS")) {
-                continue;
-            }
-
-            actions.add(value);
-        }
-
-        return actions;
     }
 
     public void setFilter(CharSequence search) {

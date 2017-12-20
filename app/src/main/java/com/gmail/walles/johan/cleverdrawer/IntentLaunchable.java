@@ -26,17 +26,26 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+
+import timber.log.Timber;
 
 public class IntentLaunchable implements Launchable {
     private ResolveInfo resolveInfo;
@@ -62,7 +71,7 @@ public class IntentLaunchable implements Launchable {
     private final String id;
     private final Intent launchIntent;
 
-    public IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager) {
+    private IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager) {
         this.resolveInfo = resolveInfo;
         this.packageManager = packageManager;
 
@@ -72,6 +81,86 @@ public class IntentLaunchable implements Launchable {
         // Fast!
         ActivityInfo activityInfo = resolveInfo.activityInfo;
         this.id = activityInfo.applicationInfo.packageName + "." + activityInfo.name;
+    }
+
+    /**
+     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
+     * empty names.
+     */
+    public static List<Launchable> loadLaunchables(Context context) {
+        Timer timer = new Timer();
+        final PackageManager packageManager = context.getPackageManager();
+
+        timer.addLeg("Listing Query Intents");
+        List<ResolveInfo> resInfos = new LinkedList<>();
+        for (Intent intent: getQueryIntents()) {
+            resInfos.addAll(packageManager.queryIntentActivities(intent, 0));
+        }
+
+        timer.addLeg("Creating Launchables");
+        List<Launchable> launchables = new ArrayList<>();
+        for(ResolveInfo resolveInfo : resInfos) {
+            launchables.add(new IntentLaunchable(resolveInfo, packageManager));
+        }
+
+        Timber.i("loadLaunchables() timings: %s", timer);
+        return launchables;
+    }
+
+    private static Iterable<Intent> getQueryIntents() {
+        List<Intent> queryIntents = new LinkedList<>();
+
+        Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
+        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        queryIntents.add(queryIntent);
+
+        for (String action: getActions(Settings.class)) {
+            queryIntent = new Intent(action);
+            queryIntents.add(queryIntent);
+        }
+
+        // Battery screen on my Galaxy S6, I want to find this when searching for "battery"
+        queryIntents.add(new Intent(Intent.ACTION_POWER_USAGE_SUMMARY));
+
+        return queryIntents;
+    }
+
+    private static Iterable<String> getActions(Class<?> classWithConstants) {
+        List<String> actions = new LinkedList<>();
+        for (Field field: classWithConstants.getFields()) {
+            if (!Modifier.isFinal(field.getModifiers())) {
+                continue;
+            }
+            if (!Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+            if (!Modifier.isPublic(field.getModifiers())) {
+                continue;
+            }
+            if (field.getType() != String.class) {
+                continue;
+            }
+            if (!field.getName().startsWith("ACTION_")) {
+                continue;
+            }
+
+            String value;
+            try {
+                value = (String)field.get(null);
+            } catch (IllegalAccessException e) {
+                Timber.w(e, "Unable to get field value of %s.%s",
+                        classWithConstants.getName(), field.getName());
+                continue;
+            }
+
+            if (!value.endsWith("_SETTINGS")) {
+                continue;
+            }
+
+            actions.add(value);
+        }
+
+        return actions;
     }
 
     public Drawable getIcon() {
