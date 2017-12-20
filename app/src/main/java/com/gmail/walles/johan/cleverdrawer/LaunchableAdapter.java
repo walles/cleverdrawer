@@ -228,17 +228,17 @@ class LaunchableAdapter extends BaseAdapter {
 
         timer.addLeg("Creating Launchables");
         List<Launchable> launchables = new ArrayList<>();
-        Set<String> doneIds = new HashSet<>();
+        Set<String> alreadyLoadedIds = new HashSet<>();
         for(ResolveInfo resolveInfo : resInfos) {
             Launchable launchable = new IntentLaunchable(resolveInfo, packageManager);
-            if (doneIds.contains(launchable.getId())) {
+            if (alreadyLoadedIds.contains(launchable.getId())) {
                 // Should we print a warning here? All dups we have looked at have been identical,
                 // so just dropping these should be fine.
                 continue;
             }
 
             launchables.add(launchable);
-            doneIds.add(launchable.getId());
+            alreadyLoadedIds.add(launchable.getId());
         }
 
         Timber.i("loadLaunchables() timings: %s", timer);
