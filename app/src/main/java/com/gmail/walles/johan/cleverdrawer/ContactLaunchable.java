@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.provider.ContactsContract;
 
 import java.util.Collection;
@@ -38,6 +39,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 class ContactLaunchable extends Launchable {
+    private final long id;
+
     // FIXME: Somehow read these as well:
     // * ContactsContract.CommonDataKinds.Organization.COMPANY,
     // * ContactsContract.CommonDataKinds.Nickname.NAME,
@@ -46,8 +49,9 @@ class ContactLaunchable extends Launchable {
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
-    private ContactLaunchable(String id, String name) {
+    private ContactLaunchable(long id, String name) {
         super("contacts." + id);
+        this.id = id;
         setName(name);
     }
 
@@ -65,7 +69,7 @@ class ContactLaunchable extends Launchable {
             int idColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
             int nameColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
             while (cursor.moveToNext()) {
-                String id = cursor.getString(idColumnIndex);
+                long id = cursor.getLong(idColumnIndex);
                 String name = cursor.getString(nameColumnIndex);
 
                 launchables.add(new ContactLaunchable(id, name));
@@ -89,7 +93,10 @@ class ContactLaunchable extends Launchable {
 
     @Override
     public Intent getLaunchIntent() {
-        // FIXME: Launch Contacts with this person
-        return null;
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(id));
+        intent.setData(uri);
+
+        return intent;
     }
 }

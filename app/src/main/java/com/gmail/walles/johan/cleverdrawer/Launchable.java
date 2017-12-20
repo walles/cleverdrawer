@@ -35,6 +35,9 @@ public abstract class Launchable implements Comparable<Launchable> {
     private String name;
     private double score;
 
+    /**
+     * Calling this method can be slow!
+     */
     public abstract Drawable getIcon();
 
     protected Launchable(String id) {
