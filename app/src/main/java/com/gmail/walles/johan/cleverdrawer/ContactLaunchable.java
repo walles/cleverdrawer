@@ -32,6 +32,7 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.v4.content.ContextCompat;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import timber.log.Timber;
 
 class ContactLaunchable extends Launchable {
     private final long id;
+    private final Context context;
 
     // FIXME: Somehow read these as well:
     // * ContactsContract.CommonDataKinds.Organization.COMPANY,
@@ -51,8 +53,9 @@ class ContactLaunchable extends Launchable {
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
-    private ContactLaunchable(long id, String name) {
+    private ContactLaunchable(Context context, long id, String name) {
         super("contacts." + id);
+        this.context = context;
         this.id = id;
         setName(name);
     }
@@ -76,7 +79,7 @@ class ContactLaunchable extends Launchable {
                 long id = cursor.getLong(idColumnIndex);
                 String name = cursor.getString(nameColumnIndex);
 
-                launchables.add(new ContactLaunchable(id, name));
+                launchables.add(new ContactLaunchable(context, id, name));
             }
 
             Timber.i("loading %d contacts timings: %s", launchables.size(), timer);
@@ -87,8 +90,8 @@ class ContactLaunchable extends Launchable {
 
     @Override
     public Drawable getIcon() {
-        // FIXME: Get some image for this person
-        return null;
+        // FIXME: If this person has a personal photo, use that instead
+        return ContextCompat.getDrawable(context, R.drawable.head);
     }
 
     @Override
