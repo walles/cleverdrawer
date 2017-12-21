@@ -96,8 +96,21 @@ class ContactLaunchable extends Launchable {
 
     @Override
     public boolean matches(CharSequence search) {
-        // FIXME: Actually match some things
-        return true;
+        if (search.length() == 0) {
+            return true;
+        }
+
+        // FIXME: Do all matches case insensitively
+
+        if (getName().contains(search)) {
+            return true;
+        }
+
+        // FIXME: Match against nickname
+
+        // FIXME: Match against organization
+
+        return false;
     }
 
     @Override
