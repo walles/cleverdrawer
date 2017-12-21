@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import timber.log.Timber;
+
 class ContactLaunchable extends Launchable {
     private final long id;
 
@@ -66,14 +68,18 @@ class ContactLaunchable extends Launchable {
 
             List<Launchable> launchables = new LinkedList<>();
 
+            Timer timer = new Timer();
             int idColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
             int nameColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+            timer.addLeg("scanning");
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(idColumnIndex);
                 String name = cursor.getString(nameColumnIndex);
 
                 launchables.add(new ContactLaunchable(id, name));
             }
+
+            Timber.i("loading %d contacts timings: %s", launchables.size(), timer);
 
             return launchables;
         }

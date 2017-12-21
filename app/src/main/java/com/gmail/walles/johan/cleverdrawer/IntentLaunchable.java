@@ -95,7 +95,7 @@ public class IntentLaunchable extends Launchable {
             launchables.add(new IntentLaunchable(resolveInfo, packageManager));
         }
 
-        Timber.i("loadLaunchables() timings: %s", timer);
+        Timber.i("loadIntentLaunchables() timings: %s", timer);
         return launchables;
     }
 
