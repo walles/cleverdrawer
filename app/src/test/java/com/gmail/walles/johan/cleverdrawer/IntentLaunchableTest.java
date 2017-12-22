@@ -44,24 +44,24 @@ public class IntentLaunchableTest {
 
     @Test
     public void testMatches() {
-        Launchable launchable = new IntentLaunchable("fot", "Gnu");
-        Assert.assertThat(launchable.matches("g"), is(true));
-        Assert.assertThat(launchable.matches("n"), is(true));
-        Assert.assertThat(launchable.matches("u"), is(true));
-        Assert.assertThat(launchable.matches("nu"), is(true));
-        Assert.assertThat(launchable.matches("gnu"), is(true));
+        Launchable launchable = new IntentLaunchable("fot", new CaseInsensitive("Gnu"));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("g")), is(true));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("n")), is(true));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("u")), is(true));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("nu")), is(true));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("gnu")), is(true));
 
-        Assert.assertThat(launchable.matches("f"), is(false));
-        Assert.assertThat(launchable.matches("o"), is(false));
-        Assert.assertThat(launchable.matches("t"), is(false));
-        Assert.assertThat(launchable.matches("fot"), is(false));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("f")), is(false));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("o")), is(false));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("t")), is(false));
+        Assert.assertThat(launchable.contains(new CaseInsensitive("fot")), is(false));
     }
 
     @Test
     public void testAlphabeticFallback() throws Exception {
         File dbFile = new File(tempdir.getRoot(), "testFile");
-        Launchable ape = new IntentLaunchable("Ape", "Ape");
-        Launchable zebra = new IntentLaunchable("Zebra", "Zebra");
+        Launchable ape = new IntentLaunchable("Ape", new CaseInsensitive("Ape"));
+        Launchable zebra = new IntentLaunchable("Zebra", new CaseInsensitive("Zebra"));
 
         List<Launchable> launchables = Arrays.asList(zebra, ape);
 
@@ -74,8 +74,8 @@ public class IntentLaunchableTest {
     @Test
     public void testLaunchedBetterThanNotLaunched() throws Exception {
         File dbFile = new File(tempdir.getRoot(), "testFile");
-        Launchable ape = new IntentLaunchable("Ape", "Ape");
-        Launchable zebra = new IntentLaunchable("Zebra", "Zebra");
+        Launchable ape = new IntentLaunchable("Ape", new CaseInsensitive("Ape"));
+        Launchable zebra = new IntentLaunchable("Zebra", new CaseInsensitive("Zebra"));
 
         List<Launchable> launchables = Arrays.asList(ape, zebra);
         DatabaseUtils.registerLaunch(dbFile, zebra);

@@ -45,7 +45,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -120,7 +119,7 @@ class LaunchableAdapter extends BaseAdapter {
     }
 
     private static void logDuplicateNames(List<Launchable> launchables) {
-        Map<String, Integer> nameCounts = new HashMap<>();
+        Map<CaseInsensitive, Integer> nameCounts = new HashMap<>();
         for (Launchable launchable: launchables) {
             Integer oldCount = nameCounts.get(launchable.getName());
             if (oldCount == null) {
@@ -129,11 +128,11 @@ class LaunchableAdapter extends BaseAdapter {
             nameCounts.put(launchable.getName(), oldCount + 1);
         }
 
-        for (Map.Entry<String, Integer> nameCount: nameCounts.entrySet()) {
+        for (Map.Entry<CaseInsensitive, Integer> nameCount: nameCounts.entrySet()) {
             if (nameCount.getValue() == 1) {
                 continue;
             }
-            String duplicateName = nameCount.getKey();
+            CaseInsensitive duplicateName = nameCount.getKey();
 
             // We have a dup!
             SortedSet<String> idsForName = new TreeSet<>();
@@ -224,7 +223,7 @@ class LaunchableAdapter extends BaseAdapter {
 
         Launchable launchable = (Launchable)getItem(i);
         TextView textView = view.findViewById(R.id.launchableName);
-        textView.setText(launchable.getName());
+        textView.setText(launchable.getName().toString());
         ImageView imageView = view.findViewById(R.id.launchableIcon);
         new AsyncSetImageDrawable(imageView).execute(launchable);
 
@@ -237,8 +236,9 @@ class LaunchableAdapter extends BaseAdapter {
         }
 
         List<Launchable> newFilteredList = new LinkedList<>();
+        CaseInsensitive caseInsensitiveSearch = CaseInsensitive.create(search);
         for (Launchable launchable: allLaunchables) {
-            if (launchable.matches(search.toString().toLowerCase(Locale.getDefault()))) {
+            if (launchable.contains(caseInsensitiveSearch)) {
                 newFilteredList.add(launchable);
             }
         }

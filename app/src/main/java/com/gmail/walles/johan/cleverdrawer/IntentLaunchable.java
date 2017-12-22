@@ -42,7 +42,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -51,17 +50,6 @@ public class IntentLaunchable extends Launchable {
     private PackageManager packageManager;
 
     private Drawable icon;
-
-    /**
-     * This is what we have lowercased. Managed by {@link #getLowercaseName()}.
-     */
-    @Nullable
-    private String lowercaseBase;
-
-    /**
-     * This is the lower case name. Access through {@link #getLowercaseName()}.
-     */
-    private String lowercased;
 
     private final Intent launchIntent;
 
@@ -155,6 +143,7 @@ public class IntentLaunchable extends Launchable {
         return actions;
     }
 
+    @Override
     public Drawable getIcon() {
         if (icon == null) {
             // Slow!
@@ -164,18 +153,19 @@ public class IntentLaunchable extends Launchable {
         return icon;
     }
 
+    @Override
     @Nullable
-    protected String doGetTrueName() {
+    protected CaseInsensitive doGetTrueName() {
         if (resolveInfo != null) {
             // Slow!
-            return resolveInfo.loadLabel(packageManager).toString();
+            return new CaseInsensitive(resolveInfo.loadLabel(packageManager).toString());
         }
 
         return null;
     }
 
     @TestOnly
-    public IntentLaunchable(String id, @Nullable String name) {
+    public IntentLaunchable(String id, @Nullable CaseInsensitive name) {
         super(id);
         setName(name);
         this.icon = null;
@@ -199,15 +189,15 @@ public class IntentLaunchable extends Launchable {
     }
 
     /**
-     * @param search This should be a lowercase search string.
+     * @param substring This should be a lowercase search string.
      */
-    public boolean matches(CharSequence search) {
-        String name = getLowercaseName();
-        if (name == null) {
+    @Override
+    public boolean contains(CaseInsensitive substring) {
+        if (getName() == null) {
             throw new UnsupportedOperationException("My name is null, can't match that, id: " + getId());
         }
 
-        return name.toLowerCase(Locale.getDefault()).contains(search);
+        return getName().contains(substring);
     }
 
     @Override
@@ -221,21 +211,6 @@ public class IntentLaunchable extends Launchable {
         }
 
         return 1.0;
-    }
-
-    @Nullable
-    private String getLowercaseName() {
-        String name = getName();
-        if (name == null) {
-            return null;
-        }
-
-        if (!name.equals(lowercaseBase)) {
-            lowercased = name.toLowerCase(Locale.getDefault());
-            lowercaseBase = name;
-        }
-
-        return lowercased;
     }
 
     @Override

@@ -46,8 +46,8 @@ public class DatabaseUtilsTest {
         File dbFile = new File(tempdir.getRoot(), "testFile");
 
         // Populate cache with some mappings
-        Launchable l1 = new IntentLaunchable("id: 1", "name: One");
-        Launchable l2 = new IntentLaunchable("id: 2", "name: Two");
+        Launchable l1 = new IntentLaunchable("id: 1", new CaseInsensitive("name: One"));
+        Launchable l2 = new IntentLaunchable("id: 2", new CaseInsensitive("name: Two"));
         DatabaseUtils.cacheTrueNames(dbFile, Arrays.asList(l1, l2));
 
         // Populate some new launchables with those mappings, from a new data source to simulate
@@ -57,7 +57,7 @@ public class DatabaseUtilsTest {
         DatabaseUtils.nameLaunchablesFromCache(dbFile, Arrays.asList(l1, l2));
 
         // Verify that the new launchables got the right names
-        Assert.assertThat(l1.getName(), is("name: One"));
-        Assert.assertThat(l2.getName(), is("name: Two"));
+        Assert.assertThat(l1.getName(), is(new CaseInsensitive("name: One")));
+        Assert.assertThat(l2.getName(), is(new CaseInsensitive("name: Two")));
     }
 }

@@ -32,7 +32,7 @@ import android.support.annotation.Nullable;
 
 public abstract class Launchable implements Comparable<Launchable> {
     private final String id;
-    private String name;
+    private CaseInsensitive name;
     private double score;
 
     /**
@@ -45,7 +45,7 @@ public abstract class Launchable implements Comparable<Launchable> {
     }
 
     @Nullable
-    public String getName() {
+    public CaseInsensitive getName() {
         if (name != null) {
             return name;
         }
@@ -54,7 +54,7 @@ public abstract class Launchable implements Comparable<Launchable> {
         return name;
     }
 
-    public void setName(@Nullable String name) {
+    public void setName(@Nullable CaseInsensitive name) {
         this.name = name;
     }
 
@@ -62,8 +62,8 @@ public abstract class Launchable implements Comparable<Launchable> {
      * Get true name from system, calling this can be slow!
      */
     @Nullable
-    public final String getTrueName() {
-        String trueName = doGetTrueName();
+    public final CaseInsensitive getTrueName() {
+        CaseInsensitive trueName = doGetTrueName();
         if (trueName != null) {
             return trueName;
         }
@@ -79,15 +79,15 @@ public abstract class Launchable implements Comparable<Launchable> {
      * @return null if true name unknown
      */
     @Nullable
-    protected String doGetTrueName() {
+    protected CaseInsensitive doGetTrueName() {
         return null;
     }
 
 
     /**
-     * @param search This should be a lowercase search string.
+     * @param substring This should be a lowercase search string.
      */
-    public abstract boolean matches(CharSequence search);
+    public abstract boolean contains(CaseInsensitive substring);
 
     public void setScore(double score) {
         if (score <= 0.0) {

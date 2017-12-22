@@ -53,7 +53,7 @@ class ContactLaunchable extends Launchable {
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
     };
 
-    private ContactLaunchable(Context context, long id, String name) {
+    private ContactLaunchable(Context context, long id, CaseInsensitive name) {
         super("contacts." + id);
         this.context = context;
         this.id = id;
@@ -77,7 +77,7 @@ class ContactLaunchable extends Launchable {
             timer.addLeg("scanning");
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(idColumnIndex);
-                String name = cursor.getString(nameColumnIndex);
+                CaseInsensitive name = CaseInsensitive.create(cursor.getString(nameColumnIndex));
 
                 launchables.add(new ContactLaunchable(context, id, name));
             }
@@ -95,14 +95,12 @@ class ContactLaunchable extends Launchable {
     }
 
     @Override
-    public boolean matches(CharSequence search) {
-        if (search.length() == 0) {
+    public boolean contains(CaseInsensitive substring) {
+        if (substring.isEmpty()) {
             return true;
         }
 
-        // FIXME: Do all matches case insensitively
-
-        if (getName().contains(search)) {
+        if (getName().contains(substring)) {
             return true;
         }
 

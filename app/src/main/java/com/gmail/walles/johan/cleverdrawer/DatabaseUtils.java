@@ -81,7 +81,7 @@ public class DatabaseUtils {
             if (name == null) {
                 continue;
             }
-            launchable.setName(name);
+            launchable.setName(new CaseInsensitive(name));
             updateCount++;
         }
 
@@ -102,11 +102,11 @@ public class DatabaseUtils {
             if (launchable.getId() == null) {
                 continue;
             }
-            String name = launchable.getTrueName();
+            CaseInsensitive name = launchable.getTrueName();
             if (name == null) {
                 continue;
             }
-            cache.put(launchable.getId(), name);
+            cache.put(launchable.getId(), name.toString());
         }
 
         // For atomicity, write to temporary file, then rename
