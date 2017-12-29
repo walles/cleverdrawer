@@ -32,8 +32,11 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -43,6 +46,7 @@ import timber.log.Timber;
 
 class ContactLaunchable extends Launchable {
     private final long id;
+    private final Uri photoRef;
     private final Context context;
 
     // FIXME: Somehow read these as well:
@@ -51,12 +55,14 @@ class ContactLaunchable extends Launchable {
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
+            ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
     };
 
-    private ContactLaunchable(Context context, long id, CaseInsensitive name) {
+    private ContactLaunchable(Context context, long id, CaseInsensitive name, @Nullable Uri photoRef) {
         super("contacts." + id);
         this.context = context;
         this.id = id;
+        this.photoRef = photoRef;
         setName(name);
     }
 
@@ -74,12 +80,22 @@ class ContactLaunchable extends Launchable {
             Timer timer = new Timer();
             int idColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
             int nameColumnIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+            int photoThumbnailUriColumnIndex =
+                    cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI);
             timer.addLeg("scanning");
             while (cursor.moveToNext()) {
                 long id = cursor.getLong(idColumnIndex);
                 CaseInsensitive name = CaseInsensitive.create(cursor.getString(nameColumnIndex));
+                String photoThumbnailUri = cursor.getString(photoThumbnailUriColumnIndex);
 
-                launchables.add(new ContactLaunchable(context, id, name));
+                Uri photoRef = null;
+                if (photoThumbnailUri != null) {
+                    photoRef = Uri.parse(photoThumbnailUri);
+                }
+
+                ContactLaunchable contactLaunchable =
+                        new ContactLaunchable(context, id, name, photoRef);
+                launchables.add(contactLaunchable);
             }
 
             Timber.i("loading %d contacts timings: %s", launchables.size(), timer);
@@ -90,7 +106,16 @@ class ContactLaunchable extends Launchable {
 
     @Override
     public Drawable getIcon() {
-        // FIXME: If this person has a personal photo, use that instead
+        if (photoRef != null) {
+            try {
+                // This person has a personal photo, use that instead
+                InputStream inputStream = context.getContentResolver().openInputStream(photoRef);
+                return Drawable.createFromStream(inputStream, photoRef.toString());
+            } catch (FileNotFoundException e) {
+                Timber.w(e, "Contact photo thumbnail not found: %s", photoRef);
+            }
+        }
+
         return ContextCompat.getDrawable(context, R.drawable.head);
     }
 
