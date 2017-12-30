@@ -109,11 +109,17 @@ class LaunchableAdapter extends BaseAdapter {
 
     static List<Launchable> loadLaunchables(Context context) {
         List<Launchable> launchables = new ArrayList<>();
+        Timer timer = new Timer();
+        timer.addLeg("Add IntentLaunchables");
         launchables.addAll(IntentLaunchable.loadLaunchables(context));
+        timer.addLeg("Add ContactLaunchables");
         launchables.addAll(ContactLaunchable.loadLaunchables(context));
 
+        timer.addLeg("Tidy up");
         dropUnnamed(launchables);
         dropDuplicateIds(launchables);
+
+        Timber.i("loadLaunchables() timings: %s", timer);
 
         return launchables;
     }
