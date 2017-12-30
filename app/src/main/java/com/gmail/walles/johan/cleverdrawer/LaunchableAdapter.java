@@ -127,6 +127,7 @@ class LaunchableAdapter extends BaseAdapter {
         timer.addLeg("Adding names from cache");
         DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, launchables);
 
+        timer.addLeg("Logging name dups");
         logDuplicateNames(launchables);
 
         timer.addLeg("Sorting Launchables");
@@ -144,6 +145,11 @@ class LaunchableAdapter extends BaseAdapter {
     private static void logDuplicateNames(List<Launchable> launchables) {
         Map<CaseInsensitive, Integer> nameCounts = new HashMap<>();
         for (Launchable launchable: launchables) {
+            if (launchable instanceof ContactLaunchable) {
+                // We can't really do anything about duplicate contact names, never mind
+                continue;
+            }
+
             Integer oldCount = nameCounts.get(launchable.getName());
             if (oldCount == null) {
                 oldCount = 0;
