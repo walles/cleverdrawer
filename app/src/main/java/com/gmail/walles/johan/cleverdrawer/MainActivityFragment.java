@@ -42,9 +42,6 @@ import java.io.IOException;
 
 import timber.log.Timber;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
         Timber.d("Main Activity Fragment being constructed...");
@@ -64,7 +61,8 @@ public class MainActivityFragment extends Fragment {
         timer.addLeg("Finding GridView");
         GridView gridView = view.findViewById(R.id.iconGrid);
         timer.addLeg("Constructing Adapter");
-        LaunchableAdapter adapter = new LaunchableAdapter(getContext(), statsFile, cacheFile);
+        LaunchableAdapter adapter =
+                new LaunchableAdapter((MainActivity)getActivity(), statsFile, cacheFile);
         gridView.setAdapter(adapter);
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {

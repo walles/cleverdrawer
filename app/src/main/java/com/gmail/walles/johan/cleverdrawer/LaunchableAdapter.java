@@ -25,9 +25,12 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +57,9 @@ import timber.log.Timber;
 
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
-    private final List<Launchable> allLaunchables;
+    private final File statsFile;
+    private final File nameCacheFile;
+    private List<Launchable> allLaunchables;
     private List<Launchable> filteredLaunchables;
 
     /**
@@ -85,39 +90,51 @@ class LaunchableAdapter extends BaseAdapter {
         }
     }
 
-    public LaunchableAdapter(Context context, File statsFile, File nameCacheFile) {
-        this.context = context;
-        Timer timer = new Timer();
-        timer.addLeg("Getting Launchables");
-        allLaunchables = loadLaunchables(context);
+    public LaunchableAdapter(MainActivity mainActivity, File statsFile, File nameCacheFile) {
+        this.context = mainActivity;
+        this.statsFile = statsFile;
+        this.nameCacheFile = nameCacheFile;
+        reloadLaunchables();
 
-        DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, allLaunchables);
-
-        logDuplicateNames(allLaunchables);
-
-        timer.addLeg("Sorting Launchables");
-        DatabaseUtils.scoreLaunchables(statsFile, allLaunchables);
-        Collections.sort(allLaunchables);
-
-        timer.addLeg("Updating names cache");
-        updateNamesCache(nameCacheFile, allLaunchables);
-
-        Timber.i("LaunchableAdapter timings: %s", timer);
-
-        filteredLaunchables = allLaunchables;
+        mainActivity.setLaunchableAdapter(this);
     }
 
-    static List<Launchable> loadLaunchables(Context context) {
+    public void reloadLaunchables() {
+        allLaunchables = loadLaunchables(context, nameCacheFile, statsFile);
+        filteredLaunchables = allLaunchables;
+        notifyDataSetChanged();
+    }
+
+    static List<Launchable> loadLaunchables(Context context, File nameCacheFile, File statsFile) {
         List<Launchable> launchables = new ArrayList<>();
         Timer timer = new Timer();
         timer.addLeg("Add IntentLaunchables");
         launchables.addAll(IntentLaunchable.loadLaunchables(context));
-        timer.addLeg("Add ContactLaunchables");
-        launchables.addAll(ContactLaunchable.loadLaunchables(context));
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED)
+        {
+            timer.addLeg("Add ContactLaunchables");
+            launchables.addAll(ContactLaunchable.loadLaunchables(context));
+        } else {
+            Timber.w("READ_CONTACTS permission not granted (yet?), contacts not loaded");
+        }
 
         timer.addLeg("Tidy up");
         dropUnnamed(launchables);
         dropDuplicateIds(launchables);
+
+        timer.addLeg("Adding names from cache");
+        DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, launchables);
+
+        logDuplicateNames(launchables);
+
+        timer.addLeg("Sorting Launchables");
+        DatabaseUtils.scoreLaunchables(statsFile, launchables);
+        Collections.sort(launchables);
+
+        timer.addLeg("Updating names cache");
+        updateNamesCache(nameCacheFile, launchables);
 
         Timber.i("loadLaunchables() timings: %s", timer);
 
