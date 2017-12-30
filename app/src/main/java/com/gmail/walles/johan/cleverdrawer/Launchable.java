@@ -44,6 +44,10 @@ public abstract class Launchable implements Comparable<Launchable> {
         this.id = id;
     }
 
+    public boolean hasName() {
+        return name != null;
+    }
+
     @Nullable
     public CaseInsensitive getName() {
         if (name != null) {

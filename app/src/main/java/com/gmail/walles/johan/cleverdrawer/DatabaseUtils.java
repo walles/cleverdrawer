@@ -71,7 +71,7 @@ public class DatabaseUtils {
         // Update all launchable names from the map
         int updateCount = 0;
         for (Launchable launchable: launchables) {
-            if (launchable.getName() != null) {
+            if (launchable.hasName()) {
                 // Only name what we need; contacts already have proper names for example so let's
                 // not mess those up
                 continue;

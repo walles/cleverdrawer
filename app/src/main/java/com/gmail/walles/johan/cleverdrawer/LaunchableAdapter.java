@@ -120,12 +120,14 @@ class LaunchableAdapter extends BaseAdapter {
             Timber.w("READ_CONTACTS permission not granted (yet?), contacts not loaded");
         }
 
-        timer.addLeg("Tidy up");
-        dropUnnamed(launchables);
+        timer.addLeg("Dropping duplicate IDs");
         dropDuplicateIds(launchables);
 
         timer.addLeg("Adding names from cache");
         DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, launchables);
+
+        timer.addLeg("Dropping unnamed");
+        dropUnnamed(launchables);
 
         timer.addLeg("Logging name dups");
         logDuplicateNames(launchables);
