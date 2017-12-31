@@ -30,7 +30,6 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Public Release
-* Add contacts as launchables
 * Add an About entry in the ... menu
 * Add a Contact Developer entry in the ... menu
 * Remove Settings entry in the ... menu if we don't need it
@@ -39,7 +38,15 @@ also a good way of researching Travis problems locally.
 doesn't look weird
 
 # TODO Misc
-* Disable launching ourselves?
+* Crashlytics log answers to "READ_CONTACTS please?" question
+* Enable finding contacts by nickname
+* Enable finding contacts by organization
+* Enable finding contacts by title
+* Move names caching into `IntentLaunchable`
+* Crashlytics log whether people have searched or scrolled when
+launching a Launchable?
+* Fix `@Nullable` related warnings
+* Disable launching CleverDrawer itself?
 * Get a real-world launch history and test the prediction algorithm
 using that
 * Rework icon and feature image. Still consider the brand color.
@@ -129,3 +136,4 @@ see if we get crash reports)
 * Report duplicate labels to Crashlytics
 * Report launch counts to Crashlytics, use that as our KPI
 * Get somebody to install + start using the beta
+* Add contacts as launchables
