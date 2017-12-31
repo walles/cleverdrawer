@@ -38,11 +38,11 @@ also a good way of researching Travis problems locally.
 doesn't look weird
 
 # TODO Misc
-* Crashlytics log answers to "READ_CONTACTS please?" question
 * Enable finding contacts by nickname
 * Enable finding contacts by organization
 * Enable finding contacts by title
 * Move names caching into `IntentLaunchable`
+* Speed up reading names from cache; it's 256ms/600ms startup time
 * Crashlytics log whether people have searched or scrolled when
 launching a Launchable?
 * Fix `@Nullable` related warnings
@@ -137,3 +137,4 @@ see if we get crash reports)
 * Report launch counts to Crashlytics, use that as our KPI
 * Get somebody to install + start using the beta
 * Add contacts as launchables
+* Crashlytics log answers to "READ_CONTACTS please?" question

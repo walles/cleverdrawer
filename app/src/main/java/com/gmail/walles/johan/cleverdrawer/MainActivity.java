@@ -41,6 +41,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import com.crashlytics.android.answers.CustomEvent;
+
 import java.util.Arrays;
 
 import timber.log.Timber;
@@ -129,12 +131,21 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_READ_CONTACTS: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                String response;
+                if (grantResults.length == 0) {
+                    // If request is cancelled, the result arrays are empty.
+                    response = "Cancel";
+                } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    response = "Allow";
                     if (launchableAdapter != null) {
                         launchableAdapter.reloadLaunchables();
                     }
+                } else {
+                    response = "Deny";
                 }
+
+                LoggingUtils.logCustom(new CustomEvent("Request READ_CONTACTS")
+                        .putCustomAttribute("Response", response));
 
                 return;
             }
