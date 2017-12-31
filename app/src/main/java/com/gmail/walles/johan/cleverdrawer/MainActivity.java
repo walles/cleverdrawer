@@ -25,8 +25,14 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -35,7 +41,17 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
+import java.util.Arrays;
+
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity {
+    // See: https://developer.android.com/training/permissions/requesting.html#make-the-request
+    private static final int REQUEST_READ_CONTACTS = 29;
+
+    @Nullable
+    private LaunchableAdapter launchableAdapter;
+
     private EditText searchBox;
 
     @Override
@@ -46,6 +62,23 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         searchBox = findViewById(R.id.searchBox);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED) {
+            // We already have it
+            return;
+        }
+
+        // FIXME: Show explanation as described here:
+        // https://developer.android.com/training/permissions/requesting.html#make-the-request
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CONTACTS},
+                REQUEST_READ_CONTACTS);
     }
 
     @Override
@@ -90,5 +123,29 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (launchableAdapter != null) {
+                        launchableAdapter.reloadLaunchables();
+                    }
+                }
+
+                return;
+            }
+
+            default: {
+                Timber.w("Got unknown permissions result %d: %s", requestCode, Arrays.toString(permissions));
+            }
+        }
+    }
+
+    public void setLaunchableAdapter(@Nullable LaunchableAdapter launchableAdapter) {
+        this.launchableAdapter = launchableAdapter;
     }
 }

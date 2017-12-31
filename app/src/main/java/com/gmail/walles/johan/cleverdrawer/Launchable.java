@@ -25,66 +25,31 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.jetbrains.annotations.TestOnly;
-
-import java.util.Locale;
-
-public class Launchable implements Comparable<Launchable> {
-    private ResolveInfo resolveInfo;
-    private PackageManager packageManager;
-
-    private Drawable icon;
-
-    private String name;
-
-    private Double score;
+public abstract class Launchable implements Comparable<Launchable> {
+    private final String id;
+    private CaseInsensitive name;
+    private double score;
 
     /**
-     * This is what we have lowercased. Managed by {@link #getLowercaseName()}.
+     * Calling this method can be slow!
      */
-    @Nullable
-    private String lowercaseBase;
+    public abstract Drawable getIcon();
 
-    /**
-     * This is the lower case name. Access through {@link #getLowercaseName()}.
-     */
-    private String lowercased;
-
-    public final String id;
-    public final Intent launchIntent;
-
-    public Launchable(ResolveInfo resolveInfo, PackageManager packageManager) {
-        this.resolveInfo = resolveInfo;
-        this.packageManager = packageManager;
-
-        // Fast!
-        this.launchIntent = createLaunchIntent(resolveInfo);
-
-        // Fast!
-        ActivityInfo activityInfo = resolveInfo.activityInfo;
-        this.id = activityInfo.applicationInfo.packageName + "." + activityInfo.name;
+    protected Launchable(String id) {
+        this.id = id;
     }
 
-    public Drawable getIcon() {
-        if (icon == null) {
-            // Slow!
-            icon = resolveInfo.loadIcon(packageManager);
-        }
-
-        return icon;
+    public boolean hasName() {
+        return name != null;
     }
 
     @Nullable
-    public String getName() {
+    public CaseInsensitive getName() {
         if (name != null) {
             return name;
         }
@@ -93,78 +58,40 @@ public class Launchable implements Comparable<Launchable> {
         return name;
     }
 
+    public void setName(@Nullable CaseInsensitive name) {
+        this.name = name;
+    }
+
     /**
      * Get true name from system, calling this can be slow!
      */
     @Nullable
-    public String getTrueName() {
-        if (resolveInfo != null) {
-            // Slow!
-            return resolveInfo.loadLabel(packageManager).toString();
+    public final CaseInsensitive getTrueName() {
+        CaseInsensitive trueName = doGetTrueName();
+        if (trueName != null) {
+            return trueName;
         }
 
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Get true name from system, calling this can be slow!
+     * <p>
+     * Depending on what type of launchable you are you may or may not need to override this method.
+     *
+     * @return null if true name unknown
+     */
+    @Nullable
+    protected CaseInsensitive doGetTrueName() {
+        return null;
     }
 
-    @TestOnly
-    public Launchable(String id, @Nullable String name) {
-        this.id = id;
-        this.name = name;
-        this.icon = null;
-        this.launchIntent = null;
-    }
-
-    private static Intent createLaunchIntent(
-            ResolveInfo resolveInfo)
-    {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-
-        ActivityInfo activityInfo = resolveInfo.activityInfo;
-        ComponentName componentName =
-                new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name);
-
-        intent.setComponent(componentName);
-
-        return intent;
-    }
-
-    @Override
-    public String toString() {
-        return id;
-    }
 
     /**
-     * @param search This should be a lowercase search string.
+     * @param substring This should be a lowercase search string.
      */
-    public boolean matches(CharSequence search) {
-        String name = getLowercaseName();
-        if (name == null) {
-            throw new UnsupportedOperationException("My name is null, can't match that, id: " + id);
-        }
-
-        return name.toLowerCase(Locale.getDefault()).contains(search);
-    }
-
-    @Nullable
-    private String getLowercaseName() {
-        String name = getName();
-        if (name == null) {
-            return null;
-        }
-
-        if (!name.equals(lowercaseBase)) {
-            lowercased = name.toLowerCase(Locale.getDefault());
-            lowercaseBase = name;
-        }
-
-        return lowercased;
-    }
+    public abstract boolean contains(CaseInsensitive substring);
 
     public void setScore(double score) {
         if (score <= 0.0) {
@@ -172,17 +99,16 @@ public class Launchable implements Comparable<Launchable> {
             throw new IllegalArgumentException("score must be > 0, was " + score);
         }
 
-        double factor = 1.0;
-        if (id.startsWith("com.android.settings.") || id.startsWith("android.settings.")) {
-            // Put settings after apps. Multiple reasons really:
-            // * People expect apps, not settings, so put what people expect first
-            // * All the settings have the same icon, mixing this with the apps makes both apps and
-            //  settings harder to find
-            factor = 0.99;
-        }
-
-        this.score = score * factor;
+        this.score = score * getScoreFactor();
     }
+
+    public abstract double getScoreFactor();
+
+    public String getId() {
+        return id;
+    }
+
+    public abstract Intent getLaunchIntent();
 
     @Override
     public int compareTo(@NonNull Launchable o) {
@@ -192,5 +118,10 @@ public class Launchable implements Comparable<Launchable> {
         }
 
         return getName().compareTo(o.getName());
+    }
+
+    @Override
+    public String toString() {
+        return getId();
     }
 }

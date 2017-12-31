@@ -32,9 +32,12 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,18 +50,25 @@ import java.util.Map;
  */
 @RunWith(AndroidJUnit4.class)
 public class LaunchableAdapterTest {
+    @SuppressWarnings("CanBeFinal")
+    @Rule
+    public TemporaryFolder tempdir = new TemporaryFolder();
+
     @Test
     public void testLoadLaunchablesNoDuplicateIds() throws Exception {
         Context appContext = InstrumentationRegistry.getTargetContext();
-        List<Launchable> launchables = LaunchableAdapter.loadLaunchables(appContext);
+        File nameCache = tempdir.newFile("nameCache");
+        File statsFile = tempdir.newFile("statsFile");
+
+        List<Launchable> launchables = LaunchableAdapter.loadLaunchables(appContext, nameCache, statsFile);
 
         // Map all IDs to the launchables with that ID
         HashMap<String, List<Launchable>> idToLaunchables = new HashMap<>();
         for (Launchable launchable: launchables) {
-            List<Launchable> launchablesForId = idToLaunchables.get(launchable.id);
+            List<Launchable> launchablesForId = idToLaunchables.get(launchable.getId());
             if (launchablesForId == null) {
                 launchablesForId = new LinkedList<>();
-                idToLaunchables.put(launchable.id, launchablesForId);
+                idToLaunchables.put(launchable.getId(), launchablesForId);
             }
             launchablesForId.add(launchable);
         }
