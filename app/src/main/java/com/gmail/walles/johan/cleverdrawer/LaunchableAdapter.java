@@ -59,6 +59,28 @@ class LaunchableAdapter extends BaseAdapter {
     private final Context context;
     private final File statsFile;
     private final File nameCacheFile;
+
+    /**
+     * Qualifiers to add to various IDs to give the unique names.
+     * <p>
+     * Without these, a number of things end up with the same name, and are impossible for the user
+     * to tell apart.
+     *
+     * @see #logDuplicateNames(List)
+     */
+    private static final Map<String, String> UNIQUIFIERS = new HashMap<>(); static {
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AppNotificationSettingsActivity", "App");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ChannelNotificationSettingsActivity", "Channel");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ConfigureNotificationSettingsActivity", "Config");
+
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Zen Event");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeExternalRuleSettingsActivity", "Zen External");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeScheduleRuleSettingsActivity", "Zen Schedule");
+
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AllApplicationsActivity", "All");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ManageApplicationsActivity", "Manage");
+    }
+
     private List<Launchable> allLaunchables;
     private List<Launchable> filteredLaunchables;
 
@@ -129,6 +151,9 @@ class LaunchableAdapter extends BaseAdapter {
         timer.addLeg("Dropping unnamed");
         dropUnnamed(launchables);
 
+        timer.addLeg("Uniquifying names");
+        uniquify(launchables);
+
         timer.addLeg("Logging name dups");
         logDuplicateNames(launchables);
 
@@ -144,11 +169,22 @@ class LaunchableAdapter extends BaseAdapter {
         return launchables;
     }
 
+    private static void uniquify(List<Launchable> launchables) {
+        for (Launchable launchable: launchables) {
+            String uniquifier = UNIQUIFIERS.get(launchable.getId());
+            if (uniquifier == null) {
+                continue;
+            }
+
+            launchable.setName(new CaseInsensitive(launchable.getName() + " (" + uniquifier + ")"));
+        }
+    }
+
     private static void logDuplicateNames(List<Launchable> launchables) {
         Map<CaseInsensitive, Integer> nameCounts = new HashMap<>();
         for (Launchable launchable: launchables) {
             if (launchable instanceof ContactLaunchable) {
-                // We can't really do anything about duplicate contact names, never mind
+                // There's nothing we can do about duplicate contact names, never mind
                 continue;
             }
 

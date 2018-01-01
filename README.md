@@ -38,9 +38,11 @@ also a good way of researching Travis problems locally.
 doesn't look weird
 
 # TODO Misc
+* Verify there are no duplicate labels in the launchables list
 * Enable finding contacts by nickname
 * Enable finding contacts by organization
 * Enable finding contacts by title
+* Enable finding contacts by e-mail
 * Move names caching into `IntentLaunchable`
 * Speed up reading names from cache; it's 256ms/600ms startup time
 * Crashlytics log whether people have searched or scrolled when
@@ -51,7 +53,6 @@ launching a Launchable?
 using that
 * Rework icon and feature image. Still consider the brand color.
 * Swipe down for search
-* Verify there are no duplicate labels in the launchables list
 * Make Travis run the instrumented tests
 * Sort recently installed apps earlier
 * Make a pre-commit hook that runs `gradlew check --continue`
