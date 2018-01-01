@@ -38,13 +38,12 @@ also a good way of researching Travis problems locally.
 doesn't look weird
 
 # TODO Misc
-* Verify there are no duplicate labels in the launchables list
 * Enable finding contacts by nickname
 * Enable finding contacts by organization
 * Enable finding contacts by title
 * Enable finding contacts by e-mail
 * Move names caching into `IntentLaunchable`
-* Speed up reading names from cache; it's 256ms/600ms startup time
+* Speed up reading names from cache; it takes 256ms of the 600ms startup time
 * Crashlytics log whether people have searched or scrolled when
 launching a Launchable?
 * Fix `@Nullable` related warnings
@@ -139,3 +138,4 @@ see if we get crash reports)
 * Get somebody to install + start using the beta
 * Add contacts as launchables
 * Crashlytics log answers to "READ_CONTACTS please?" question
+* Verify there are no duplicate labels in the launchables list

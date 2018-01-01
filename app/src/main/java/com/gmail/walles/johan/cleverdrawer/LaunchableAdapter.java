@@ -69,6 +69,7 @@ class LaunchableAdapter extends BaseAdapter {
      * @see #logDuplicateNames(List)
      */
     private static final Map<String, String> UNIQUIFIERS = new HashMap<>(); static {
+        // Emulator with Android 8.0 Oreo
         UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AppNotificationSettingsActivity", "App");
         UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ChannelNotificationSettingsActivity", "Channel");
         UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ConfigureNotificationSettingsActivity", "Config");
@@ -79,6 +80,16 @@ class LaunchableAdapter extends BaseAdapter {
 
         UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AllApplicationsActivity", "All");
         UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ManageApplicationsActivity", "Manage");
+
+        // Samsung Galaxy S6 with Android 7.0
+        UNIQUIFIERS.put("com.google.android.calendar.com.android.calendar.AllInOneActivity", "Google");
+        UNIQUIFIERS.put("com.samsung.android.calendar.com.android.calendar.AllInOneActivity", "Samsung");
+
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AdvancedAppsActivity", "Advanced Apps");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.WebViewImplementation", "Web View");
+
+        UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.apps.gsa.velvet.ui.settings.PublicSettingsActivity", "Settings");
+        UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.googlequicksearchbox.SearchActivity", "Search");
     }
 
     private List<Launchable> allLaunchables;
