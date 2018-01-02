@@ -81,6 +81,7 @@ public class Application extends android.app.Application {
         // Inspired by
         // http://stackoverflow.com/questions/2799097/how-can-i-detect-when-an-android-application-is-running-in>
         if (Build.PRODUCT == null) {
+            Log.i(TAG, "No PRODUCT, not on emulator");
             return false;
         }
 
@@ -89,10 +90,16 @@ public class Application extends android.app.Application {
         parts.remove("google");
         parts.remove("x86");
         parts.remove("phone");
+        parts.remove("gphone");
 
         // If the build identifier contains only the above keywords in some order, then we're
         // in an emulator
-        return parts.isEmpty();
+        if (parts.isEmpty()) {
+            return true;
+        } else {
+            Log.i(TAG, "Have non-filtered device parts, not on emulator: " + parts);
+            return false;
+        }
     }
 
     private static boolean isRunningOnAndroid() {
