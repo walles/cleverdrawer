@@ -71,6 +71,7 @@ public class Application extends android.app.Application {
             Log.d(TAG, "Emulated Android, not logging to Crashlytics");
             return false;
         }
+        // FIXME: if (executing instrumentation tests) { return false; }
 
         Log.d(TAG, "On a physical Android device, Crashlytics logging enabled");
         return true;

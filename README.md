@@ -23,7 +23,7 @@ instructions](https://docs.fabric.io/android/fabric/settings/working-in-teams.ht
 also a good way of researching Travis problems locally.
 
 ## Releasing
-1. Do `git tag` and think about what the next version number should be.
+1. Do `git tag | cat` and think about what the next version number should be.
 2. Do `git tag 1.2.3` to set the next version number.
 3. `env JAVA_OPTS=-Xmx512m ./gradlew --no-daemon build`
 4. Upload `app/build/outputs/apk/app-release.apk` to Google Play
@@ -34,41 +34,38 @@ also a good way of researching Travis problems locally.
 * Add a Contact Developer entry in the ... menu
 * Remove Settings entry in the ... menu if we don't need it
 * Back button should cancel ongoing search
-* Fix icon loading so that rapid scrolling after start screen loaded
-doesn't look weird
+* Rework icon and feature image. Still consider the brand color.
 
 # TODO Misc
+* Sort recently installed apps earlier
+* Don't Crashlytics report during instrumentation tests
 * Enable finding contacts by nickname
 * Enable finding contacts by organization
 * Enable finding contacts by title
 * Enable finding contacts by e-mail
 * Move names caching into `IntentLaunchable`
 * Speed up reading names from cache; it takes 256ms of the 600ms startup time
+* Fix icon loading so that rapid scrolling after start screen loaded
+doesn't look weird
 * Crashlytics log whether people have searched or scrolled when
 launching a Launchable?
 * Fix `@Nullable` related warnings
 * Disable launching CleverDrawer itself?
 * Get a real-world launch history and test the prediction algorithm
 using that
-* Rework icon and feature image. Still consider the brand color.
 * Swipe down for search
 * Make Travis run the instrumented tests
-* Sort recently installed apps earlier
-* Make a pre-commit hook that runs `gradlew check --continue`
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
 * Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
-* Add system settings to the list.
+* Make a pre-commit hook that runs `gradlew check --continue`
 * Use weekday vs weekend as scoring factor
 * Use time of day as a scoring factor
 * Use most recently used other app as scoring factor
 * Long clicking app should bring up a menu:
+  * Add shortcut to home screen
   * Show on Google Play
+  * Show app info
   * Uninstall
-* Clicking a contact should bring up a menu:
-  * Dial
-  * SMS
-  * E-mail
-  * Open Contact
 
 # DONE
 * Add Timber logging
@@ -139,3 +136,4 @@ see if we get crash reports)
 * Add contacts as launchables
 * Crashlytics log answers to "READ_CONTACTS please?" question
 * Verify there are no duplicate labels in the launchables list
+* Add system settings to the list.
