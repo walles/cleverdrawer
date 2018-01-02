@@ -38,6 +38,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.answers.CustomEvent;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -133,9 +135,25 @@ class LaunchableAdapter extends BaseAdapter {
     }
 
     public void reloadLaunchables() {
+        boolean haveNameCache = nameCacheFile.isFile();
+        long t0 = System.currentTimeMillis();
+
         allLaunchables = loadLaunchables(context, nameCacheFile, statsFile);
         filteredLaunchables = allLaunchables;
         notifyDataSetChanged();
+
+        long t1 = System.currentTimeMillis();
+        long dtMillis = t1 - t0;
+
+        if (haveNameCache) {
+            // This is the ususal case
+            LoggingUtils.logCustom(new CustomEvent("Reload launchables")
+                    .putCustomAttribute("Total duration ms", dtMillis));
+        } else {
+            // This should only happen for first-time users
+            LoggingUtils.logCustom(new CustomEvent("Reload launchables")
+                    .putCustomAttribute("Uncached total duration ms", dtMillis));
+        }
     }
 
     static List<Launchable> loadLaunchables(Context context, File nameCacheFile, File statsFile) {

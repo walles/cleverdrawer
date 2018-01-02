@@ -28,9 +28,12 @@ package com.gmail.walles.johan.cleverdrawer;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
 
+import timber.log.Timber;
+
 public class LoggingUtils {
     public static void logCustom(CustomEvent event) {
         if (!Application.IS_CRASHLYTICS_ENABLED) {
+            Timber.i("Not logging to Crashlytics: %s", event);
             return;
         }
 
