@@ -2,9 +2,9 @@
 
 # CleverDrawer
 
-App drawer that reads your mind.
+App, settings and contacts drawer that reads your mind.
 
-It then uses that information to sort everything launchable with
+It then uses that information to sort apps, settings and contacts with
 the things you are most likely to launch first.
 
 <img src="media/screenshot-vertical-phone.png" width="216" height="384">
