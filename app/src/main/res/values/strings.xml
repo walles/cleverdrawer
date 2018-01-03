@@ -24,8 +24,8 @@
   -->
 
 <resources>
-    <string name="app_name">CleverDrawer</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name" translatable="false">CleverDrawer</string>
     <string name="action_search">Search</string>
     <string name="launchable_icon_description">Icon</string>
+    <string name="action_contact_developer">Contact Developer…</string>
 </resources>

@@ -30,9 +30,8 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Public Release
+* Include launch history JSON in the Contact Developer e-mails
 * Add an About entry in the ... menu
-* Add a Contact Developer entry in the ... menu
-* Remove Settings entry in the ... menu if we don't need it
 * Back button should cancel ongoing search
 * Rework icon and feature image. Still consider the brand color.
 
@@ -137,3 +136,5 @@ see if we get crash reports)
 * Crashlytics log answers to "READ_CONTACTS please?" question
 * Verify there are no duplicate labels in the launchables list
 * Add system settings to the list.
+* Add a Contact Developer entry in the ... menu
+* Remove Settings entry in the ... menu

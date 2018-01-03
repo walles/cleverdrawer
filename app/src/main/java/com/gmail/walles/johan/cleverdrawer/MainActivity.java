@@ -27,6 +27,7 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,6 +44,7 @@ import android.widget.EditText;
 
 import com.crashlytics.android.answers.CustomEvent;
 
+import java.io.File;
 import java.util.Arrays;
 
 import timber.log.Timber;
@@ -98,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_contact_developer) {
+            emailDeveloper();
             return true;
         }
 
@@ -125,6 +128,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Compose an e-mail with version number and the launch history file attached.
+     */
+    private void emailDeveloper() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+
+        intent.setType("message/rfc822");
+
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { "johan.walles@gmail.com" });
+
+        intent.putExtra(Intent.EXTRA_SUBJECT, "CleverDrawer " + BuildConfig.VERSION_NAME);
+
+        // FIXME: Attach the launch history
+
+        startActivity(Intent.createChooser(intent, "Contact Developer"));
+    }
+
+    public static File getStatsFile(Context context) {
+        return new File(context.getFilesDir(), "statistics.json");
     }
 
     @Override
