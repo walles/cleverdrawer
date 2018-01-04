@@ -51,7 +51,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
     {
-        final File statsFile = MainActivity.getLaunchHistoryFile(getContext());
+        final File launchHistoryFile = MainActivity.getLaunchHistoryFile(getContext());
         final File cacheFile = new File(getContext().getFilesDir(), "nameCache.json");
 
         Timer timer = new Timer();
@@ -62,7 +62,7 @@ public class MainActivityFragment extends Fragment {
         GridView gridView = view.findViewById(R.id.iconGrid);
         timer.addLeg("Constructing Adapter");
         LaunchableAdapter adapter =
-                new LaunchableAdapter((MainActivity)getActivity(), statsFile, cacheFile);
+                new LaunchableAdapter((MainActivity)getActivity(), launchHistoryFile, cacheFile);
         gridView.setAdapter(adapter);
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
@@ -70,7 +70,7 @@ public class MainActivityFragment extends Fragment {
             Timber.i("Launching %s (%s)...", launchable.getName(), launchable.getId());
             getContext().startActivity(launchable.getLaunchIntent());
             try {
-                DatabaseUtils.registerLaunch(statsFile, launchable);
+                DatabaseUtils.registerLaunch(launchHistoryFile, launchable);
             } catch (IOException e) {
                 Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.getId());
             }

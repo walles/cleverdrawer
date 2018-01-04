@@ -59,7 +59,7 @@ import timber.log.Timber;
 
 class LaunchableAdapter extends BaseAdapter {
     private final Context context;
-    private final File statsFile;
+    private final File launchHistoryFile;
     private final File nameCacheFile;
 
     /**
@@ -125,9 +125,9 @@ class LaunchableAdapter extends BaseAdapter {
         }
     }
 
-    public LaunchableAdapter(MainActivity mainActivity, File statsFile, File nameCacheFile) {
+    public LaunchableAdapter(MainActivity mainActivity, File launchHistoryFile, File nameCacheFile) {
         this.context = mainActivity;
-        this.statsFile = statsFile;
+        this.launchHistoryFile = launchHistoryFile;
         this.nameCacheFile = nameCacheFile;
         reloadLaunchables();
 
@@ -138,7 +138,7 @@ class LaunchableAdapter extends BaseAdapter {
         boolean haveNameCache = nameCacheFile.isFile();
         long t0 = System.currentTimeMillis();
 
-        allLaunchables = loadLaunchables(context, nameCacheFile, statsFile);
+        allLaunchables = loadLaunchables(context, nameCacheFile, launchHistoryFile);
         filteredLaunchables = allLaunchables;
         notifyDataSetChanged();
 
@@ -156,7 +156,7 @@ class LaunchableAdapter extends BaseAdapter {
         }
     }
 
-    static List<Launchable> loadLaunchables(Context context, File nameCacheFile, File statsFile) {
+    static List<Launchable> loadLaunchables(Context context, File nameCacheFile, File launchHistoryFile) {
         List<Launchable> launchables = new ArrayList<>();
         Timer timer = new Timer();
         timer.addLeg("Add IntentLaunchables");
@@ -187,7 +187,7 @@ class LaunchableAdapter extends BaseAdapter {
         logDuplicateNames(launchables);
 
         timer.addLeg("Sorting Launchables");
-        DatabaseUtils.scoreLaunchables(statsFile, launchables);
+        DatabaseUtils.scoreLaunchables(launchHistoryFile, launchables);
         Collections.sort(launchables);
 
         timer.addLeg("Updating names cache");
