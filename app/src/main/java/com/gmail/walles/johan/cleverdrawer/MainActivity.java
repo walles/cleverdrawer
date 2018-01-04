@@ -29,11 +29,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -142,12 +144,19 @@ public class MainActivity extends AppCompatActivity {
 
         intent.putExtra(Intent.EXTRA_SUBJECT, "CleverDrawer " + BuildConfig.VERSION_NAME);
 
-        // FIXME: Attach the launch history
+        File launchHistoryFile = getLaunchHistoryFile(this);
+        if (launchHistoryFile.isFile()) {
+            Uri launchHistoryUri = FileProvider.getUriForFile(
+                    this,
+                    BuildConfig.APPLICATION_ID + ".provider",
+                    launchHistoryFile);
+            intent.putExtra(Intent.EXTRA_STREAM, launchHistoryUri);
+        }
 
         startActivity(Intent.createChooser(intent, "Contact Developer"));
     }
 
-    public static File getStatsFile(Context context) {
+    public static File getLaunchHistoryFile(Context context) {
         return new File(context.getFilesDir(), "statistics.json");
     }
 

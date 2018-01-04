@@ -1,7 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ MIT License
   ~
-  ~ Copyright (c) 2017 Johan Walles <johan.walles@gmail.com>
+  ~ Copyright (c) 2018 Johan Walles <johan.walles@gmail.com>
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +24,7 @@
   ~
   -->
 
-<resources>
-    <string name="app_name" translatable="false">CleverDrawer</string>
-    <string name="action_search">Search</string>
-    <string name="launchable_icon_description">Icon</string>
-    <string name="action_contact_developer">Contact Developer</string>
-</resources>
+<!-- See: https://inthecheesefactory.com/blog/how-to-share-access-to-file-with-fileprovider-on-android-nougat/en -->
+<paths>
+    <files-path name="email-files" path="."/>
+</paths>

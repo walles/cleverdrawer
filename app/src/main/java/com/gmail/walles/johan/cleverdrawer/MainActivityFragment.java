@@ -51,7 +51,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState)
     {
-        final File statsFile = MainActivity.getStatsFile(getContext());
+        final File statsFile = MainActivity.getLaunchHistoryFile(getContext());
         final File cacheFile = new File(getContext().getFilesDir(), "nameCache.json");
 
         Timer timer = new Timer();

@@ -20,6 +20,21 @@ names so users know which "Settings" (for example) it is they are launching
 permission. This is to be able to experiment with better explaining that we want
 to list contacts.
 
+## Optional Launch History
+
+Optionally, users can on their own initiative click the "Contact
+Developer" button. This will let the user compose an e-mail to the
+developer. By default, this e-mail has an attachment with the user's
+launch history. This launch history does contains app identifiers with
+launch timestamps, so it is obvious which apps the user has launched.
+
+The file also includes a number for each contact, which is valid only
+for the user's device, so this number can *not* be used by the developer
+to identify any of the user's contacts.
+
+If the user feels uncomfortable sharing this information with the
+developer, they can just remove the attachment before sending the mail.
+
 ## Questions
 
 Questions about this policy will be answered by <johan.walles@gmail.com>.

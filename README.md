@@ -30,7 +30,6 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Public Release
-* Include launch history JSON in the Contact Developer e-mails
 * Add an About entry in the ... menu
 * Back button should cancel ongoing search
 * Rework icon and feature image. Still consider the brand color.
@@ -138,3 +137,4 @@ see if we get crash reports)
 * Add system settings to the list.
 * Add a Contact Developer entry in the ... menu
 * Remove Settings entry in the ... menu
+* Include launch history JSON in the Contact Developer e-mails
