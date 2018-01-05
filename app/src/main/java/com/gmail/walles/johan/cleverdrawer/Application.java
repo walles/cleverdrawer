@@ -106,7 +106,7 @@ public class Application extends android.app.Application {
         // Inspired by: https://developer.android.com/reference/java/lang/System.html#getProperties()
         // Developed using trial and error...
         final Properties properties = System.getProperties();
-        final String httpAgent = (String)properties.get("http.agent");
+        final String httpAgent = properties.getProperty("http.agent");
         if (httpAgent == null) {
             return false;
         }

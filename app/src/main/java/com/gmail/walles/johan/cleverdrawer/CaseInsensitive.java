@@ -88,10 +88,6 @@ public class CaseInsensitive implements Comparable<CaseInsensitive> {
     }
 
     public boolean isEmpty() {
-        return length() == 0;
-    }
-
-    public int length() {
-        return original.length();
+        return original.isEmpty();
     }
 }

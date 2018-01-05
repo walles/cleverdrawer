@@ -42,6 +42,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import timber.log.Timber;
 
@@ -117,7 +118,7 @@ public class IntentLaunchable extends Launchable {
             if (!Modifier.isPublic(field.getModifiers())) {
                 continue;
             }
-            if (field.getType() != String.class) {
+            if (!Objects.equals(field.getType(), String.class)) {
                 continue;
             }
             if (!field.getName().startsWith("ACTION_")) {

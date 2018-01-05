@@ -62,7 +62,8 @@ public class Timer {
         long now = System.currentTimeMillis();
         if (legs == null) {
             long dtMs = now - t0;
-            return "" + dtMs + "ms";
+            //noinspection StringConcatenationMissingWhitespace
+            return dtMs + "ms";
         }
 
         StringBuilder builder = new StringBuilder();
