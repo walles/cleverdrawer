@@ -26,6 +26,9 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.greaterThan;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -33,7 +36,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class DatabaseUtilsTest {
     @SuppressWarnings("CanBeFinal")
@@ -59,5 +66,50 @@ public class DatabaseUtilsTest {
         // Verify that the new launchables got the right names
         Assert.assertThat(l1.getName(), is(new CaseInsensitive("name: One")));
         Assert.assertThat(l2.getName(), is(new CaseInsensitive("name: Two")));
+    }
+
+    @Test
+    public void testScoreLaunchablesPerformance() throws IOException {
+        // We should be at least this good, otherwise we have regressed
+        final int BASELINE_SCORE = 1_000_000;
+
+        List<DatabaseUtils.LaunchMetadata> launchHistory;
+        try (InputStream launchHistoryStream =
+                     getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
+        {
+            launchHistory = DatabaseUtils.loadLaunches(launchHistoryStream);
+        }
+        Assert.assertThat(launchHistory, is(not(empty())));
+
+        int score = 0;
+        for (DatabaseUtils.LaunchMetadata launchMetadata: launchHistory) {
+            // Replay launch history until before our current launch
+            long now = launchMetadata.timestamp;
+            List<DatabaseUtils.LaunchMetadata> previousLaunches =
+                    beforeTimestamp(launchHistory, now);
+            List<Launchable> launchables = listLaunchables(previousLaunches);
+            DatabaseUtils.scoreLaunchables(launchables, previousLaunches, now);
+            Collections.sort(launchables);
+
+            // Locate what we want to launch in the sorted launchables list
+            int index = -1;
+            for (int i = 0; i < launchables.size(); i++) {
+                Launchable launchable = launchables.get(i);
+                if (launchMetadata.id.equals(launchable.getId())) {
+                    index = i;
+                }
+            }
+
+            // Rate how well this launch was predicted
+            if (index < 4) {
+                score += 2;
+            } else if (index < 8) {
+                score += 1;
+            } else {
+                // Further down than that isn't good enough
+            }
+        }
+
+        Assert.assertThat(score, greaterThan(BASELINE_SCORE));
     }
 }

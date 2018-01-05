@@ -167,8 +167,8 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 
-    // Having this dependency gets us Flyway logs from failed unit tests
-    testImplementation 'org.slf4j:slf4j-simple:1.7.25'
+    // For Matchers.empty(), see DatabaseUtilsTest.testScoreLaunchablesPerformance()
+    testImplementation 'org.hamcrest:hamcrest-library:1.3'
 
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

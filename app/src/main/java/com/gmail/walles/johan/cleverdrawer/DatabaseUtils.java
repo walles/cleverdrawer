@@ -28,8 +28,12 @@ package com.gmail.walles.johan.cleverdrawer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -192,19 +196,21 @@ public class DatabaseUtils {
         }
     }
 
-    private static List<LaunchMetadata> loadLaunches(File file) {
-        if (!file.exists()) {
+    private static List<LaunchMetadata> loadLaunches(File launchHistoryFile) {
+        try (InputStream launchHistoryStream = new BufferedInputStream(new FileInputStream(launchHistoryFile))) {
+            return loadLaunches(launchHistoryStream);
+        } catch (FileNotFoundException e) {
             return new LinkedList<>();
-        }
-
-        TypeReference<LinkedList<LaunchMetadata>> typeRef
-                = new TypeReference<LinkedList<LaunchMetadata>>() {};
-        try {
-            return objectMapper.readValue(file, typeRef);
         } catch (IOException e) {
             Timber.w(e, "Error reading launches list, pretending it is empty");
             return new LinkedList<>();
         }
+    }
+
+    static List<LaunchMetadata> loadLaunches(InputStream launchHistoryStream) throws IOException {
+        TypeReference<LinkedList<LaunchMetadata>> typeRef
+                = new TypeReference<LinkedList<LaunchMetadata>>() {};
+        return objectMapper.readValue(launchHistoryStream, typeRef);
     }
 
     private static void saveLaunches(File file, List<LaunchMetadata> metadata) throws IOException {
