@@ -164,25 +164,30 @@ public class DatabaseUtils {
     /**
      * Give all launchables a non-null score > 0
      */
-    public static void scoreLaunchables(File file, Iterable<Launchable> allLaunchables) {
+    public static void scoreLaunchables(File launchHistoryFile, Iterable<Launchable> allLaunchables) {
+        scoreLaunchables(allLaunchables, loadLaunches(launchHistoryFile), System.currentTimeMillis());
+    }
+
+    static void scoreLaunchables(Iterable<Launchable> launchables, Iterable<LaunchMetadata> launches, long now) {
+        // Score all IDs
         Map<String, Double> idToScore = new HashMap<>();
-        long now = System.currentTimeMillis();
-        for (LaunchMetadata launchMetadata : loadLaunches(file)) {
-            long ageMs = now - launchMetadata.timestamp;
+        for (LaunchMetadata launch : launches) {
+            long ageMs = now - launch.timestamp;
             if (ageMs >= MAX_LAUNCH_AGE_MS) {
                 continue;
             }
 
-            Double score = idToScore.get(launchMetadata.id);
+            Double score = idToScore.get(launch.id);
             if (score == null) {
                 score = 1.0;
             } else {
                 score++;
             }
-            idToScore.put(launchMetadata.id, score);
+            idToScore.put(launch.id, score);
         }
 
-        for (Launchable launchable: allLaunchables) {
+        // Apply ID scores to our launchables
+        for (Launchable launchable: launchables) {
             Double score = idToScore.get(launchable.getId());
 
             // Score should be non-zero so that it can be multiplied in later stages

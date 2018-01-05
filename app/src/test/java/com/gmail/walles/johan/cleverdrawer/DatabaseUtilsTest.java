@@ -30,6 +30,9 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.greaterThan;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,9 +41,12 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseUtilsTest {
     @SuppressWarnings("CanBeFinal")
@@ -82,9 +88,9 @@ public class DatabaseUtilsTest {
         Assert.assertThat(launchHistory, is(not(empty())));
 
         int score = 0;
-        for (DatabaseUtils.LaunchMetadata launchMetadata: launchHistory) {
+        for (DatabaseUtils.LaunchMetadata launch: launchHistory) {
             // Replay launch history until before our current launch
-            long now = launchMetadata.timestamp;
+            long now = launch.timestamp;
             List<DatabaseUtils.LaunchMetadata> previousLaunches =
                     beforeTimestamp(launchHistory, now);
             List<Launchable> launchables = listLaunchables(previousLaunches);
@@ -95,7 +101,7 @@ public class DatabaseUtilsTest {
             int index = -1;
             for (int i = 0; i < launchables.size(); i++) {
                 Launchable launchable = launchables.get(i);
-                if (launchMetadata.id.equals(launchable.getId())) {
+                if (launch.id.equals(launchable.getId())) {
                     index = i;
                 }
             }
@@ -111,5 +117,59 @@ public class DatabaseUtilsTest {
         }
 
         Assert.assertThat(score, greaterThan(BASELINE_SCORE));
+    }
+
+    /**
+     * Create a list of launchables from the IDs in the launch metadata.
+     */
+    private List<Launchable> listLaunchables(List<DatabaseUtils.LaunchMetadata> launches) {
+        Map<String, Launchable> idToLaunchable = new HashMap<>();
+        for (DatabaseUtils.LaunchMetadata launch: launches) {
+            if (idToLaunchable.containsKey(launch.id)) {
+                continue;
+            }
+
+            idToLaunchable.put(launch.id, new Launchable(launch.id) {
+                @Override
+                public Drawable getIcon() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public boolean contains(CaseInsensitive substring) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public double getScoreFactor() {
+                    return 1.0;
+                }
+
+                @Override
+                public Intent getLaunchIntent() {
+                    throw new UnsupportedOperationException();
+                }
+            });
+        }
+
+        return new ArrayList<>(idToLaunchable.values());
+    }
+
+    /**
+     * Create a new list containing only launches before the given timestamp.
+     */
+    private List<DatabaseUtils.LaunchMetadata> beforeTimestamp(
+            List<DatabaseUtils.LaunchMetadata> launchHistory, long now)
+    {
+        int firstAfterNowIndex = launchHistory.size();
+        for (int i = 0; i < launchHistory.size(); i++) {
+            DatabaseUtils.LaunchMetadata launch = launchHistory.get(i);
+            if (launch.timestamp >= now) {
+                firstAfterNowIndex = i;
+                break;
+            }
+        }
+
+        return launchHistory.subList(0, firstAfterNowIndex);
     }
 }
