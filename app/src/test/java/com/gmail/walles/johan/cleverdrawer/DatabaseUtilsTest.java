@@ -129,7 +129,7 @@ public class DatabaseUtilsTest {
                 continue;
             }
 
-            idToLaunchable.put(launch.id, new Launchable(launch.id) {
+            Launchable launchable = new Launchable(launch.id) {
                 @Override
                 public Drawable getIcon() {
                     throw new UnsupportedOperationException();
@@ -149,7 +149,9 @@ public class DatabaseUtilsTest {
                 public Intent getLaunchIntent() {
                     throw new UnsupportedOperationException();
                 }
-            });
+            };
+            launchable.setName(new CaseInsensitive(launch.id));
+            idToLaunchable.put(launch.id, launchable);
         }
 
         return new ArrayList<>(idToLaunchable.values());
