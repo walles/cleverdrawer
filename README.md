@@ -48,8 +48,6 @@ doesn't look weird
 launching a Launchable?
 * Fix `@Nullable` related warnings
 * Disable launching CleverDrawer itself?
-* Get a real-world launch history and test the prediction algorithm
-using that
 * Swipe down for search
 * Make Travis run the instrumented tests
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
@@ -138,3 +136,5 @@ see if we get crash reports)
 * Remove Settings entry in the ... menu
 * Include launch history JSON in the Contact Developer e-mails
 * Improve readability by updating color scheme & icon
+* Get a real-world launch history and test the prediction algorithm
+using that
