@@ -28,7 +28,6 @@ package com.gmail.walles.johan.cleverdrawer;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.greaterThan;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -76,8 +75,9 @@ public class DatabaseUtilsTest {
 
     @Test
     public void testScoreLaunchablesPerformance() throws IOException {
-        // We should be at least this good, otherwise we have regressed
-        final int BASELINE_SCORE = 1_000_000;
+        // We should be at least this good, otherwise we have regressed. If you update the example
+        // data that we're testing, this baseline will need to change.
+        final int BASELINE_SCORE = 148;
 
         List<DatabaseUtils.LaunchMetadata> launchHistory;
         try (InputStream launchHistoryStream =
@@ -116,7 +116,9 @@ public class DatabaseUtilsTest {
             }
         }
 
-        Assert.assertThat(score, greaterThan(BASELINE_SCORE));
+        // We do an exact match; if something changes the score we should investigate and either
+        // update our baseline or fix whatever we broke.
+        Assert.assertThat(score, is(BASELINE_SCORE));
     }
 
     /**
