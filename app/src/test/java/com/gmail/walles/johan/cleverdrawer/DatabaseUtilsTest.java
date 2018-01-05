@@ -26,6 +26,11 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.empty;
+
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -33,7 +38,14 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DatabaseUtilsTest {
     @SuppressWarnings("CanBeFinal")
@@ -59,5 +71,109 @@ public class DatabaseUtilsTest {
         // Verify that the new launchables got the right names
         Assert.assertThat(l1.getName(), is(new CaseInsensitive("name: One")));
         Assert.assertThat(l2.getName(), is(new CaseInsensitive("name: Two")));
+    }
+
+    @Test
+    public void testScoreLaunchablesPerformance() throws IOException {
+        // We should be at least this good, otherwise we have regressed. If you update the example
+        // data that we're testing, this baseline will need to change.
+        final int BASELINE_SCORE = 148;
+
+        List<DatabaseUtils.LaunchMetadata> launchHistory;
+        try (InputStream launchHistoryStream =
+                     getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
+        {
+            launchHistory = DatabaseUtils.loadLaunches(launchHistoryStream);
+        }
+        Assert.assertThat(launchHistory, is(not(empty())));
+
+        int score = 0;
+        for (DatabaseUtils.LaunchMetadata launch: launchHistory) {
+            // Replay launch history until before our current launch
+            long now = launch.timestamp;
+            List<DatabaseUtils.LaunchMetadata> previousLaunches =
+                    beforeTimestamp(launchHistory, now);
+            List<Launchable> launchables = listLaunchables(previousLaunches);
+            DatabaseUtils.scoreLaunchables(launchables, previousLaunches, now);
+            Collections.sort(launchables);
+
+            // Locate what we want to launch in the sorted launchables list
+            int index = -1;
+            for (int i = 0; i < launchables.size(); i++) {
+                Launchable launchable = launchables.get(i);
+                if (launch.id.equals(launchable.getId())) {
+                    index = i;
+                }
+            }
+
+            // Rate how well this launch was predicted
+            if (index < 4) {
+                score += 2;
+            } else if (index < 8) {
+                score += 1;
+            } else {
+                // Further down than that isn't good enough
+            }
+        }
+
+        // We do an exact match; if something changes the score we should investigate and either
+        // update our baseline or fix whatever we broke.
+        Assert.assertThat(score, is(BASELINE_SCORE));
+    }
+
+    /**
+     * Create a list of launchables from the IDs in the launch metadata.
+     */
+    private List<Launchable> listLaunchables(List<DatabaseUtils.LaunchMetadata> launches) {
+        Map<String, Launchable> idToLaunchable = new HashMap<>();
+        for (DatabaseUtils.LaunchMetadata launch: launches) {
+            if (idToLaunchable.containsKey(launch.id)) {
+                continue;
+            }
+
+            Launchable launchable = new Launchable(launch.id) {
+                @Override
+                public Drawable getIcon() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public boolean contains(CaseInsensitive substring) {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public double getScoreFactor() {
+                    return 1.0;
+                }
+
+                @Override
+                public Intent getLaunchIntent() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+            launchable.setName(new CaseInsensitive(launch.id));
+            idToLaunchable.put(launch.id, launchable);
+        }
+
+        return new ArrayList<>(idToLaunchable.values());
+    }
+
+    /**
+     * Create a new list containing only launches before the given timestamp.
+     */
+    private List<DatabaseUtils.LaunchMetadata> beforeTimestamp(
+            List<DatabaseUtils.LaunchMetadata> launchHistory, long now)
+    {
+        int firstAfterNowIndex = launchHistory.size();
+        for (int i = 0; i < launchHistory.size(); i++) {
+            DatabaseUtils.LaunchMetadata launch = launchHistory.get(i);
+            if (launch.timestamp >= now) {
+                firstAfterNowIndex = i;
+                break;
+            }
+        }
+
+        return launchHistory.subList(0, firstAfterNowIndex);
     }
 }

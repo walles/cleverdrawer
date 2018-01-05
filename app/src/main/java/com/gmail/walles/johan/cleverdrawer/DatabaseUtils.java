@@ -28,8 +28,12 @@ package com.gmail.walles.johan.cleverdrawer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -160,25 +164,30 @@ public class DatabaseUtils {
     /**
      * Give all launchables a non-null score > 0
      */
-    public static void scoreLaunchables(File file, Iterable<Launchable> allLaunchables) {
+    public static void scoreLaunchables(File launchHistoryFile, Iterable<Launchable> allLaunchables) {
+        scoreLaunchables(allLaunchables, loadLaunches(launchHistoryFile), System.currentTimeMillis());
+    }
+
+    static void scoreLaunchables(Iterable<Launchable> launchables, Iterable<LaunchMetadata> launches, long now) {
+        // Score all IDs
         Map<String, Double> idToScore = new HashMap<>();
-        long now = System.currentTimeMillis();
-        for (LaunchMetadata launchMetadata : loadLaunches(file)) {
-            long ageMs = now - launchMetadata.timestamp;
+        for (LaunchMetadata launch : launches) {
+            long ageMs = now - launch.timestamp;
             if (ageMs >= MAX_LAUNCH_AGE_MS) {
                 continue;
             }
 
-            Double score = idToScore.get(launchMetadata.id);
+            Double score = idToScore.get(launch.id);
             if (score == null) {
                 score = 1.0;
             } else {
                 score++;
             }
-            idToScore.put(launchMetadata.id, score);
+            idToScore.put(launch.id, score);
         }
 
-        for (Launchable launchable: allLaunchables) {
+        // Apply ID scores to our launchables
+        for (Launchable launchable: launchables) {
             Double score = idToScore.get(launchable.getId());
 
             // Score should be non-zero so that it can be multiplied in later stages
@@ -192,19 +201,21 @@ public class DatabaseUtils {
         }
     }
 
-    private static List<LaunchMetadata> loadLaunches(File file) {
-        if (!file.exists()) {
+    private static List<LaunchMetadata> loadLaunches(File launchHistoryFile) {
+        try (InputStream launchHistoryStream = new BufferedInputStream(new FileInputStream(launchHistoryFile))) {
+            return loadLaunches(launchHistoryStream);
+        } catch (FileNotFoundException e) {
             return new LinkedList<>();
-        }
-
-        TypeReference<LinkedList<LaunchMetadata>> typeRef
-                = new TypeReference<LinkedList<LaunchMetadata>>() {};
-        try {
-            return objectMapper.readValue(file, typeRef);
         } catch (IOException e) {
             Timber.w(e, "Error reading launches list, pretending it is empty");
             return new LinkedList<>();
         }
+    }
+
+    static List<LaunchMetadata> loadLaunches(InputStream launchHistoryStream) throws IOException {
+        TypeReference<LinkedList<LaunchMetadata>> typeRef
+                = new TypeReference<LinkedList<LaunchMetadata>>() {};
+        return objectMapper.readValue(launchHistoryStream, typeRef);
     }
 
     private static void saveLaunches(File file, List<LaunchMetadata> metadata) throws IOException {
