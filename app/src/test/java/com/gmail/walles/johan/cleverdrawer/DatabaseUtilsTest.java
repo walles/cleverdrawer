@@ -78,7 +78,9 @@ public class DatabaseUtilsTest {
     public void testScoreLaunchablesPerformance() throws IOException {
         // We should be at least this good, otherwise we have regressed. If you update the example
         // data that we're testing, this baseline will need to change.
-        final double BASELINE_SCORE_PER_LAUNCH = 1.2643;
+        //
+        // 100 = All launches were done from one of the first four launchables
+        final double BASELINE_SCORE_PER_LAUNCH = 63.22;
 
         List<DatabaseUtils.LaunchMetadata> launchHistory;
         try (InputStream launchHistoryStream =
@@ -109,9 +111,9 @@ public class DatabaseUtilsTest {
 
             // Rate how well this launch was predicted
             if (index < 4) {
-                score += 2;
+                score += 100;
             } else if (index < 8) {
-                score += 1;
+                score += 50;
             } else {
                 // Further down than that isn't good enough
             }
@@ -120,7 +122,7 @@ public class DatabaseUtilsTest {
         // We do an exact match; if something changes the score we should investigate and either
         // update our baseline or fix whatever we broke.
         Assert.assertThat(score / (double)launchHistory.size(),
-                closeTo(BASELINE_SCORE_PER_LAUNCH, 0.001));
+                closeTo(BASELINE_SCORE_PER_LAUNCH, 0.1));
     }
 
     /**
