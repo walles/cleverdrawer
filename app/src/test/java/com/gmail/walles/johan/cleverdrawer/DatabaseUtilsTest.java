@@ -175,7 +175,7 @@ public class DatabaseUtilsTest {
             List<DatabaseUtils.LaunchMetadata> previousLaunches =
                     beforeTimestamp(launchHistory, now);
             List<Launchable> launchables = listLaunchables(previousLaunches);
-            DatabaseUtils.scoreLaunchables(launchables, previousLaunches, now);
+            DatabaseUtils.scoreLaunchables(launchables, previousLaunches);
             Collections.sort(launchables);
 
             SimulatedLaunch simulatedLaunch = new SimulatedLaunch();

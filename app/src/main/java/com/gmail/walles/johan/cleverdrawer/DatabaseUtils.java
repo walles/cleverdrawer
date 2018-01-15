@@ -50,10 +50,9 @@ public class DatabaseUtils {
     private static final int MAX_LAUNCHES = 1000;
 
     /**
-     * Ignore all launches older than three weeks.
+     * Only consider the SCORING_MAX_LAUNCH_COUNT most recent launches when scoring.
      */
-    private static final long ONE_WEEK_MS = 7 * 86400L * 1000L;
-    private static final long MAX_LAUNCH_AGE_MS = ONE_WEEK_MS * 3L;
+    private static final int SCORING_MAX_LAUNCH_COUNT = 300;
 
     public static void nameLaunchablesFromCache(File file, List<Launchable> launchables) {
         if (!file.exists()) {
@@ -165,18 +164,16 @@ public class DatabaseUtils {
      * Give all launchables a non-null score > 0
      */
     public static void scoreLaunchables(File launchHistoryFile, Iterable<Launchable> allLaunchables) {
-        scoreLaunchables(allLaunchables, loadLaunches(launchHistoryFile), System.currentTimeMillis());
+        scoreLaunchables(allLaunchables, loadLaunches(launchHistoryFile));
     }
 
-    static void scoreLaunchables(Iterable<Launchable> launchables, Iterable<LaunchMetadata> launches, long now) {
-        // Score all IDs
+    static void scoreLaunchables(Iterable<Launchable> launchables, List<LaunchMetadata> launches) {
+        if (launches.size() > SCORING_MAX_LAUNCH_COUNT) {
+            launches = launches.subList(launches.size() - SCORING_MAX_LAUNCH_COUNT, launches.size());
+        }
+
         Map<String, Double> idToScore = new HashMap<>();
         for (LaunchMetadata launch : launches) {
-            long ageMs = now - launch.timestamp;
-            if (ageMs >= MAX_LAUNCH_AGE_MS) {
-                continue;
-            }
-
             Double score = idToScore.get(launch.id);
             if (score == null) {
                 score = 1.0;
