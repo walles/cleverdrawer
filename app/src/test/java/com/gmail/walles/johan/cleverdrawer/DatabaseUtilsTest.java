@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DatabaseUtilsTest {
     @SuppressWarnings("CanBeFinal")
@@ -74,12 +75,15 @@ public class DatabaseUtilsTest {
         Assert.assertThat(l2.getName(), is(new CaseInsensitive("name: Two")));
     }
 
+    /**
+     * Verify how well we manage to predict what the user is going to launch next.
+     */
     @Test
     public void testScoreLaunchablesPerformance() throws IOException {
         // We should be at least this good, otherwise we have regressed. If you update the example
         // data that we're testing, this baseline will need to change.
         //
-        // 100 = All launches were done from one of the first four launchables
+        // 100.0 = All launches were done from one of the first four launchables
         final double BASELINE_SCORE_PER_LAUNCH = 63.22;
 
         int score = 0;
@@ -107,6 +111,47 @@ public class DatabaseUtilsTest {
         // update our baseline or fix whatever we broke.
         Assert.assertThat(score / (double)getLaunchHistorySize(),
                 closeTo(BASELINE_SCORE_PER_LAUNCH, 0.1));
+    }
+
+    /**
+     * Verify that we don't move the top of the list around too much; it's bad for muscle memory.
+     */
+    @Test
+    public void testScoreLaunchablesJumpiness() throws IOException {
+        // We should be at most this bad, otherwise we have regressed. If you update the example
+        // data that we're testing, this baseline will need to change.
+        //
+        // 0 = Nothing ever moved at the top of the list
+        final double BASELINE_JUMPS_PER_LAUNCH = 0.86;
+
+        int jumpiness = 0;
+        List<Launchable> previousLaunchables = null;
+        for (SimulatedLaunch simulatedLaunch: simulatedLaunches()) {
+            if (previousLaunchables != null) {
+                for (int i = 0; i < 8; i++) {
+                    if (i >= previousLaunchables.size()) {
+                        break;
+                    }
+                    if (i >= simulatedLaunch.launchables.size()) {
+                        break;
+                    }
+
+                    if (!Objects.equals(
+                            previousLaunchables.get(i).getId(),
+                            simulatedLaunch.launchables.get(i).getId()))
+                    {
+                        jumpiness++;
+                    }
+                }
+            }
+
+            previousLaunchables = simulatedLaunch.launchables;
+        }
+
+        // We do an exact match; if something changes the score we should investigate and either
+        // update our baseline or fix whatever we broke.
+        Assert.assertThat(jumpiness / (double)getLaunchHistorySize(),
+                closeTo(BASELINE_JUMPS_PER_LAUNCH, 0.1));
     }
 
     private static class SimulatedLaunch {
