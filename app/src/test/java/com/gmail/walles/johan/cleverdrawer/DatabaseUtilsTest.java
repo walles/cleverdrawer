@@ -82,29 +82,13 @@ public class DatabaseUtilsTest {
         // 100 = All launches were done from one of the first four launchables
         final double BASELINE_SCORE_PER_LAUNCH = 63.22;
 
-        List<DatabaseUtils.LaunchMetadata> launchHistory;
-        try (InputStream launchHistoryStream =
-                     getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
-        {
-            launchHistory = DatabaseUtils.loadLaunches(launchHistoryStream);
-        }
-        Assert.assertThat(launchHistory, is(not(empty())));
-
         int score = 0;
-        for (DatabaseUtils.LaunchMetadata launch: launchHistory) {
-            // Replay launch history until before our current launch
-            long now = launch.timestamp;
-            List<DatabaseUtils.LaunchMetadata> previousLaunches =
-                    beforeTimestamp(launchHistory, now);
-            List<Launchable> launchables = listLaunchables(previousLaunches);
-            DatabaseUtils.scoreLaunchables(launchables, previousLaunches, now);
-            Collections.sort(launchables);
-
+        for (SimulatedLaunch simulatedLaunch: simulatedLaunches()) {
             // Locate what we want to launch in the sorted launchables list
             int index = -1;
-            for (int i = 0; i < launchables.size(); i++) {
-                Launchable launchable = launchables.get(i);
-                if (launch.id.equals(launchable.getId())) {
+            for (int i = 0; i < simulatedLaunch.launchables.size(); i++) {
+                Launchable launchable = simulatedLaunch.launchables.get(i);
+                if (simulatedLaunch.launch.id.equals(launchable.getId())) {
                     index = i;
                 }
             }
@@ -121,8 +105,49 @@ public class DatabaseUtilsTest {
 
         // We do an exact match; if something changes the score we should investigate and either
         // update our baseline or fix whatever we broke.
-        Assert.assertThat(score / (double)launchHistory.size(),
+        Assert.assertThat(score / (double)getLaunchHistorySize(),
                 closeTo(BASELINE_SCORE_PER_LAUNCH, 0.1));
+    }
+
+    private static class SimulatedLaunch {
+        public List<Launchable> launchables;
+        public DatabaseUtils.LaunchMetadata launch;
+    }
+
+    private Iterable<SimulatedLaunch> simulatedLaunches() throws IOException {
+        List<DatabaseUtils.LaunchMetadata> launchHistory;
+        try (InputStream launchHistoryStream =
+                     getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
+        {
+            launchHistory = DatabaseUtils.loadLaunches(launchHistoryStream);
+        }
+        Assert.assertThat(launchHistory, is(not(empty())));
+
+        List<SimulatedLaunch> returnMe = new ArrayList<>();
+        for (DatabaseUtils.LaunchMetadata launch: launchHistory) {
+            // Replay launch history until before our current launch
+            long now = launch.timestamp;
+            List<DatabaseUtils.LaunchMetadata> previousLaunches =
+                    beforeTimestamp(launchHistory, now);
+            List<Launchable> launchables = listLaunchables(previousLaunches);
+            DatabaseUtils.scoreLaunchables(launchables, previousLaunches, now);
+            Collections.sort(launchables);
+
+            SimulatedLaunch simulatedLaunch = new SimulatedLaunch();
+            simulatedLaunch.launchables = launchables;
+            simulatedLaunch.launch = launch;
+            returnMe.add(simulatedLaunch);
+        }
+
+        return returnMe;
+    }
+
+    private int getLaunchHistorySize() throws IOException {
+        try (InputStream launchHistoryStream =
+                     getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
+        {
+            return DatabaseUtils.loadLaunches(launchHistoryStream).size();
+        }
     }
 
     /**
