@@ -30,8 +30,7 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Before First Public Release
-* Add an About entry in the ... menu
-* Back button should cancel ongoing search
+* Put a clear-the-search-box button inside the search box.
 
 # TODO Misc
 * Sort recently installed apps earlier
@@ -138,3 +137,5 @@ see if we get crash reports)
 * Improve readability by updating color scheme & icon
 * Get a real-world launch history and test the prediction algorithm
 using that
+* Put a search box permanently at the bottom and remove the search
+button.
