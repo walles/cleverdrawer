@@ -138,3 +138,4 @@ using that
 * Put a search box permanently at the bottom and remove the search
 button.
 * Make sure the keyboard doesn't pop up by default on Johan's phone
+* Put a link to the source code in the ... menu

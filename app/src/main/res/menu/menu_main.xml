@@ -30,5 +30,11 @@
     <item
         android:id="@+id/action_contact_developer"
         android:title="@string/action_contact_developer"
+        android:icon="@android:drawable/ic_menu_help"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_view_source_code"
+        android:title="@string/action_view_source_code"
+        android:icon="@android:drawable/ic_menu_view"
         app:showAsAction="never"/>
 </menu>

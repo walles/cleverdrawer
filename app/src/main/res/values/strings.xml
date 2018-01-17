@@ -27,4 +27,5 @@
     <string name="app_name" translatable="false">CleverDrawer</string>
     <string name="launchable_icon_description">Icon</string>
     <string name="action_contact_developer">Contact Developer</string>
+    <string name="action_view_source_code">View Source Code</string>
 </resources>

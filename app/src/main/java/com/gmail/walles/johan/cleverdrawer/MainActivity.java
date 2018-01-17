@@ -99,6 +99,13 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.action_view_source_code) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://github.com/walles/cleverdrawer?files=1"));
+            startActivity(intent);
+            return true;
+        }
+
         Timber.w("Got unrecognized options item ID %d", id);
         return super.onOptionsItemSelected(item);
     }
