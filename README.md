@@ -29,10 +29,8 @@ also a good way of researching Travis problems locally.
 4. Upload `app/build/outputs/apk/app-release.apk` to Google Play
 5. `git push --tags`
 
-# TODO Before First Public Release
-* Put a clear-the-search-box button inside the search box.
-
 # TODO Misc
+* Put a clear-the-search-box button inside the search box.
 * Sort recently installed apps earlier
 * Don't Crashlytics report during instrumentation tests
 * Enable finding contacts by nickname
