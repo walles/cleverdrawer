@@ -137,3 +137,4 @@ see if we get crash reports)
 using that
 * Put a search box permanently at the bottom and remove the search
 button.
+* Make sure the keyboard doesn't pop up by default on Johan's phone
