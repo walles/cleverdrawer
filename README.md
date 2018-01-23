@@ -30,6 +30,9 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Misc
+* In landscape mode, put the search bar next to or inside the top toolbar
+* Speed up reading names from cache; it takes 256ms of the 600ms startup time
+* Move names caching into `IntentLaunchable`
 * Put a clear-the-search-box button inside the search box.
 * Sort recently installed apps earlier
 * Don't Crashlytics report during instrumentation tests
@@ -37,19 +40,14 @@ also a good way of researching Travis problems locally.
 * Enable finding contacts by organization
 * Enable finding contacts by title
 * Enable finding contacts by e-mail
-* Move names caching into `IntentLaunchable`
-* Speed up reading names from cache; it takes 256ms of the 600ms startup time
 * Fix icon loading so that rapid scrolling after start screen loaded
 doesn't look weird
 * Crashlytics log whether people have searched or scrolled when
 launching a Launchable?
-* Fix `@Nullable` related warnings
 * Disable launching CleverDrawer itself?
-* Swipe down for search
 * Make Travis run the instrumented tests
 * Run [Findbugs](https://docs.gradle.org/current/userguide/findbugs_plugin.html) in Travis
 * Run [ErrorProne](https://github.com/google/error-prone/blob/master/examples/gradle/build.gradle) in Travis
-* Make a pre-commit hook that runs `gradlew check --continue`
 * Use weekday vs weekend as scoring factor
 * Use time of day as a scoring factor
 * Use most recently used other app as scoring factor
@@ -139,3 +137,5 @@ using that
 button.
 * Make sure the keyboard doesn't pop up by default on Johan's phone
 * Put a link to the source code in the ... menu
+* Fix `@Nullable` related warnings
+* Make a pre-commit hook that runs `gradlew check --continue`
