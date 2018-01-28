@@ -84,7 +84,7 @@ public class DatabaseUtilsTest {
         // data that we're testing, this baseline will need to change.
         //
         // 100.0 = All launches were done from one of the first four launchables
-        final double BASELINE_SCORE_PER_LAUNCH = 63.22;
+        final double BASELINE_SCORE_PER_LAUNCH = 58.76;
 
         int score = 0;
         for (SimulatedLaunch simulatedLaunch: simulatedLaunches()) {
@@ -122,7 +122,7 @@ public class DatabaseUtilsTest {
         // data that we're testing, this baseline will need to change.
         //
         // 0 = Nothing ever moved at the top of the list
-        final double BASELINE_JUMPS_PER_LAUNCH = 0.86;
+        final double BASELINE_JUMPS_PER_LAUNCH = 0.54;
 
         int jumpiness = 0;
         List<Launchable> previousLaunchables = null;
