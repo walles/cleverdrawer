@@ -38,12 +38,17 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.GridView;
 
 import com.crashlytics.android.answers.CustomEvent;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import timber.log.Timber;
@@ -58,9 +63,59 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Timer timer = new Timer();
+        timer.addLeg("Inflating View");
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        final File launchHistoryFile = MainActivity.getLaunchHistoryFile(this);
+        final File cacheFile = new File(getFilesDir(), "nameCache.json");
+
+        timer.addLeg("Finding GridView");
+        GridView gridView = findViewById(R.id.iconGrid);
+        timer.addLeg("Constructing Adapter");
+        LaunchableAdapter adapter =
+                new LaunchableAdapter(this, launchHistoryFile, cacheFile);
+        gridView.setAdapter(adapter);
+        timer.addLeg("Setting up Listener");
+        gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
+            Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
+            Timber.i("Launching %s (%s)...", launchable.getName(), launchable.getId());
+            startActivity(launchable.getLaunchIntent());
+            try {
+                DatabaseUtils.registerLaunch(launchHistoryFile, launchable);
+            } catch (IOException e) {
+                Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.getId());
+            }
+
+            LoggingUtils.logCustom(new CustomEvent("Launched Other App"));
+
+            finish();
+        });
+
+        timer.addLeg("Finding Search Box");
+        EditText searchBox = findViewById(R.id.searchBox);
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // This block intentionally left blank
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // This block intentionally left blank
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                adapter.setFilter(s);
+            }
+        });
+
+        Timber.i("onCreateView() timings: %s", timer.toString());
     }
 
     @Override

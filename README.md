@@ -30,7 +30,6 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Misc
-* In landscape mode, put the search bar next to or inside the top toolbar
 * Speed up reading names from cache; it takes 256ms of the 600ms startup time
 * Move names caching into `IntentLaunchable`
 * Put a clear-the-search-box button inside the search box.
@@ -139,3 +138,4 @@ button.
 * Put a link to the source code in the ... menu
 * Fix `@Nullable` related warnings
 * Make a pre-commit hook that runs `gradlew check --continue`
+* In landscape mode, put the search bar next to or inside the top toolbar
