@@ -83,15 +83,21 @@ public class MainActivity extends AppCompatActivity {
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
-            Timber.i("Launching %s (%s)...", launchable.getName(), launchable.getId());
-            startActivity(launchable.getLaunchIntent());
-            try {
-                DatabaseUtils.registerLaunch(launchHistoryFile, launchable);
-            } catch (IOException e) {
-                Timber.e(e, "Failed to register " + launchable.getName() + " launch: " + launchable.getId());
-            }
 
-            LoggingUtils.logCustom(new CustomEvent("Launched Other App"));
+            Timber.i("Launching %s (%s)...", launchable.getName(), launchable.getId());
+            try {
+                startActivity(launchable.getLaunchIntent());
+
+                DatabaseUtils.registerLaunch(launchHistoryFile, launchable);
+
+                LoggingUtils.logCustom(new CustomEvent("Launched Other App"));
+            } catch (RuntimeException e) {
+                // We can get a SecurityException, log what we were trying to launch. Note that the
+                // above info level message with this information never seems to reach Crashlytics.
+                Timber.e(e, "Failed to launch %s (%s)", launchable.getName(), launchable.getId());
+            } catch (IOException e) {
+                Timber.w(e, "Failed to register %s launch: %s", launchable.getName(), launchable.getId());
+            }
 
             finish();
         });
