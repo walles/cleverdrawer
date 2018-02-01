@@ -194,10 +194,6 @@ public class IntentLaunchable extends Launchable {
      */
     @Override
     public boolean contains(CaseInsensitive substring) {
-        if (getName() == null) {
-            throw new UnsupportedOperationException("My name is null, can't match that, id: " + getId());
-        }
-
         return getName().contains(substring);
     }
 

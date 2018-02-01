@@ -30,6 +30,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import timber.log.Timber;
+
 @SuppressWarnings("ComparableImplementedButEqualsNotOverridden")
 public abstract class Launchable implements Comparable<Launchable> {
     private final String id;
@@ -49,6 +51,7 @@ public abstract class Launchable implements Comparable<Launchable> {
         return name != null;
     }
 
+    @NonNull
     public CaseInsensitive getName() {
         if (name != null) {
             return name;
@@ -59,7 +62,8 @@ public abstract class Launchable implements Comparable<Launchable> {
             return name;
         }
 
-        throw new IllegalStateException("getName() called before setName()");
+        Timber.w(new IllegalStateException("getName() called before setName() for: " + id));
+        return new CaseInsensitive("");
     }
 
     public void setName(@Nullable CaseInsensitive name) {
