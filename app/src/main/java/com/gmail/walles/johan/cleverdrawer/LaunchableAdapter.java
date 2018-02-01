@@ -92,6 +92,9 @@ class LaunchableAdapter extends BaseAdapter {
 
         UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.apps.gsa.velvet.ui.settings.PublicSettingsActivity", "Settings");
         UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.googlequicksearchbox.SearchActivity", "Search");
+
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$NotificationSettingsActivity", "Notifications");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$SoundSettingsActivity", "Sound");
     }
 
     private List<Launchable> allLaunchables;
