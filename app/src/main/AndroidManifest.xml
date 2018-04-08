@@ -39,6 +39,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <!-- Support Galaxy S9 18:9 aspect ratio -->
+        <meta-data android:name="android.max_aspect" android:value="2.1" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
