@@ -23,7 +23,7 @@
   ~
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat">
@@ -31,6 +31,17 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <!--
+        #303030 is the dark theme's background color:
+        https://material.io/guidelines/style/color.html#color-themes
+
+        Would be better if we could use @android:color/background_material_dark, but that one is
+        "private", so no go.
+
+        But I have empirical evidence that this hack looks fine.
+        -->
+        <item name="android:navigationBarColor" tools:targetApi="lollipop">#303030</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
