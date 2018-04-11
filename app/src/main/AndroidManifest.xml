@@ -48,13 +48,29 @@
             android:label="@string/app_name"
             android:excludeFromRecents="true"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- For being able to enable / disable working as a home app -->
+        <activity-alias
+            android:name=".Homescreen"
+            android:targetActivity=".MainActivity"
+            android:label="@string/app_name"
+            android:enabled="false">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

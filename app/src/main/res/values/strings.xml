@@ -28,4 +28,5 @@
     <string name="launchable_icon_description">Icon</string>
     <string name="action_contact_developer">Contact Developer</string>
     <string name="action_view_source_code">View Source Code</string>
+    <string name="home_button_launcher">Home Button Launcher</string>
 </resources>
