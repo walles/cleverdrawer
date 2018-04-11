@@ -26,6 +26,7 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -141,10 +142,31 @@ public class MainActivity extends AppCompatActivity {
                 REQUEST_READ_CONTACTS);
     }
 
+    boolean isHomeScreenEnabled() {
+        ComponentName component =
+                new ComponentName(getPackageName(), "com.gmail.walles.johan.cleverdrawer.Homescreen");
+
+        return getPackageManager().getComponentEnabledSetting(component)
+                == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
+    void setHomeScreenEnabled(boolean enabled) {
+        ComponentName component =
+                new ComponentName(getPackageName(), "com.gmail.walles.johan.cleverdrawer.Homescreen");
+
+        int state = enabled ?
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+
+        getPackageManager().setComponentEnabledSetting(component, state, PackageManager.DONT_KILL_APP);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem toggleHomeScreen = menu.findItem(R.id.toggle_home_screen);
+        toggleHomeScreen.setChecked(isHomeScreenEnabled());
         return true;
     }
 
@@ -164,6 +186,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("https://github.com/walles/cleverdrawer?files=1"));
             startActivity(intent);
+            return true;
+        }
+
+        if (id == R.id.toggle_home_screen) {
+            setHomeScreenEnabled(!isHomeScreenEnabled());
+            item.setChecked(isHomeScreenEnabled());
             return true;
         }
 

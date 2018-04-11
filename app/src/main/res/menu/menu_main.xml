@@ -37,4 +37,10 @@
         android:title="@string/action_view_source_code"
         android:icon="@android:drawable/ic_menu_view"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/toggle_home_screen"
+        android:title="@string/home_button_launcher"
+        android:checkable="true"
+        android:checked="false"
+        app:showAsAction="never" />
 </menu>

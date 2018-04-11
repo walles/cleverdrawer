@@ -9,6 +9,10 @@ the things you are most likely to launch first.
 
 <img src="media/screenshot-vertical-phone.png" width="216" height="384">
 
+To use CleverDrawer as your home screen, check the "Home Button
+Launcher" box in the options menu. Then go to (System) Settings / Apps /
+Advanced / Default apps / Home app and check CleverDrawer there.
+
 # Hacking
 * `git clone git@github.com:walles/cleverdrawer.git`
 * [Download and install Android Studio](https://developer.android.com/sdk/index.html)
