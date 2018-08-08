@@ -61,6 +61,7 @@ class LaunchableAdapter extends BaseAdapter {
     private final Context context;
     private final File launchHistoryFile;
     private final File nameCacheFile;
+    private final File lastOrderFile;
 
     /**
      * Qualifiers to add to various IDs to give the unique names.
@@ -131,10 +132,13 @@ class LaunchableAdapter extends BaseAdapter {
         }
     }
 
-    public LaunchableAdapter(MainActivity mainActivity, File launchHistoryFile, File nameCacheFile) {
+    public LaunchableAdapter(MainActivity mainActivity,
+            File launchHistoryFile, File nameCacheFile, File lastOrderFile)
+    {
         this.context = mainActivity;
         this.launchHistoryFile = launchHistoryFile;
         this.nameCacheFile = nameCacheFile;
+        this.lastOrderFile = lastOrderFile;
         reloadLaunchables();
 
         mainActivity.setLaunchableAdapter(this);
@@ -144,7 +148,7 @@ class LaunchableAdapter extends BaseAdapter {
         boolean haveNameCache = nameCacheFile.isFile();
         long t0 = System.currentTimeMillis();
 
-        allLaunchables = loadLaunchables(context, nameCacheFile, launchHistoryFile);
+        allLaunchables = loadLaunchables(context, nameCacheFile, launchHistoryFile, lastOrderFile);
         filteredLaunchables = allLaunchables;
         notifyDataSetChanged();
 
@@ -162,11 +166,12 @@ class LaunchableAdapter extends BaseAdapter {
         }
     }
 
-    static List<Launchable> loadLaunchables(Context context, File nameCacheFile, File launchHistoryFile) {
-        List<Launchable> launchables = new ArrayList<>();
+    static List<Launchable> loadLaunchables(Context context,
+            File nameCacheFile, File launchHistoryFile, File lastOrderFile)
+    {
         Timer timer = new Timer();
         timer.addLeg("Add IntentLaunchables");
-        launchables.addAll(IntentLaunchable.loadLaunchables(context));
+        List<Launchable> launchables = new ArrayList<>(IntentLaunchable.loadLaunchables(context));
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED)
@@ -195,6 +200,10 @@ class LaunchableAdapter extends BaseAdapter {
         timer.addLeg("Sorting Launchables");
         DatabaseUtils.scoreLaunchables(launchHistoryFile, launchables);
         Collections.sort(launchables);
+
+        timer.addLeg("Stabilizing Sort Order");
+        StabilityUtils.stabilize(lastOrderFile, launchables);
+        StabilityUtils.storeOrder(lastOrderFile, launchables);
 
         timer.addLeg("Updating names cache");
         updateNamesCache(nameCacheFile, launchables);
