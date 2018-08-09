@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -72,7 +73,9 @@ public class StabilityUtilsTest {
     }
 
     @Test
-    public void testLoadOrderQuirks() {
-        Assert.fail("Not implemented: Empty test and not-existing test");
+    public void testLoadIdOrderNoFile() {
+        File doesntExist = new File(tempdir.getRoot(), "doesntExist");
+
+        Assert.assertThat(StabilityUtils.loadIdOrder(doesntExist), is(Collections.emptyList()));
     }
 }
