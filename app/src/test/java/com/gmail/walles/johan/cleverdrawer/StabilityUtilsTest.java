@@ -25,10 +25,22 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
+import static org.hamcrest.CoreMatchers.is;
+
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 public class StabilityUtilsTest {
+    @SuppressWarnings("CanBeFinal")
+    @Rule
+    public TemporaryFolder tempdir = new TemporaryFolder();
+
     @Test
     public void testStabilize() {
         Assert.fail("Unimplemented");
@@ -36,6 +48,31 @@ public class StabilityUtilsTest {
 
     @Test
     public void testStoreOrder() {
-        Assert.fail("Unimplemented");
+        File lastOrder = new File(tempdir.getRoot(), "lastOrder");
+
+        Launchable ape = new IntentLaunchable("Ape", new CaseInsensitive("Ape"));
+        Launchable zebra = new IntentLaunchable("Zebra", new CaseInsensitive("Zebra"));
+
+        List<Launchable> launchables = new LinkedList<>();
+        launchables.add(ape);
+        launchables.add(zebra);
+
+        // Store the list
+        StabilityUtils.storeOrder(lastOrder, launchables);
+
+        // Load the list back
+        List<String> loadedIds = StabilityUtils.loadIdOrder(lastOrder);
+
+        List<String> expected = new LinkedList<>();
+        for (Launchable launchable: launchables) {
+            expected.add(launchable.getId());
+        }
+
+        Assert.assertThat(loadedIds, is(expected));
+    }
+
+    @Test
+    public void testLoadOrderQuirks() {
+        Assert.fail("Not implemented: Empty test and not-existing test");
     }
 }

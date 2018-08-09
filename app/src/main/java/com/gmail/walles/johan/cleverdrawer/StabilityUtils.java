@@ -25,7 +25,10 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
+import org.jetbrains.annotations.TestOnly;
+
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,5 +41,10 @@ public class StabilityUtils {
 
     public static void storeOrder(File lastSortOrder, List<Launchable> launchables) {
 
+    }
+
+    @TestOnly
+    static List<String> loadIdOrder(File lastOrder) {
+        return Collections.emptyList();
     }
 }
