@@ -100,7 +100,17 @@ public class StabilityUtilsTest {
 
     @Test
     public void testStabilizeNoNewOrder() {
-        Assert.fail("Unimplemented");
+        // Create a list of launchables
+        List<Launchable> launchables = createLaunchablesWithIds();
+
+        // Create a list of IDs
+        List<String> oldOrderIds = Arrays.asList("a", "b", "c", "d", "e", "f");
+
+        // Validate that the launchables list was suitably stabilized from the IDs list
+        List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
+
+        List<Launchable> expected = createLaunchablesWithIds();
+        Assert.assertThat(stabilized, is(expected));
     }
 
     @Test
