@@ -115,7 +115,32 @@ public class StabilityUtilsTest {
 
     @Test
     public void testStabilizeCrossBoundarySwitch() {
-        Assert.fail("Unimplemented");
+        // Create a list of launchables, note -e-d- order
+        List<Launchable> launchables = createLaunchablesWithIds("a", "b", "c", "e", "d", "f");
+
+        // Create a list of IDs
+        List<String> oldOrderIds = Arrays.asList("a", "b", "c", "d", "e", "f");
+
+        // Validate that the launchables list was suitably stabilized from the IDs list
+        List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
+
+        List<Launchable> expected = createLaunchablesWithIds("a", "b", "c", "e", "d", "f");
+        Assert.assertThat(stabilized, is(expected));
+    }
+
+    @Test
+    public void testStabilizeOneNewAtStart() {
+        // Create a list of launchables
+        List<Launchable> launchables = createLaunchablesWithIds("x", "a", "b", "c", "d", "e", "f");
+
+        // Create a list of IDs
+        List<String> oldOrderIds = Arrays.asList("a", "b", "c", "d", "e", "f");
+
+        // Validate that the launchables list was suitably stabilized from the IDs list
+        List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
+
+        List<Launchable> expected = createLaunchablesWithIds("a", "b", "c", "x", "d", "e", "f");
+        Assert.assertThat(stabilized, is(expected));
     }
 
     @Test
