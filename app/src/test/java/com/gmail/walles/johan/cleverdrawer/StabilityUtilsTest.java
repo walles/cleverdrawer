@@ -43,21 +43,19 @@ public class StabilityUtilsTest {
     @Rule
     public TemporaryFolder tempdir = new TemporaryFolder();
 
-    private static Launchable createLaunchableWithId(String id) {
-        return new IntentLaunchable(id, new CaseInsensitive(id));
+    private static List<Launchable> createLaunchablesWithIds(String ... ids) {
+        List<Launchable> launchables = new LinkedList<>();
+        for (String id: ids) {
+            launchables.add(new IntentLaunchable(id, new CaseInsensitive(id)));
+        }
+
+        return Collections.unmodifiableList(launchables);
     }
 
     @Test
-    public void testStabilize() {
+    public void testStabilizeBase() {
         // Create a list of launchables
-        List<Launchable> launchables = Arrays.asList(
-                createLaunchableWithId("a"),
-                createLaunchableWithId("b"),
-                createLaunchableWithId("c"),
-                createLaunchableWithId("d"),
-                createLaunchableWithId("e"),
-                createLaunchableWithId("f")
-        );
+        List<Launchable> launchables = createLaunchablesWithIds("a", "b", "c", "d", "e", "f");
 
         // Create a list of IDs
         List<String> oldOrderIds = Arrays.asList("a", "b", "c", "d", "e", "f");
@@ -65,20 +63,49 @@ public class StabilityUtilsTest {
         // Validate that the launchables list was suitably stabilized from the IDs list
         List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
 
-        List<Launchable> expected = Arrays.asList(
-                createLaunchableWithId("a"),
-                createLaunchableWithId("b"),
-                createLaunchableWithId("c"),
-                createLaunchableWithId("d"),
-                createLaunchableWithId("e"),
-                createLaunchableWithId("f")
-        );
+        List<Launchable> expected = createLaunchablesWithIds("a", "b", "c", "d", "e", "f");
         Assert.assertThat(stabilized, is(expected));
     }
 
     @Test
-    public void testStabilize2() {
-        Assert.fail("Unimplemented, more tests needed");
+    public void testStabilizeNoOldOrder() {
+        // Create a list of launchables
+        List<Launchable> launchables = createLaunchablesWithIds("a", "b", "c", "d", "e", "f");
+
+        // Create a list of IDs
+        List<String> oldOrderIds = Collections.emptyList();
+
+        // Validate that the launchables list was suitably stabilized from the IDs list
+        List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
+
+        List<Launchable> expected = createLaunchablesWithIds("a", "b", "c", "d", "e", "f");
+        Assert.assertThat(stabilized, is(expected));
+    }
+
+    @Test
+    public void testStabilizeOneSwitch() {
+        // Create a list of launchables, note a-c-b order
+        List<Launchable> launchables = createLaunchablesWithIds("a", "c", "b", "d", "e", "f");
+
+        // Create a list of IDs
+        List<String> oldOrderIds = Arrays.asList("a", "b", "c", "d", "e", "f");
+
+        // Validate that the launchables list was suitably stabilized from the IDs list
+        List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
+
+        // Expect a-b-c order, stabilized from before
+        List<Launchable> expected = createLaunchablesWithIds("a", "b", "c", "d", "e", "f");
+        Assert.assertThat(stabilized, is(expected));
+    }
+
+    @Test
+    public void testStabilizeNoNewOrder() {
+        Assert.fail("Unimplemented");
+    }
+
+    @Test
+    public void testStabilizeCrossBoundarySwitch() {
+        Assert.fail("Unimplemented");
     }
 
     @Test
