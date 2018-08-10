@@ -146,13 +146,7 @@ public class StabilityUtilsTest {
     @Test
     public void testStoreOrder() {
         File lastOrder = new File(tempdir.getRoot(), "lastOrder");
-
-        Launchable ape = new IntentLaunchable("Ape", new CaseInsensitive("Ape"));
-        Launchable zebra = new IntentLaunchable("Zebra", new CaseInsensitive("Zebra"));
-
-        List<Launchable> launchables = new LinkedList<>();
-        launchables.add(ape);
-        launchables.add(zebra);
+        List<Launchable> launchables = createLaunchablesWithIds("Ape", "Zebra");
 
         // Store the list
         StabilityUtils.storeOrder(lastOrder, launchables);
