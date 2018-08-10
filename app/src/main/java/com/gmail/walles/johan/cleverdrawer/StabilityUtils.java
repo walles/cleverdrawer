@@ -39,6 +39,11 @@ public class StabilityUtils {
 
     }
 
+    @TestOnly
+    static List<Launchable> stabilize(List<String> lastOrderIds, List<Launchable> launchables) {
+        return Collections.emptyList();
+    }
+
     public static void storeOrder(File lastSortOrder, List<Launchable> launchables) {
 
     }

@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,9 +43,42 @@ public class StabilityUtilsTest {
     @Rule
     public TemporaryFolder tempdir = new TemporaryFolder();
 
+    private static Launchable createLaunchableWithId(String id) {
+        return new IntentLaunchable(id, new CaseInsensitive(id));
+    }
+
     @Test
     public void testStabilize() {
-        Assert.fail("Unimplemented");
+        // Create a list of launchables
+        List<Launchable> launchables = Arrays.asList(
+                createLaunchableWithId("a"),
+                createLaunchableWithId("b"),
+                createLaunchableWithId("c"),
+                createLaunchableWithId("d"),
+                createLaunchableWithId("e"),
+                createLaunchableWithId("f")
+        );
+
+        // Create a list of IDs
+        List<String> oldOrderIds = Arrays.asList("a", "b", "c", "d", "e", "f");
+
+        // Validate that the launchables list was suitably stabilized from the IDs list
+        List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
+
+        List<Launchable> expected = Arrays.asList(
+                createLaunchableWithId("a"),
+                createLaunchableWithId("b"),
+                createLaunchableWithId("c"),
+                createLaunchableWithId("d"),
+                createLaunchableWithId("e"),
+                createLaunchableWithId("f")
+        );
+        Assert.assertThat(stabilized, is(expected));
+    }
+
+    @Test
+    public void testStabilize2() {
+        Assert.fail("Unimplemented, more tests needed");
     }
 
     @Test
