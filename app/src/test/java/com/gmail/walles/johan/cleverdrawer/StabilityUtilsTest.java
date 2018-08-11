@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -143,9 +144,7 @@ public class StabilityUtilsTest {
         Assert.assertThat(stabilized, is(expected));
     }
 
-    @Test
-    public void testStoreOrder() {
-        File lastOrder = new File(tempdir.getRoot(), "lastOrder");
+    private void testStoreOrder(File lastOrder) {
         List<Launchable> launchables = createLaunchablesWithIds("Ape", "Zebra");
 
         // Store the list
@@ -160,6 +159,22 @@ public class StabilityUtilsTest {
         }
 
         Assert.assertThat(loadedIds, is(expected));
+    }
+
+    @Test
+    public void testStoreOrderBasic() {
+        testStoreOrder(new File(tempdir.getRoot(), "lastOrder"));
+    }
+
+    @Test
+    public void testStoreOrderOverwrite() throws Exception {
+        File lastOrder = new File(tempdir.getRoot(), "lastOrder");
+
+        try (PrintWriter out = new PrintWriter(lastOrder)) {
+            out.println("This contents should be overwritten by the test");
+        }
+
+        testStoreOrder(lastOrder);
     }
 
     @Test
