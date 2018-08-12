@@ -26,13 +26,17 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import android.support.annotation.CheckResult;
+import android.support.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +46,10 @@ import timber.log.Timber;
  * Helps not reshuffling the list as much when things change place.
  */
 public class StabilityUtils {
+    // Changing this can break the unit tests without actually being wrong, fix the unit tests in
+    // that case.
+    private static int GROUP_SIZE = 4;
+
     @CheckResult
     public static List<Launchable> stabilize(File lastSortOrder, List<Launchable> launchables) {
         return stabilize(loadIdOrder(lastSortOrder), launchables);
@@ -49,7 +57,106 @@ public class StabilityUtils {
 
     @CheckResult
     static List<Launchable> stabilize(List<String> lastOrderIds, List<Launchable> launchables) {
-        return Collections.emptyList();
+        List<Launchable> stabilized = new ArrayList<>(launchables.size());
+
+        Iterator<Launchable> source = launchables.iterator();
+        Iterator<String> lastOrder = lastOrderIds.iterator();
+
+        while (true) {
+            // Pick GROUP_SIZE elements from both lists
+            ArrayList<Launchable> launchableGroup = getNextGroup(source);
+            ArrayList<String> idGroup = getNextGroup(lastOrder);
+
+            if (launchableGroup == null) {
+                // No more launchables, done!
+                return stabilized;
+            }
+
+            if (idGroup == null) {
+                // No more stabilization data, add the rest of the launchables as they are and go
+
+                // Add the launchableGroup to stabilized
+                stabilized.addAll(launchableGroup);
+
+                // Add the rest of the elements in launchables to stabilized
+                while (source.hasNext()) {
+                    stabilized.add(source.next());
+                }
+
+                return stabilized;
+            }
+
+            // Stabilize this group and add it to our result
+            stabilized.addAll(Arrays.asList(stabilizeGroup(launchableGroup, idGroup)));
+        }
+    }
+
+    private static Launchable[] stabilizeGroup(
+            ArrayList<Launchable> launchableGroup,
+            ArrayList<String> idGroup)
+    {
+        Launchable[] stabilized = new Launchable[launchableGroup.size()];
+
+        // Add all launchables that already have spots in the right places
+        int idIndex = 0;
+        for (String id: idGroup) {
+            Launchable launchable = removeById(launchableGroup, id);
+            stabilized[idIndex++] = launchable;
+        }
+
+        // Fill in the blanks from the remaining launchables
+        for (int i = 0; i < stabilized.length; i++) {
+            if (stabilized[i] == null) {
+                stabilized[i] = launchableGroup.remove(0);
+            }
+        }
+
+        return stabilized;
+    }
+
+    /**
+     * If there is a Launchable with the given ID, remove it from the list and return it.
+     *
+     * @return A Launchable with the given ID, or null if not found
+     */
+    @Nullable
+    private static Launchable removeById(ArrayList<Launchable> launchables, String id) {
+        Iterator<Launchable> launchableIter = launchables.iterator();
+        while (launchableIter.hasNext()) {
+            Launchable launchable = launchableIter.next();
+            if (id.equals(launchable.getId())) {
+                launchableIter.remove();
+                return launchable;
+            }
+        }
+
+        // ID not found
+        return null;
+    }
+
+    /**
+     * Get a group of {@link #GROUP_SIZE} elements from an iterator.
+     *
+     * @return null if the iterator has no more elements, or fewer elements if we can't get enough
+     */
+    @Nullable
+    private static <E> ArrayList<E> getNextGroup(Iterator<E> source) {
+        if (!source.hasNext()) {
+            return null;
+        }
+
+        ArrayList<E> returnMe = new ArrayList<>(GROUP_SIZE);
+        while (true) {
+            if (returnMe.size() >= GROUP_SIZE) {
+                return returnMe;
+            }
+
+            if (!source.hasNext()) {
+                return returnMe;
+            }
+
+            returnMe.add(source.next());
+        }
     }
 
     public static void storeOrder(File lastSortOrder, List<Launchable> launchables) {
