@@ -188,7 +188,9 @@ public class StabilityUtilsTest {
         // Validate that the launchables list was suitably stabilized from the IDs list
         List<Launchable> stabilized = StabilityUtils.stabilize(oldOrderIds, launchables);
 
-        List<Launchable> expected = createLaunchablesWithIds("a", "b", "c", "x", "d", "e", "f");
+        // "x" should replace "d", and "d" should get a spot at the end so that "e" and "f" won't
+        // have to move
+        List<Launchable> expected = createLaunchablesWithIds("a", "b", "c", "x", "e", "f", "d");
         Assert.assertThat(stabilized, is(expected));
     }
 
