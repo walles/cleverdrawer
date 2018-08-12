@@ -27,6 +27,10 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import static org.hamcrest.CoreMatchers.is;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,6 +44,50 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class StabilityUtilsTest {
+    private static class EqualsLaunchable extends Launchable {
+        public EqualsLaunchable(String id) {
+            super(id);
+            setName(new CaseInsensitive(id));
+        }
+
+        @Override
+        @Nullable
+        public Drawable getIcon() {
+            return null;
+        }
+
+        @Override
+        public boolean contains(CaseInsensitive substring) {
+            return false;
+        }
+
+        @Override
+        public double getScoreFactor() {
+            return 0;
+        }
+
+        @Override
+        @Nullable
+        public Intent getLaunchIntent() {
+            return null;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!obj.getClass().equals(this.getClass())) {
+                return false;
+            }
+
+            EqualsLaunchable that = (EqualsLaunchable)obj;
+            return this.getId().equals(that.getId());
+        }
+
+        @Override
+        public int hashCode() {
+            return getId().hashCode();
+        }
+    }
+
     @SuppressWarnings("CanBeFinal")
     @Rule
     public TemporaryFolder tempdir = new TemporaryFolder();
@@ -47,7 +95,7 @@ public class StabilityUtilsTest {
     private static List<Launchable> createLaunchablesWithIds(String ... ids) {
         List<Launchable> launchables = new LinkedList<>();
         for (String id: ids) {
-            launchables.add(new IntentLaunchable(id, new CaseInsensitive(id)));
+            launchables.add(new EqualsLaunchable(id));
         }
 
         return Collections.unmodifiableList(launchables);
