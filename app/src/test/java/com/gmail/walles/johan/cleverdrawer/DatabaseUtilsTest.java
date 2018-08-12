@@ -145,7 +145,7 @@ public class DatabaseUtilsTest {
         // data that we're testing, this baseline will need to change.
         //
         // 0 = Nothing ever moved at the top of the list
-        final double BASELINE_JUMPS_PER_LAUNCH = 0.54;
+        final double BASELINE_JUMPS_PER_LAUNCH = 0.173;
 
         int jumpiness = 0;
         List<Launchable> previousLaunchables = null;
@@ -192,14 +192,18 @@ public class DatabaseUtilsTest {
         Assert.assertThat(launchHistory, is(not(empty())));
 
         List<SimulatedLaunch> returnMe = new ArrayList<>();
+        List<String> lastOrder = Collections.emptyList();
         for (DatabaseUtils.LaunchMetadata launch: launchHistory) {
             // Replay launch history until before our current launch
             long now = launch.timestamp;
             List<DatabaseUtils.LaunchMetadata> previousLaunches =
                     beforeTimestamp(launchHistory, now);
             List<Launchable> launchables = listLaunchables(previousLaunches);
+
             DatabaseUtils.scoreLaunchables(launchables, previousLaunches);
             Collections.sort(launchables);
+            launchables = StabilityUtils.stabilize(lastOrder, launchables);
+            lastOrder = extractIds(launchables);
 
             SimulatedLaunch simulatedLaunch = new SimulatedLaunch();
             simulatedLaunch.launchables = launchables;
@@ -208,6 +212,14 @@ public class DatabaseUtilsTest {
         }
 
         return returnMe;
+    }
+
+    private List<String> extractIds(List<Launchable> launchables) {
+        List<String> ids = new LinkedList<>();
+        for (Launchable launchable: launchables) {
+            ids.add(launchable.getId());
+        }
+        return ids;
     }
 
     private int getLaunchHistorySize() throws IOException {
