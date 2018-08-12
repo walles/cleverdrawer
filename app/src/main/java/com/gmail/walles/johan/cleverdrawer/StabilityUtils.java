@@ -25,7 +25,7 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
-import org.jetbrains.annotations.TestOnly;
+import android.support.annotation.CheckResult;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,11 +42,12 @@ import timber.log.Timber;
  * Helps not reshuffling the list as much when things change place.
  */
 public class StabilityUtils {
-    public static void stabilize(File lastSortOrder, List<Launchable> launchables) {
-
+    @CheckResult
+    public static List<Launchable> stabilize(File lastSortOrder, List<Launchable> launchables) {
+        return stabilize(loadIdOrder(lastSortOrder), launchables);
     }
 
-    @TestOnly
+    @CheckResult
     static List<Launchable> stabilize(List<String> lastOrderIds, List<Launchable> launchables) {
         return Collections.emptyList();
     }
@@ -81,7 +82,6 @@ public class StabilityUtils {
         }
     }
 
-    @TestOnly
     static List<String> loadIdOrder(File lastOrder) {
         List<String> idList = new LinkedList<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(lastOrder))) {

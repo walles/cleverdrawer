@@ -202,7 +202,7 @@ class LaunchableAdapter extends BaseAdapter {
         Collections.sort(launchables);
 
         timer.addLeg("Stabilizing Sort Order");
-        StabilityUtils.stabilize(lastOrderFile, launchables);
+        launchables = StabilityUtils.stabilize(lastOrderFile, launchables);
         StabilityUtils.storeOrder(lastOrderFile, launchables);
 
         timer.addLeg("Updating names cache");
