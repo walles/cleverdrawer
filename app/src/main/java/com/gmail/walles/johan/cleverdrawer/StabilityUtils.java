@@ -164,6 +164,8 @@ public class StabilityUtils {
         File tempfile = new File(lastSortOrder.toString() + ".tmp");
         try (PrintWriter out = new PrintWriter(tempfile)) {
             for (Launchable launchable: launchables) {
+                FIXME: Store only the IDs that the user has clicked
+
                 out.println(launchable.getId());
             }
         } catch (IOException e) {
