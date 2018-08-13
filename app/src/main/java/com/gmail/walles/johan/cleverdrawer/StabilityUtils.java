@@ -190,6 +190,13 @@ public class StabilityUtils {
     }
 
     static List<String> loadIdOrder(File lastOrder) {
+        if (!lastOrder.exists()) {
+            // This is OK; it will happen before we've started tracking the last sort order for the
+            // first time.
+            Timber.i("Last order file doesn't exist: %s", lastOrder);
+            return Collections.emptyList();
+        }
+
         List<String> idList = new LinkedList<>();
         try(BufferedReader reader = new BufferedReader(new FileReader(lastOrder))) {
             for(String line; (line = reader.readLine()) != null; ) {
