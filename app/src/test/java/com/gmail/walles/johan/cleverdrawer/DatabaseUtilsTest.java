@@ -159,11 +159,16 @@ public class DatabaseUtilsTest {
                         break;
                     }
 
+                    Launchable previousLaunchable = previousLaunchables.get(i);
+                    Launchable currentLaunchable = simulatedLaunch.launchables.get(i);
                     if (!Objects.equals(
-                            previousLaunchables.get(i).getId(),
-                            simulatedLaunch.launchables.get(i).getId()))
+                            previousLaunchable.getId(),
+                            currentLaunchable.getId()))
                     {
-                        jumpiness++;
+                        if (previousLaunchable.hasScore()) {
+                            // Jumpiness is only relevant when something we care about is moved
+                            jumpiness++;
+                        }
                     }
                 }
             }

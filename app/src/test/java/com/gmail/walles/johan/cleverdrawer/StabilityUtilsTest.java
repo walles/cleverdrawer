@@ -27,10 +27,6 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import static org.hamcrest.CoreMatchers.is;
 
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,32 +40,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class StabilityUtilsTest {
-    private static class EqualsLaunchable extends Launchable {
+    private static class EqualsLaunchable extends DummyLaunchable {
         public EqualsLaunchable(String id) {
             super(id);
             setName(new CaseInsensitive(id));
-        }
-
-        @Override
-        @Nullable
-        public Drawable getIcon() {
-            return null;
-        }
-
-        @Override
-        public boolean contains(CaseInsensitive substring) {
-            return false;
-        }
-
-        @Override
-        public double getScoreFactor() {
-            return 0;
-        }
-
-        @Override
-        @Nullable
-        public Intent getLaunchIntent() {
-            return null;
         }
 
         @Override
@@ -95,7 +69,9 @@ public class StabilityUtilsTest {
     private static List<Launchable> createLaunchablesWithIds(String ... ids) {
         List<Launchable> launchables = new LinkedList<>();
         for (String id: ids) {
-            launchables.add(new EqualsLaunchable(id));
+            EqualsLaunchable launchable = new EqualsLaunchable(id);
+            launchable.setScore(27);
+            launchables.add(launchable);
         }
 
         return Collections.unmodifiableList(launchables);
@@ -232,5 +208,29 @@ public class StabilityUtilsTest {
         File doesntExist = new File(tempdir.getRoot(), "doesntExist");
 
         Assert.assertThat(StabilityUtils.loadIdOrder(doesntExist), is(Collections.emptyList()));
+    }
+
+    @Test
+    public void testStoreOrderOnlyRelevant() {
+        File lastOrder = new File(tempdir.getRoot(), "lastOrder");
+
+        Launchable interesting = new EqualsLaunchable("interesting");
+        interesting.setScore(25);
+
+        Launchable uninteresting = new EqualsLaunchable("uninteresting");
+        // To keep it uninteresting, don't set the score
+
+        List<Launchable> launchables = Arrays.asList(interesting, uninteresting);
+
+        // Store the list
+        StabilityUtils.storeOrder(lastOrder, launchables);
+
+        // Load the list back
+        List<String> loadedIds = StabilityUtils.loadIdOrder(lastOrder);
+
+        // We expect to only get the interesting one back when we load the list
+        List<String> expected = Collections.singletonList(interesting.getId());
+
+        Assert.assertThat(loadedIds, is(expected));
     }
 }
