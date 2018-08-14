@@ -177,7 +177,9 @@ public class DatabaseUtils {
         for (LaunchMetadata launch : launches) {
             Double score = idToScore.get(launch.id);
             if (score == null) {
-                score = 1.0;
+                // Start scoring at 2, since not-scored Launchables will implicitly get 1, and we
+                // want to be better than that.
+                score = 2.0;
             } else {
                 score++;
             }
@@ -187,12 +189,8 @@ public class DatabaseUtils {
         // Apply ID scores to our launchables
         for (Launchable launchable: launchables) {
             Double score = idToScore.get(launchable.getId());
-
-            // Score should be non-zero so that it can be multiplied in later stages
             if (score == null) {
-                score = 1.0;
-            } else {
-                score += 1.0;
+                continue;
             }
 
             launchable.setScore(score);

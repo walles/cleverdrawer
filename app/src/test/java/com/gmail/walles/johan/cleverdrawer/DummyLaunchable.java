@@ -25,18 +25,32 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
-import static org.hamcrest.Matchers.*;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
 
-import org.junit.Assert;
-import org.junit.Test;
+class DummyLaunchable extends Launchable {
+    protected DummyLaunchable(String id) {
+        super(id);
+        setName(new CaseInsensitive(getId()));
+    }
 
-public class LaunchableTest {
+    @Override
+    public Drawable getIcon() {
+        return null;
+    }
 
-    @Test
-    public void testHasScore() {
-        Launchable launchable = new DummyLaunchable("Johan");
-        Assert.assertThat(launchable.hasScore(), is(false));
-        launchable.setScore(5);
-        Assert.assertThat(launchable.hasScore(), is(true));
+    @Override
+    public boolean contains(CaseInsensitive substring) {
+        return false;
+    }
+
+    @Override
+    public double getScoreFactor() {
+        return 0;
+    }
+
+    @Override
+    public Intent getLaunchIntent() {
+        return null;
     }
 }
