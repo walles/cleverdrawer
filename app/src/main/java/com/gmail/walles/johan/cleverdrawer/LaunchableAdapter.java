@@ -242,11 +242,11 @@ class LaunchableAdapter extends BaseAdapter {
             }
 
             StringBuilder message = new StringBuilder();
-            message.append("Multiple IDs share the same name: <");
+            message.append("Multiple IDs share the same name: [");
             message.append(duplicateName);
-            message.append(">");
+            message.append("]");
             for (String id: idsForName) {
-                message.append("\n-> ").append(id);
+                message.append("\n-] ").append(id);
             }
 
             Timber.w(new RuntimeException(message.toString()));
