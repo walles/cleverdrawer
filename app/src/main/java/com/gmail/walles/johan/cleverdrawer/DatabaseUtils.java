@@ -117,7 +117,8 @@ public class DatabaseUtils {
         File tempfile = new File(file.getAbsolutePath() + ".tmp");
         objectMapper.writeValue(tempfile, cache);
         if (!tempfile.renameTo(file)) {
-            throw new IOException("Updating cache file failed");
+            throw new IOException(String.format("Updating cache file failed: '%s'->'%s'",
+                    tempfile.getAbsolutePath(), file.getAbsolutePath()));
         }
 
         Timber.i("Caching true names took: %s", timer.toString());
