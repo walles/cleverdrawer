@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,6 +74,28 @@ public class DatabaseUtilsTest {
         // Verify that the new launchables got the right names
         Assert.assertThat(l1.getName(), is(new CaseInsensitive("name: One")));
         Assert.assertThat(l2.getName(), is(new CaseInsensitive("name: Two")));
+    }
+
+    @Test
+    public void testScoreLaunchablesOnlyScoreLaunched() {
+        DummyLaunchable interesting = new DummyLaunchable("interesting");
+        DummyLaunchable boring = new DummyLaunchable("boring");
+
+        List<Launchable> launchables = new LinkedList<>();
+        launchables.add(interesting);
+        launchables.add(boring);
+
+        DatabaseUtils.LaunchMetadata launch = new DatabaseUtils.LaunchMetadata();
+        launch.timestamp = 1234;
+        launch.id = "interesting";
+
+        List<DatabaseUtils.LaunchMetadata> launches = new LinkedList<>();
+        launches.add(launch);
+
+        DatabaseUtils.scoreLaunchables(launchables, launches);
+
+        Assert.assertThat(interesting.hasScore(), is(true));
+        Assert.assertThat(boring.hasScore(), is(false));
     }
 
     /**
