@@ -36,7 +36,9 @@ import timber.log.Timber;
 public abstract class Launchable implements Comparable<Launchable> {
     private final String id;
     private CaseInsensitive name;
-    private double score;
+
+    @Nullable
+    private Double score;
 
     /**
      * Calling this method can be slow!
@@ -95,7 +97,6 @@ public abstract class Launchable implements Comparable<Launchable> {
         return null;
     }
 
-
     /**
      * @param substring This should be a lowercase search string.
      */
@@ -118,9 +119,16 @@ public abstract class Launchable implements Comparable<Launchable> {
 
     public abstract Intent getLaunchIntent();
 
+    private double getScore() {
+        if (score != null) {
+            return score;
+        }
+        return 1.0 * getScoreFactor();
+    }
+
     @Override
     public int compareTo(@NonNull Launchable o) {
-        int scoresCompare = Double.compare(o.score, score);
+        int scoresCompare = Double.compare(o.getScore(), getScore());
         if (scoresCompare != 0) {
             return scoresCompare;
         }
@@ -131,5 +139,9 @@ public abstract class Launchable implements Comparable<Launchable> {
     @Override
     public String toString() {
         return getId();
+    }
+
+    public boolean hasScore() {
+        return score != null;
     }
 }
