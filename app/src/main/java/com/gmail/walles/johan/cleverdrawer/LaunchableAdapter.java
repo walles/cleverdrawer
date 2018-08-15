@@ -99,6 +99,7 @@ class LaunchableAdapter extends BaseAdapter {
 
         // Samsung Galaxy S5 Neo, 6.0.1
         UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$NfcSettingsActivity", "NFC");
+        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$WriteSettingsActivity", "Write");
     }
 
     private List<Launchable> allLaunchables;
