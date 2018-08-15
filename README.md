@@ -34,8 +34,6 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Misc
-* Improve jumpiness by remembering the last sort and just moving the
-icons that need to change lines.
 * Speed up reading names from cache; it takes 256ms of the 600ms startup time
 * Move names caching into `IntentLaunchable`
 * Put a clear-the-search-box button inside the search box.
@@ -145,3 +143,5 @@ button.
 * Fix `@Nullable` related warnings
 * Make a pre-commit hook that runs `gradlew check --continue`
 * In landscape mode, put the search bar next to or inside the top toolbar
+* Improve jumpiness by remembering the last sort and just moving the
+icons that need to change lines.

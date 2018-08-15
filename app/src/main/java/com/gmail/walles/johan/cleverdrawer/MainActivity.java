@@ -74,12 +74,13 @@ public class MainActivity extends AppCompatActivity {
 
         final File launchHistoryFile = MainActivity.getLaunchHistoryFile(this);
         final File cacheFile = new File(getFilesDir(), "nameCache.json");
+        final File lastOrderFile = new File(getFilesDir(), "lastOrder.json");
 
         timer.addLeg("Finding GridView");
         GridView gridView = findViewById(R.id.iconGrid);
         timer.addLeg("Constructing Adapter");
         LaunchableAdapter adapter =
-                new LaunchableAdapter(this, launchHistoryFile, cacheFile);
+                new LaunchableAdapter(this, launchHistoryFile, cacheFile, lastOrderFile);
         gridView.setAdapter(adapter);
         timer.addLeg("Setting up Listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {

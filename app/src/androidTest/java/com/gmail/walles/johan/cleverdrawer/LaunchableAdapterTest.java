@@ -59,8 +59,10 @@ public class LaunchableAdapterTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
         File nameCache = tempdir.newFile("nameCache");
         File statsFile = tempdir.newFile("statsFile");
+        File lastOrderFile = tempdir.newFile("lastOrderFile");
 
-        List<Launchable> launchables = LaunchableAdapter.loadLaunchables(appContext, nameCache, statsFile);
+        List<Launchable> launchables =
+                LaunchableAdapter.loadLaunchables(appContext, nameCache, statsFile, lastOrderFile);
 
         // Map all IDs to the launchables with that ID
         HashMap<String, List<Launchable>> idToLaunchables = new HashMap<>();
