@@ -186,8 +186,11 @@ class LaunchableAdapter extends BaseAdapter {
         timer.addLeg("Dropping duplicate IDs");
         dropDuplicateIds(launchables);
 
-        timer.addLeg("Adding names from cache");
-        DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, launchables);
+        timer.addLeg("Reading names from cache");
+        Map<String, String> idToNameCache = DatabaseUtils.readIdToNameCache(nameCacheFile);
+
+        timer.addLeg("Applying names from cache");
+        DatabaseUtils.nameLaunchablesFromCache(idToNameCache, launchables);
 
         timer.addLeg("Dropping unnamed");
         dropUnnamed(launchables);
