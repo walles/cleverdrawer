@@ -178,18 +178,20 @@ class LaunchableAdapter extends BaseAdapter {
     {
         Timer timer = new Timer();
         ExecutorService executor = new ThreadPoolExecutor(
-                1,
-                3,
-                400, TimeUnit.MILLISECONDS,
+                2,
+                4,
+                500, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(5));
 
         FutureTask<Map<String, String>> readCache = new FutureTask<>(
                 () -> DatabaseUtils.readIdToNameCache(nameCacheFile));
         executor.submit(readCache);
 
-        timer.addLeg("Add IntentLaunchables");
-        List<Launchable> launchables = new ArrayList<>(IntentLaunchable.loadLaunchables(context));
+        FutureTask<List<Launchable>> loadIntentLaunchables = new FutureTask<>(
+                () -> IntentLaunchable.loadLaunchables(context));
+        executor.submit(loadIntentLaunchables);
 
+        List<Launchable> launchables = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED)
         {
@@ -199,6 +201,13 @@ class LaunchableAdapter extends BaseAdapter {
             Timber.w("READ_CONTACTS permission not granted (yet?), contacts not loaded");
         }
 
+        timer.addLeg("Add IntentLaunchables");
+        try {
+            launchables.addAll(loadIntentLaunchables.get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Loading Intent Launchables failed", e);
+        }
+
         timer.addLeg("Dropping duplicate IDs");
         dropDuplicateIds(launchables);
 
@@ -206,8 +215,7 @@ class LaunchableAdapter extends BaseAdapter {
         try {
             DatabaseUtils.nameLaunchablesFromCache(readCache.get(), launchables);
         } catch (InterruptedException | ExecutionException e) {
-            // FIXME: What do we do now?
-            e.printStackTrace();
+            throw new RuntimeException("Reading names cache failed", e);
         }
 
         timer.addLeg("Dropping unnamed");
