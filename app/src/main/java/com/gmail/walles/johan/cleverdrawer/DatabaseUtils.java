@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,23 +55,24 @@ public class DatabaseUtils {
      */
     private static final int SCORING_MAX_LAUNCH_COUNT = 300;
 
-    public static void nameLaunchablesFromCache(File file, List<Launchable> launchables) {
+    public static Map<String, String> readIdToNameCache(File file) {
         if (!file.exists()) {
             Timber.i("No names cache file found, guessing this is the first launch");
-            return;
+            return Collections.emptyMap();
         }
 
         // Load the launchables table into an id->name map
         TypeReference<HashMap<String, String>> typeRef
                 = new TypeReference<HashMap<String, String>>() {};
-        Map<String, String> cache;
         try {
-            cache = objectMapper.readValue(file, typeRef);
+            return objectMapper.readValue(file, typeRef);
         } catch (IOException e) {
             Timber.w(e, "Error reading names cache, pretending it's empty");
-            return;
+            return Collections.emptyMap();
         }
+    }
 
+    public static void nameLaunchablesFromCache(Map<String, String> cache, List<Launchable> launchables) {
         // Update all launchable names from the map
         int updateCount = 0;
         for (Launchable launchable: launchables) {
@@ -161,13 +163,6 @@ public class DatabaseUtils {
         saveLaunches(file, launches);
     }
 
-    /**
-     * Give all launchables a non-null score > 0
-     */
-    public static void scoreLaunchables(File launchHistoryFile, Iterable<Launchable> allLaunchables) {
-        scoreLaunchables(allLaunchables, loadLaunches(launchHistoryFile));
-    }
-
     static void scoreLaunchables(Iterable<Launchable> launchables, List<LaunchMetadata> launches) {
         if (launches.size() > SCORING_MAX_LAUNCH_COUNT) {
             launches = launches.subList(launches.size() - SCORING_MAX_LAUNCH_COUNT, launches.size());
@@ -197,7 +192,7 @@ public class DatabaseUtils {
         }
     }
 
-    private static List<LaunchMetadata> loadLaunches(File launchHistoryFile) {
+    public static List<LaunchMetadata> loadLaunches(File launchHistoryFile) {
         try (InputStream launchHistoryStream = new BufferedInputStream(new FileInputStream(launchHistoryFile))) {
             return loadLaunches(launchHistoryStream);
         } catch (FileNotFoundException e) {

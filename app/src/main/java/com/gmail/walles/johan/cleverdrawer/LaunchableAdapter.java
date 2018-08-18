@@ -54,6 +54,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
@@ -171,9 +177,25 @@ class LaunchableAdapter extends BaseAdapter {
             File nameCacheFile, File launchHistoryFile, File lastOrderFile)
     {
         Timer timer = new Timer();
-        timer.addLeg("Add IntentLaunchables");
-        List<Launchable> launchables = new ArrayList<>(IntentLaunchable.loadLaunchables(context));
+        ExecutorService executor = new ThreadPoolExecutor(
+                2,
+                4,
+                500, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(5));
 
+        FutureTask<List<Launchable>> loadIntentLaunchables = new FutureTask<>(
+                () -> IntentLaunchable.loadLaunchables(context));
+        executor.submit(loadIntentLaunchables);
+
+        FutureTask<Map<String, String>> readCache = new FutureTask<>(
+                () -> DatabaseUtils.readIdToNameCache(nameCacheFile));
+        executor.submit(readCache);
+
+        FutureTask<List<DatabaseUtils.LaunchMetadata>> loadLaunchHistory = new FutureTask<>(
+                () -> DatabaseUtils.loadLaunches(launchHistoryFile));
+        executor.submit(loadLaunchHistory);
+
+        List<Launchable> launchables = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED)
         {
@@ -183,11 +205,22 @@ class LaunchableAdapter extends BaseAdapter {
             Timber.w("READ_CONTACTS permission not granted (yet?), contacts not loaded");
         }
 
+        timer.addLeg("Add IntentLaunchables");
+        try {
+            launchables.addAll(loadIntentLaunchables.get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Loading Intent Launchables failed", e);
+        }
+
         timer.addLeg("Dropping duplicate IDs");
         dropDuplicateIds(launchables);
 
-        timer.addLeg("Adding names from cache");
-        DatabaseUtils.nameLaunchablesFromCache(nameCacheFile, launchables);
+        timer.addLeg("Applying names from cache");
+        try {
+            DatabaseUtils.nameLaunchablesFromCache(readCache.get(), launchables);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Reading names cache failed", e);
+        }
 
         timer.addLeg("Dropping unnamed");
         dropUnnamed(launchables);
@@ -199,7 +232,11 @@ class LaunchableAdapter extends BaseAdapter {
         logDuplicateNames(launchables);
 
         timer.addLeg("Sorting Launchables");
-        DatabaseUtils.scoreLaunchables(launchHistoryFile, launchables);
+        try {
+            DatabaseUtils.scoreLaunchables(launchables, loadLaunchHistory.get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Loading launch history failed", e);
+        }
         Collections.sort(launchables);
 
         timer.addLeg("Stabilizing Sort Order");

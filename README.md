@@ -34,7 +34,6 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Misc
-* Speed up reading names from cache; it takes 256ms of the 600ms startup time
 * Move names caching into `IntentLaunchable`
 * Put a clear-the-search-box button inside the search box.
 * Sort recently installed apps earlier
@@ -55,10 +54,8 @@ launching a Launchable?
 * Use time of day as a scoring factor
 * Use most recently used other app as scoring factor
 * Long clicking app should bring up a menu:
-  * Add shortcut to home screen
+  * Manage (Like clicking an app in the Settings)
   * Show on Google Play
-  * Show app info
-  * Uninstall
 
 # DONE
 * Add Timber logging
@@ -145,3 +142,5 @@ button.
 * In landscape mode, put the search bar next to or inside the top toolbar
 * Improve jumpiness by remembering the last sort and just moving the
 icons that need to change lines.
+* Improve startup performance by doing multiple independent slow tasks
+in parallel.
