@@ -29,7 +29,7 @@ also a good way of researching Travis problems locally.
 ## Releasing
 1. Do `git tag | cat` and think about what the next version number should be.
 2. Do `git tag 1.2.3` to set the next version number.
-3. `env JAVA_OPTS=-Xmx512m ./gradlew --no-daemon build`
+3. `./gradlew build`
 4. Upload `app/build/outputs/apk/app-release.apk` to Google Play
 5. `git push --tags`
 
