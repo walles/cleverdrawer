@@ -54,6 +54,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import timber.log.Timber;
 
@@ -171,6 +177,16 @@ class LaunchableAdapter extends BaseAdapter {
             File nameCacheFile, File launchHistoryFile, File lastOrderFile)
     {
         Timer timer = new Timer();
+        ExecutorService executor = new ThreadPoolExecutor(
+                1,
+                3,
+                400, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(5));
+
+        FutureTask<Map<String, String>> readCache = new FutureTask<>(
+                () -> DatabaseUtils.readIdToNameCache(nameCacheFile));
+        executor.submit(readCache);
+
         timer.addLeg("Add IntentLaunchables");
         List<Launchable> launchables = new ArrayList<>(IntentLaunchable.loadLaunchables(context));
 
@@ -186,11 +202,13 @@ class LaunchableAdapter extends BaseAdapter {
         timer.addLeg("Dropping duplicate IDs");
         dropDuplicateIds(launchables);
 
-        timer.addLeg("Reading names from cache");
-        Map<String, String> idToNameCache = DatabaseUtils.readIdToNameCache(nameCacheFile);
-
         timer.addLeg("Applying names from cache");
-        DatabaseUtils.nameLaunchablesFromCache(idToNameCache, launchables);
+        try {
+            DatabaseUtils.nameLaunchablesFromCache(readCache.get(), launchables);
+        } catch (InterruptedException | ExecutionException e) {
+            // FIXME: What do we do now?
+            e.printStackTrace();
+        }
 
         timer.addLeg("Dropping unnamed");
         dropUnnamed(launchables);
