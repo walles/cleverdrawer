@@ -65,7 +65,7 @@ public class IntentLaunchableTest {
 
         List<Launchable> launchables = Arrays.asList(zebra, ape);
 
-        DatabaseUtils.scoreLaunchables(dbFile, launchables);
+        DatabaseUtils.scoreLaunchables(launchables, DatabaseUtils.loadLaunches(dbFile));
         Collections.sort(launchables);
 
         Assert.assertThat(launchables, is(Arrays.asList(ape, zebra)));
@@ -80,7 +80,7 @@ public class IntentLaunchableTest {
         List<Launchable> launchables = Arrays.asList(ape, zebra);
         DatabaseUtils.registerLaunch(dbFile, zebra);
 
-        DatabaseUtils.scoreLaunchables(dbFile, launchables);
+        DatabaseUtils.scoreLaunchables(launchables, DatabaseUtils.loadLaunches(dbFile));
         Collections.sort(launchables);
 
         Assert.assertThat(launchables, is(Arrays.asList(zebra, ape)));

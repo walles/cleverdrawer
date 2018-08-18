@@ -163,13 +163,6 @@ public class DatabaseUtils {
         saveLaunches(file, launches);
     }
 
-    /**
-     * Give all launchables a non-null score > 0
-     */
-    public static void scoreLaunchables(File launchHistoryFile, Iterable<Launchable> allLaunchables) {
-        scoreLaunchables(allLaunchables, loadLaunches(launchHistoryFile));
-    }
-
     static void scoreLaunchables(Iterable<Launchable> launchables, List<LaunchMetadata> launches) {
         if (launches.size() > SCORING_MAX_LAUNCH_COUNT) {
             launches = launches.subList(launches.size() - SCORING_MAX_LAUNCH_COUNT, launches.size());
@@ -199,7 +192,7 @@ public class DatabaseUtils {
         }
     }
 
-    private static List<LaunchMetadata> loadLaunches(File launchHistoryFile) {
+    public static List<LaunchMetadata> loadLaunches(File launchHistoryFile) {
         try (InputStream launchHistoryStream = new BufferedInputStream(new FileInputStream(launchHistoryFile))) {
             return loadLaunches(launchHistoryStream);
         } catch (FileNotFoundException e) {

@@ -191,6 +191,10 @@ class LaunchableAdapter extends BaseAdapter {
                 () -> DatabaseUtils.readIdToNameCache(nameCacheFile));
         executor.submit(readCache);
 
+        FutureTask<List<DatabaseUtils.LaunchMetadata>> loadLaunchHistory = new FutureTask<>(
+                () -> DatabaseUtils.loadLaunches(launchHistoryFile));
+        executor.submit(loadLaunchHistory);
+
         List<Launchable> launchables = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED)
@@ -228,7 +232,11 @@ class LaunchableAdapter extends BaseAdapter {
         logDuplicateNames(launchables);
 
         timer.addLeg("Sorting Launchables");
-        DatabaseUtils.scoreLaunchables(launchHistoryFile, launchables);
+        try {
+            DatabaseUtils.scoreLaunchables(launchables, loadLaunchHistory.get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Loading launch history failed", e);
+        }
         Collections.sort(launchables);
 
         timer.addLeg("Stabilizing Sort Order");
