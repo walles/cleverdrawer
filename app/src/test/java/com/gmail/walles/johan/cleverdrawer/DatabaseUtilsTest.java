@@ -69,7 +69,8 @@ public class DatabaseUtilsTest {
         // app restart
         l1 = new IntentLaunchable("id: 1", null);
         l2 = new IntentLaunchable("id: 2", null);
-        DatabaseUtils.nameLaunchablesFromCache(dbFile, Arrays.asList(l1, l2));
+        Map<String, String> cache = DatabaseUtils.readIdToNameCache(dbFile);
+        DatabaseUtils.nameLaunchablesFromCache(cache, Arrays.asList(l1, l2));
 
         // Verify that the new launchables got the right names
         Assert.assertThat(l1.getName(), is(new CaseInsensitive("name: One")));
