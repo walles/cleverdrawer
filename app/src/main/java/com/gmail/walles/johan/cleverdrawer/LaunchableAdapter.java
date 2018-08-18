@@ -183,13 +183,13 @@ class LaunchableAdapter extends BaseAdapter {
                 500, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(5));
 
-        FutureTask<Map<String, String>> readCache = new FutureTask<>(
-                () -> DatabaseUtils.readIdToNameCache(nameCacheFile));
-        executor.submit(readCache);
-
         FutureTask<List<Launchable>> loadIntentLaunchables = new FutureTask<>(
                 () -> IntentLaunchable.loadLaunchables(context));
         executor.submit(loadIntentLaunchables);
+
+        FutureTask<Map<String, String>> readCache = new FutureTask<>(
+                () -> DatabaseUtils.readIdToNameCache(nameCacheFile));
+        executor.submit(readCache);
 
         List<Launchable> launchables = new ArrayList<>();
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
