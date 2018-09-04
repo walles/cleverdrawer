@@ -23,10 +23,12 @@
  *
  */
 
-package com.gmail.walles.johan.cleverdrawer;
+package com.gmail.walles.johan.cleverdrawer.utils;
 
 import android.support.annotation.CheckResult;
 import android.support.annotation.Nullable;
+
+import com.gmail.walles.johan.cleverdrawer.Launchable;
 
 import java.io.BufferedReader;
 import java.io.File;

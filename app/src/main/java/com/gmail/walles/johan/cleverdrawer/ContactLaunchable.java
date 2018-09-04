@@ -35,6 +35,9 @@ import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
+import com.gmail.walles.johan.cleverdrawer.utils.CaseInsensitive;
+import com.gmail.walles.johan.cleverdrawer.utils.Timer;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Collection;

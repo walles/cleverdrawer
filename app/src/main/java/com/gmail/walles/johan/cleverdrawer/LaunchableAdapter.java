@@ -39,6 +39,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.crashlytics.android.answers.CustomEvent;
+import com.gmail.walles.johan.cleverdrawer.utils.CaseInsensitive;
+import com.gmail.walles.johan.cleverdrawer.utils.DatabaseUtils;
+import com.gmail.walles.johan.cleverdrawer.utils.LoggingUtils;
+import com.gmail.walles.johan.cleverdrawer.utils.StabilityUtils;
+import com.gmail.walles.johan.cleverdrawer.utils.Timer;
 
 import java.io.File;
 import java.io.IOException;

@@ -47,6 +47,9 @@ import android.widget.EditText;
 import android.widget.GridView;
 
 import com.crashlytics.android.answers.CustomEvent;
+import com.gmail.walles.johan.cleverdrawer.utils.DatabaseUtils;
+import com.gmail.walles.johan.cleverdrawer.utils.LoggingUtils;
+import com.gmail.walles.johan.cleverdrawer.utils.Timer;
 
 import java.io.File;
 import java.io.IOException;

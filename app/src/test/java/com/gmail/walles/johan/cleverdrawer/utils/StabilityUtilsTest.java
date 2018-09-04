@@ -23,9 +23,12 @@
  *
  */
 
-package com.gmail.walles.johan.cleverdrawer;
+package com.gmail.walles.johan.cleverdrawer.utils;
 
 import static org.hamcrest.CoreMatchers.is;
+
+import com.gmail.walles.johan.cleverdrawer.DummyLaunchable;
+import com.gmail.walles.johan.cleverdrawer.Launchable;
 
 import org.junit.Assert;
 import org.junit.Rule;

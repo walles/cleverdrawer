@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Johan Walles <johan.walles@gmail.com>
+ * Copyright (c) 2018 Johan Walles <johan.walles@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,12 @@
  *
  */
 
-package com.gmail.walles.johan.cleverdrawer;
+package com.gmail.walles.johan.cleverdrawer.utils;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
+import com.gmail.walles.johan.cleverdrawer.Application;
+import com.gmail.walles.johan.cleverdrawer.BuildConfig;
 
 import timber.log.Timber;
 

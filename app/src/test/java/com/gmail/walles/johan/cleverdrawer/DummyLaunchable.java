@@ -28,8 +28,10 @@ package com.gmail.walles.johan.cleverdrawer;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
-class DummyLaunchable extends Launchable {
-    protected DummyLaunchable(String id) {
+import com.gmail.walles.johan.cleverdrawer.utils.CaseInsensitive;
+
+public class DummyLaunchable extends Launchable {
+    public DummyLaunchable(String id) {
         super(id);
         setName(new CaseInsensitive(getId()));
     }

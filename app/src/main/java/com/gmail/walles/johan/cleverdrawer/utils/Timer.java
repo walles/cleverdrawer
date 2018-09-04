@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Johan Walles <johan.walles@gmail.com>
+ * Copyright (c) 2018 Johan Walles <johan.walles@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
  *
  */
 
-package com.gmail.walles.johan.cleverdrawer;
+package com.gmail.walles.johan.cleverdrawer.utils;
 
 import java.util.LinkedList;
 import java.util.List;

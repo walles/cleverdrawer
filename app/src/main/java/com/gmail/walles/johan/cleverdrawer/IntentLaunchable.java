@@ -35,6 +35,9 @@ import android.graphics.drawable.Drawable;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 
+import com.gmail.walles.johan.cleverdrawer.utils.CaseInsensitive;
+import com.gmail.walles.johan.cleverdrawer.utils.Timer;
+
 import org.jetbrains.annotations.TestOnly;
 
 import java.lang.reflect.Field;

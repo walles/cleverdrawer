@@ -30,6 +30,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.gmail.walles.johan.cleverdrawer.utils.CaseInsensitive;
+
 import timber.log.Timber;
 
 @SuppressWarnings("ComparableImplementedButEqualsNotOverridden")

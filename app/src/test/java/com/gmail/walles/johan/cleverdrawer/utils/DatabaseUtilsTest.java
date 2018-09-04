@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Johan Walles <johan.walles@gmail.com>
+ * Copyright (c) 2018 Johan Walles <johan.walles@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
  *
  */
 
-package com.gmail.walles.johan.cleverdrawer;
+package com.gmail.walles.johan.cleverdrawer.utils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -32,6 +32,13 @@ import static org.hamcrest.Matchers.empty;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+
+import com.gmail.walles.johan.cleverdrawer.DummyLaunchable;
+import com.gmail.walles.johan.cleverdrawer.IntentLaunchable;
+import com.gmail.walles.johan.cleverdrawer.Launchable;
+import com.gmail.walles.johan.cleverdrawer.utils.CaseInsensitive;
+import com.gmail.walles.johan.cleverdrawer.utils.DatabaseUtils;
+import com.gmail.walles.johan.cleverdrawer.utils.StabilityUtils;
 
 import org.junit.Assert;
 import org.junit.Rule;

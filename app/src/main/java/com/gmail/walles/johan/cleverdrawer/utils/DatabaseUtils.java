@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2017 Johan Walles <johan.walles@gmail.com>
+ * Copyright (c) 2018 Johan Walles <johan.walles@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,11 @@
  *
  */
 
-package com.gmail.walles.johan.cleverdrawer;
+package com.gmail.walles.johan.cleverdrawer.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gmail.walles.johan.cleverdrawer.Launchable;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -163,7 +164,8 @@ public class DatabaseUtils {
         saveLaunches(file, launches);
     }
 
-    static void scoreLaunchables(Iterable<Launchable> launchables, List<LaunchMetadata> launches) {
+    public static void scoreLaunchables(Iterable<Launchable> launchables,
+            List<LaunchMetadata> launches) {
         if (launches.size() > SCORING_MAX_LAUNCH_COUNT) {
             launches = launches.subList(launches.size() - SCORING_MAX_LAUNCH_COUNT, launches.size());
         }

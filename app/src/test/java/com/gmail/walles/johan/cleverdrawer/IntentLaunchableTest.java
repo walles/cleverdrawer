@@ -27,6 +27,9 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import static org.hamcrest.CoreMatchers.is;
 
+import com.gmail.walles.johan.cleverdrawer.utils.CaseInsensitive;
+import com.gmail.walles.johan.cleverdrawer.utils.DatabaseUtils;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
