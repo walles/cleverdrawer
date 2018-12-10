@@ -71,5 +71,41 @@ public class UniquifierTest {
                 "com.android.settings.com.android.settings.Settings$AppNotificationSettingsActivity", "App",
                 "com.android.settings.com.android.settings.Settings$ChannelNotificationSettingsActivity", "Channel",
                 "com.android.settings.com.android.settings.Settings$ConfigureNotificationSettingsActivity", "Config");
+
+        testUniquify(
+                "com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Zen Event",
+                "com.android.settings.com.android.settings.Settings$ZenModeExternalRuleSettingsActivity", "Zen External",
+                "com.android.settings.com.android.settings.Settings$ZenModeScheduleRuleSettingsActivity", "Zen Schedule"
+        );
+
+        testUniquify(
+                "com.android.settings.com.android.settings.Settings$AllApplicationsActivity", "All",
+                "com.android.settings.com.android.settings.Settings$ManageApplicationsActivity", "Manage"
+        );
+
+        testUniquify(
+                "com.google.android.calendar.com.android.calendar.AllInOneActivity", "Google",
+                "com.samsung.android.calendar.com.android.calendar.AllInOneActivity", "Samsung"
+        );
+
+        testUniquify(
+                "com.android.settings.com.android.settings.Settings$AdvancedAppsActivity", "Advanced Apps",
+                "com.android.settings.com.android.settings.WebViewImplementation", "Web View"
+        );
+
+        testUniquify(
+                "com.google.android.googlequicksearchbox.com.google.android.apps.gsa.velvet.ui.settings.PublicSettingsActivity", "Settings",
+                "com.google.android.googlequicksearchbox.com.google.android.googlequicksearchbox.SearchActivity", "Search"
+        );
+
+        testUniquify(
+                "com.android.settings.com.android.settings.Settings$NotificationSettingsActivity", "Notifications",
+                "com.android.settings.com.android.settings.Settings$SoundSettingsActivity", "Sound"
+        );
+
+        testUniquify(
+                "com.android.settings.com.android.settings.Settings$NfcSettingsActivity", "NFC",
+                "com.android.settings.com.android.settings.Settings$WriteSettingsActivity", "Write"
+        );
     }
 }
