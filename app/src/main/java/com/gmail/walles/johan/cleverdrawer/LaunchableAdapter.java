@@ -69,45 +69,6 @@ class LaunchableAdapter extends BaseAdapter {
     private final File nameCacheFile;
     private final File lastOrderFile;
 
-    /**
-     * Qualifiers to add to various IDs to give the unique names.
-     * <p>
-     * Without these, a number of things end up with the same name, and are impossible for the user
-     * to tell apart.
-     *
-     * @see #logDuplicateNames(List)
-     */
-    private static final Map<String, String> UNIQUIFIERS = new HashMap<>(); static {
-        // Emulator with Android 8.0 Oreo
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AppNotificationSettingsActivity", "App");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ChannelNotificationSettingsActivity", "Channel");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ConfigureNotificationSettingsActivity", "Config");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Zen Event");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeExternalRuleSettingsActivity", "Zen External");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeScheduleRuleSettingsActivity", "Zen Schedule");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AllApplicationsActivity", "All");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ManageApplicationsActivity", "Manage");
-
-        // Samsung Galaxy S6 with Android 7.0
-        UNIQUIFIERS.put("com.google.android.calendar.com.android.calendar.AllInOneActivity", "Google");
-        UNIQUIFIERS.put("com.samsung.android.calendar.com.android.calendar.AllInOneActivity", "Samsung");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AdvancedAppsActivity", "Advanced Apps");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.WebViewImplementation", "Web View");
-
-        UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.apps.gsa.velvet.ui.settings.PublicSettingsActivity", "Settings");
-        UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.googlequicksearchbox.SearchActivity", "Search");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$NotificationSettingsActivity", "Notifications");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$SoundSettingsActivity", "Sound");
-
-        // Samsung Galaxy S5 Neo, 6.0.1
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$NfcSettingsActivity", "NFC");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$WriteSettingsActivity", "Write");
-    }
-
     private List<Launchable> allLaunchables;
     private List<Launchable> filteredLaunchables;
 
@@ -226,7 +187,7 @@ class LaunchableAdapter extends BaseAdapter {
         dropUnnamed(launchables);
 
         timer.addLeg("Uniquifying names");
-        uniquify(launchables);
+        new Uniquifier().uniquify(launchables);
 
         timer.addLeg("Logging name dups");
         logDuplicateNames(launchables);
@@ -249,17 +210,6 @@ class LaunchableAdapter extends BaseAdapter {
         Timber.i("loadLaunchables() timings: %s", timer);
 
         return launchables;
-    }
-
-    private static void uniquify(List<Launchable> launchables) {
-        for (Launchable launchable: launchables) {
-            String uniquifier = UNIQUIFIERS.get(launchable.getId());
-            if (uniquifier == null) {
-                continue;
-            }
-
-            launchable.setName(new CaseInsensitive(launchable.getName() + " (" + uniquifier + ")"));
-        }
     }
 
     private static void logDuplicateNames(List<Launchable> launchables) {
