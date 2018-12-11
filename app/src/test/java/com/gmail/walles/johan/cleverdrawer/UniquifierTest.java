@@ -26,15 +26,24 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UniquifierTest {
+    private static final Random RANDOM = new Random();
+    private static final Pattern DECORATED = Pattern.compile(".*\\((.*)\\)");
+
     private void testUniquify(String ... args) {
+        final String MARKER = "x";
+
         if (args.length %2 != 0) {
             throw new IllegalArgumentException("Arguments must be paired!");
         }
@@ -54,11 +63,23 @@ public class UniquifierTest {
             expectedUniquifiers.add(uniquifier);
         }
 
+        // Add a random element to prevent the test from being too simplistic
+        launchables.add(RANDOM.nextInt(launchables.size()), new DummyLaunchable(MARKER));
+
         new Uniquifier().uniquify(launchables);
         List<String> actualUniquifiers = new LinkedList<>();
         for (Launchable launchable: launchables) {
             String name = launchable.getName().toString();
-            String uniquifier = name.substring(2, name.length() - 1);
+            if (MARKER.equals(name)) {
+                continue;
+            }
+
+            String uniquifier = null;  // Not decorated
+            Matcher matcher = DECORATED.matcher(name);
+            if (matcher.matches()) {
+                uniquifier = matcher.group(1);
+                Assert.assertThat(uniquifier, not(is("")));
+            }
             actualUniquifiers.add(uniquifier);
         }
 
@@ -66,7 +87,7 @@ public class UniquifierTest {
     }
 
     @Test
-    public void testUniquify() {
+    public void shouldNotRegress() {
         testUniquify(
                 "com.android.settings.com.android.settings.Settings$AppNotificationSettingsActivity", "App",
                 "com.android.settings.com.android.settings.Settings$ChannelNotificationSettingsActivity", "Channel",
@@ -107,5 +128,38 @@ public class UniquifierTest {
                 "com.android.settings.com.android.settings.Settings$NfcSettingsActivity", "NFC",
                 "com.android.settings.com.android.settings.Settings$WriteSettingsActivity", "Write"
         );
+    }
+
+    @Test
+    public void shouldUniquifyPlatsbanken() {
+        testUniquify(
+                "com.arbetsformedlingen.activity.com.arbetsformedlingen.activity.SplashActivity", "Splash",
+                "se.arbetsformedlingen.platsbanken_labs.se.knowit.platsbankenlabs.MainActivity", "Main");
+    }
+
+    @Test
+    public void shouldUniquifySvtPlay() {
+        testUniquify(
+                "air.se.svt.svti.android.svtplayer.air.se.svt.svti.android.svtplayer.AppEntry", "AppEntry",
+                "se.svt.android.svtplay.se.svt.svtplay.ui.LauncherActivity", null
+        );
+    }
+
+    @Test
+    public void shouldUniquifyDoNotDisturb() {
+        testUniquify(
+                "com.android.settings.com.android.settings.Settings$ZenModeAutomationSettingsActivity", "Automation",
+                "com.android.settings.com.android.settings.Settings$ZenModeSettingsActivity", null);
+    }
+
+    @Test
+    public void shouldUniquifyKingOfMathJunior() {
+        testUniquify(
+                "com.oddrobo.komj.com.oddrobo.komj.activities.LoadActivity", null,
+                "com.oddrobo.komjfree.com.oddrobo.komj.activities.LoadActivity", "Free");
+
+        // But not if we only have Free
+        testUniquify(
+                "com.oddrobo.komjfree.com.oddrobo.komj.activities.LoadActivity", null);
     }
 }
