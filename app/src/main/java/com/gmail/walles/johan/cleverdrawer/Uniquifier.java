@@ -25,59 +25,91 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
+import android.support.annotation.VisibleForTesting;
+
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class Uniquifier {
-    /**
-     * Qualifiers to add to various IDs to give the unique names.
-     * <p>
-     * Without these, a number of things end up with the same name, and are impossible for the user
-     * to tell apart.
-     *
-     * @see LaunchableAdapter#logDuplicateNames(List)
-     */
-    private static final Map<String, String> UNIQUIFIERS = new HashMap<>(); static {
-        // Emulator with Android 8.0 Oreo
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AppNotificationSettingsActivity", "App");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ChannelNotificationSettingsActivity", "Channel");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ConfigureNotificationSettingsActivity", "Config");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Zen Event");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeExternalRuleSettingsActivity", "Zen External");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ZenModeScheduleRuleSettingsActivity", "Zen Schedule");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AllApplicationsActivity", "All");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$ManageApplicationsActivity", "Manage");
-
-        // Samsung Galaxy S6 with Android 7.0
-        UNIQUIFIERS.put("com.google.android.calendar.com.android.calendar.AllInOneActivity", "Google");
-        UNIQUIFIERS.put("com.samsung.android.calendar.com.android.calendar.AllInOneActivity", "Samsung");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$AdvancedAppsActivity", "Advanced Apps");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.WebViewImplementation", "Web View");
-
-        UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.apps.gsa.velvet.ui.settings.PublicSettingsActivity", "Settings");
-        UNIQUIFIERS.put("com.google.android.googlequicksearchbox.com.google.android.googlequicksearchbox.SearchActivity", "Search");
-
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$NotificationSettingsActivity", "Notifications");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$SoundSettingsActivity", "Sound");
-
-        // Samsung Galaxy S5 Neo, 6.0.1
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$NfcSettingsActivity", "NFC");
-        UNIQUIFIERS.put("com.android.settings.com.android.settings.Settings$WriteSettingsActivity", "Write");
-    }
+    private static final Pattern INNER_CLASS_NAME = Pattern.compile(".*\\$(.*)");
 
     public void uniquify(List<Launchable> launchables) {
+        Map<String, List<Launchable>> nameToLaunchables = new HashMap<>();
+
         for (Launchable launchable: launchables) {
-            String uniquifier = UNIQUIFIERS.get(launchable.getId());
-            if (uniquifier == null) {
+            String name = launchable.getName().toString();
+            List<Launchable> list = nameToLaunchables.get(name);
+            if (list == null) {
+                list = new LinkedList<>();
+                nameToLaunchables.put(name, list);
+            }
+
+            list.add(launchable);
+        }
+
+        for (List<Launchable> list: nameToLaunchables.values()) {
+            if (list.size() == 1) {
                 continue;
             }
 
-            launchable.setName(new CaseInsensitive(launchable.getName() + " (" + uniquifier + ")"));
+            if (uniquifyByInnerClassName(list)) {
+                return;
+            }
+
+            // This failure will be logged by the duplicate-names logger, just leave it
         }
     }
 
+    private boolean uniquifyByInnerClassName(List<Launchable> launchables) {
+        List<String> innerClassNames = new LinkedList<>();
+        List<Set<String>> parts = new LinkedList<>();
+        for (Launchable launchable: launchables) {
+            Matcher matcher = INNER_CLASS_NAME.matcher(launchable.getId());
+            if (!matcher.matches()) {
+                // No inner class name, can't compare these, never mind
+                return false;
+            }
+
+            String innerClassName = matcher.group(1);
+            innerClassNames.add(innerClassName);
+            parts.add(splitInParts(innerClassName));
+        }
+
+        // We now have a set of parts for each inner class name
+
+        uniquifyParts(parts);
+
+        // We now have a set of unique parts per inner class name
+
+        Iterator<Launchable> launchableIterator = launchables.iterator();
+        Iterator<String> innerClassNamesIterator = innerClassNames.iterator();
+        Iterator<Set<String>> partsIterator = parts.iterator();
+        while (launchableIterator.hasNext() && innerClassNamesIterator.hasNext() && partsIterator.hasNext()) {
+            Launchable launchable = launchableIterator.next();
+            String innerClassName = innerClassNamesIterator.next();
+            Set<String> partNames = partsIterator.next();
+            String decoration = keepOnlyNamedParts(innerClassName, partNames);
+
+            String decorated = launchable.getName().toString() + "(" + decoration + ")";
+            launchable.setName(new CaseInsensitive(decorated));
+        }
+
+        return true;
+    }
+
+    @VisibleForTesting String keepOnlyNamedParts(String innerClassName, Set<String> partNames) {
+    }
+
+    @VisibleForTesting void uniquifyParts(List<Set<String>> parts) {
+        gris
+    }
+
+    @VisibleForTesting Set<String> splitInParts(String innerClassName) {
+    }
 }
