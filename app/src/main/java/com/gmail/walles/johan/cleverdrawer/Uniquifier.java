@@ -28,6 +28,7 @@ package com.gmail.walles.johan.cleverdrawer;
 import android.support.annotation.VisibleForTesting;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,7 +79,7 @@ class Uniquifier {
 
             String innerClassName = matcher.group(1);
             innerClassNames.add(innerClassName);
-            parts.add(splitInParts(innerClassName));
+            parts.add(new HashSet<>(splitInParts(innerClassName)));
         }
 
         // We now have a set of parts for each inner class name
@@ -103,13 +104,14 @@ class Uniquifier {
         return true;
     }
 
-    @VisibleForTesting String keepOnlyNamedParts(String innerClassName, Set<String> partNames) {
+    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> partNames) {
+        return null;
     }
 
-    @VisibleForTesting void uniquifyParts(List<Set<String>> parts) {
-        gris
+    @VisibleForTesting static void uniquifyParts(List<Set<String>> parts) {
     }
 
-    @VisibleForTesting Set<String> splitInParts(String innerClassName) {
+    @VisibleForTesting static List<String> splitInParts(String innerClassName) {
+        return null;
     }
 }

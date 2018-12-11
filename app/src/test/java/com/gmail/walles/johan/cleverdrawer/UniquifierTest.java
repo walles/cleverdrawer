@@ -31,9 +31,13 @@ import static org.hamcrest.Matchers.not;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -161,5 +165,32 @@ public class UniquifierTest {
         // But not if we only have Free
         testUniquify(
                 "com.oddrobo.komjfree.com.oddrobo.komj.activities.LoadActivity", null);
+    }
+
+    @Test
+    public void testKeepOnlyNamedParts() {
+        String string = "IAmAnABCBook";
+        Assert.assertThat(Uniquifier.keepOnlyNamedParts(string,
+                new HashSet<>(Arrays.asList("I", "ABC", "Book"))), is("IABCBook"));
+    }
+
+    @Test
+    public void testUniquifyParts() {
+        Set<String> parts1 = new HashSet<>(Arrays.asList("some", "non", "unique", "parts"));
+        Set<String> parts2 = new HashSet<>(Arrays.asList("x", "some", "non", "unique", "parts"));
+        Set<String> parts3 = new HashSet<>(Arrays.asList("y", "z", "some", "non", "unique", "parts"));
+
+        Uniquifier.uniquifyParts(Arrays.asList(parts1, parts2, parts3));
+
+        Assert.assertThat(parts1, is(new HashSet<>()));
+        Assert.assertThat(parts2, is(new HashSet<>(Collections.singletonList("x"))));
+        Assert.assertThat(parts3, is(new HashSet<>(Arrays.asList("y", "z"))));
+    }
+
+    @Test
+    public void testSplitInParts() {
+        String string = "IAmAnABCBook";
+        Assert.assertThat(Uniquifier.splitInParts(string),
+                is(Arrays.asList("I", "Am", "An", "ABC", "Book")));
     }
 }
