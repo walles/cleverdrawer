@@ -188,9 +188,12 @@ public class UniquifierTest {
     }
 
     @Test
-    public void testSplitInParts() {
-        String string = "IAmAnABCBook";
-        Assert.assertThat(Uniquifier.splitInParts(string),
+    public void testSplitInCamelParts() {
+        Assert.assertThat(Uniquifier.splitInCamelParts("IAmAnABCBook"),
                 is(Arrays.asList("I", "Am", "An", "ABC", "Book")));
+
+        Assert.assertThat("Ends with single word",
+                Uniquifier.splitInCamelParts("WhoAmI"),
+                is(Arrays.asList("Who", "Am", "I")));
     }
 }

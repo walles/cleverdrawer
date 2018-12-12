@@ -79,7 +79,7 @@ class Uniquifier {
 
             String innerClassName = matcher.group(1);
             innerClassNames.add(innerClassName);
-            parts.add(new HashSet<>(splitInParts(innerClassName)));
+            parts.add(new HashSet<>(splitInCamelParts(innerClassName)));
         }
 
         // We now have a set of parts for each inner class name
@@ -111,7 +111,38 @@ class Uniquifier {
     @VisibleForTesting static void uniquifyParts(List<Set<String>> parts) {
     }
 
-    @VisibleForTesting static List<String> splitInParts(String innerClassName) {
-        return null;
+    @VisibleForTesting static List<String> splitInCamelParts(String string) {
+        // First word starts here
+        List<Integer> wordStarts = new LinkedList<>();
+
+        // Initial letter is a word start
+        boolean wasWordStart = true;
+
+        for (int i = 1; i < string.length(); i++) {
+            boolean isWordStart = Character.isUpperCase(string.charAt(i));
+            if (wasWordStart && !isWordStart) {
+                wordStarts.add(i - 1);
+            } else if ((!wasWordStart) && isWordStart) {
+                wordStarts.add(i);
+            }
+
+            wasWordStart = isWordStart;
+        }
+
+        List<String> parts = new LinkedList<>();
+        int lastWordStart = 0;
+        for (int wordStart: wordStarts) {
+            if (wordStart == lastWordStart) {
+                // Filter out empty parts
+                continue;
+            }
+
+            parts.add(string.substring(lastWordStart, wordStart));
+
+            lastWordStart = wordStart;
+        }
+        parts.add(string.substring(lastWordStart));
+
+        return parts;
     }
 }
