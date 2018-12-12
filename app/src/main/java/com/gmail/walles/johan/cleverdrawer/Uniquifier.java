@@ -116,6 +116,33 @@ class Uniquifier {
     }
 
     @VisibleForTesting static void uniquifyParts(List<Set<String>> parts) {
+        // Count how many sets each string is part of
+        Map<String, Integer> partCounts = new HashMap<>();
+        for (Set<String> set: parts) {
+            for (String string: set) {
+                Integer count = partCounts.get(string);
+                if (count == null) {
+                    count = 0;
+                }
+
+                partCounts.put(string, count + 1);
+            }
+        }
+
+        // List which we have more than one of
+        Set<String> duplicateParts = new HashSet<>();
+        for (Map.Entry<String, Integer> entry: partCounts.entrySet()) {
+            String string = entry.getKey();
+            int count = entry.getValue();
+
+            if (count > 1) {
+                duplicateParts.add(string);
+            }
+        }
+
+        for (Set<String> part: parts) {
+            part.removeAll(duplicateParts);
+        }
     }
 
     @VisibleForTesting static List<String> splitInCamelParts(String string) {

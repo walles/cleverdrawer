@@ -95,7 +95,7 @@ public class UniquifierTest {
         testUniquify(
                 "com.android.settings.com.android.settings.Settings$AppNotificationSettingsActivity", "App",
                 "com.android.settings.com.android.settings.Settings$ChannelNotificationSettingsActivity", "Channel",
-                "com.android.settings.com.android.settings.Settings$ConfigureNotificationSettingsActivity", "Config");
+                "com.android.settings.com.android.settings.Settings$ConfigureNotificationSettingsActivity", "Configure");
 
         testUniquify(
                 "com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Zen Event",
