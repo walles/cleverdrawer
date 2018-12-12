@@ -104,8 +104,15 @@ class Uniquifier {
         return true;
     }
 
-    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> partNames) {
-        return null;
+    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> keepThese) {
+        StringBuilder builder = new StringBuilder();
+        for (String part: splitInCamelParts(string)) {
+            if (keepThese.contains(part)) {
+                builder.append(part);
+            }
+        }
+
+        return builder.toString();
     }
 
     @VisibleForTesting static void uniquifyParts(List<Set<String>> parts) {
