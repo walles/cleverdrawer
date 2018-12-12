@@ -82,7 +82,7 @@ public class UniquifierTest {
             Matcher matcher = DECORATED.matcher(name);
             if (matcher.matches()) {
                 uniquifier = matcher.group(1);
-                Assert.assertThat(uniquifier, not(is("")));
+                Assert.assertThat(launchables.toString(), uniquifier, not(is("")));
             }
             actualUniquifiers.add(uniquifier);
         }
@@ -150,7 +150,7 @@ public class UniquifierTest {
     @Test
     public void shouldNotRegress8() {
         testUniquify(
-                "com.android.settings.com.android.settings.Settings$NfcSettingsActivity", "NFC",
+                "com.android.settings.com.android.settings.Settings$NfcSettingsActivity", "Nfc",
                 "com.android.settings.com.android.settings.Settings$WriteSettingsActivity", "Write"
         );
     }
@@ -165,8 +165,8 @@ public class UniquifierTest {
     @Test
     public void shouldUniquifySvtPlay() {
         testUniquify(
-                "air.se.svt.svti.android.svtplayer.air.se.svt.svti.android.svtplayer.AppEntry", "AppEntry",
-                "se.svt.android.svtplay.se.svt.svtplay.ui.LauncherActivity", null
+                "air.se.svt.svti.android.svtplayer.air.se.svt.svti.android.svtplayer.AppEntry", "App Entry",
+                "se.svt.android.svtplay.se.svt.svtplay.ui.LauncherActivity", "Launcher Activity"
         );
     }
 
