@@ -134,7 +134,7 @@ public class UniquifierTest {
     @Test
     public void shouldNotRegress6() {
         testUniquify(
-                "com.google.android.googlequicksearchbox.com.google.android.apps.gsa.velvet.ui.settings.PublicSettingsActivity", "Settings",
+                "com.google.android.googlequicksearchbox.com.google.android.apps.gsa.velvet.ui.settings.PublicSettingsActivity", "Public Settings",
                 "com.google.android.googlequicksearchbox.com.google.android.googlequicksearchbox.SearchActivity", "Search"
         );
     }
@@ -192,7 +192,7 @@ public class UniquifierTest {
     public void testKeepOnlyNamedParts() {
         String string = "IAmAnABCBook";
         Assert.assertThat(Uniquifier.keepOnlyNamedParts(string,
-                new HashSet<>(Arrays.asList("I", "ABC", "Book"))), is("IABCBook"));
+                new HashSet<>(Arrays.asList("I", "ABC", "Book"))), is("I ABC Book"));
     }
 
     @Test

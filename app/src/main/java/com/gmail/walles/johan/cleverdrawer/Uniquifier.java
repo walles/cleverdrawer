@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 
 class Uniquifier {
     private static final Pattern INNER_CLASS_NAME = Pattern.compile(".*\\$(.*)");
+    private static final Pattern CLASS_NAME = Pattern.compile(".*\\.([^$]+)");
 
     public void uniquify(List<Launchable> launchables) {
         Map<String, List<Launchable>> nameToLaunchables = new HashMap<>();
@@ -59,7 +60,11 @@ class Uniquifier {
                 continue;
             }
 
-            if (uniquifyByInnerClassName(list)) {
+            if (uniquifyByClassName(list, INNER_CLASS_NAME)) {
+                return;
+            }
+
+            if (uniquifyByClassName(list, CLASS_NAME)) {
                 return;
             }
 
@@ -67,35 +72,35 @@ class Uniquifier {
         }
     }
 
-    private boolean uniquifyByInnerClassName(List<Launchable> launchables) {
-        List<String> innerClassNames = new LinkedList<>();
+    private boolean uniquifyByClassName(List<Launchable> launchables, Pattern classNamePattern) {
+        List<String> classNames = new LinkedList<>();
         List<Set<String>> parts = new LinkedList<>();
         for (Launchable launchable: launchables) {
-            Matcher matcher = INNER_CLASS_NAME.matcher(launchable.getId());
+            Matcher matcher = classNamePattern.matcher(launchable.getId());
             if (!matcher.matches()) {
-                // No inner class name, can't compare these, never mind
+                // No class name, can't compare these, never mind
                 return false;
             }
 
-            String innerClassName = matcher.group(1);
-            innerClassNames.add(innerClassName);
-            parts.add(new HashSet<>(splitInCamelParts(innerClassName)));
+            String className = matcher.group(1);
+            classNames.add(className);
+            parts.add(new HashSet<>(splitInCamelParts(className)));
         }
 
-        // We now have a set of parts for each inner class name
+        // We now have a set of parts for each class name
 
         uniquifyParts(parts);
 
-        // We now have a set of unique parts per inner class name
+        // We now have a set of unique parts per class name
 
         Iterator<Launchable> launchableIterator = launchables.iterator();
-        Iterator<String> innerClassNamesIterator = innerClassNames.iterator();
+        Iterator<String> classNamesIterator = classNames.iterator();
         Iterator<Set<String>> partsIterator = parts.iterator();
-        while (launchableIterator.hasNext() && innerClassNamesIterator.hasNext() && partsIterator.hasNext()) {
+        while (launchableIterator.hasNext() && classNamesIterator.hasNext() && partsIterator.hasNext()) {
             Launchable launchable = launchableIterator.next();
-            String innerClassName = innerClassNamesIterator.next();
+            String className = classNamesIterator.next();
             Set<String> partNames = partsIterator.next();
-            String decoration = keepOnlyNamedParts(innerClassName, partNames);
+            String decoration = keepOnlyNamedParts(className, partNames);
 
             String decorated = launchable.getName().toString() + "(" + decoration + ")";
             launchable.setName(new CaseInsensitive(decorated));
@@ -108,6 +113,10 @@ class Uniquifier {
         StringBuilder builder = new StringBuilder();
         for (String part: splitInCamelParts(string)) {
             if (keepThese.contains(part)) {
+                if (builder.length() > 0) {
+                    builder.append(" ");
+                }
+
                 builder.append(part);
             }
         }
