@@ -97,10 +97,7 @@ public abstract class Launchable implements Comparable<Launchable> {
         return null;
     }
 
-    /**
-     * @param substring This should be a lowercase search string.
-     */
-    public abstract boolean contains(CaseInsensitive substring);
+    public abstract boolean matches(CaseInsensitiveQuery query);
 
     public void setScore(double score) {
         if (score <= 0.0) {

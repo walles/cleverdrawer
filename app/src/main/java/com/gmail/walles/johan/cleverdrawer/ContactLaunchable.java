@@ -120,12 +120,8 @@ class ContactLaunchable extends Launchable {
     }
 
     @Override
-    public boolean contains(CaseInsensitive substring) {
-        if (substring.isEmpty()) {
-            return true;
-        }
-
-        if (getName().contains(substring)) {
+    public boolean matches(CaseInsensitiveQuery query) {
+        if (query.matches(getName())) {
             return true;
         }
 

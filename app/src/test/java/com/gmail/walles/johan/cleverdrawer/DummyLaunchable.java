@@ -40,7 +40,7 @@ class DummyLaunchable extends Launchable {
     }
 
     @Override
-    public boolean contains(CaseInsensitive substring) {
+    public boolean matches(CaseInsensitiveQuery query) {
         return false;
     }
 
