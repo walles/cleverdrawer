@@ -58,7 +58,7 @@ public class IntentLaunchableTest {
     }
 
     @Test
-    public void testAlphabeticFallback() throws Exception {
+    public void testAlphabeticFallback() {
         File dbFile = new File(tempdir.getRoot(), "testFile");
         Launchable ape = new IntentLaunchable("Ape", new CaseInsensitive("Ape"));
         Launchable zebra = new IntentLaunchable("Zebra", new CaseInsensitive("Zebra"));

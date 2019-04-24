@@ -229,32 +229,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_READ_CONTACTS: {
-                String response;
-                if (grantResults.length == 0) {
-                    // If request is cancelled, the result arrays are empty.
-                    response = "Cancel";
-                } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    response = "Allow";
-                    if (launchableAdapter != null) {
-                        launchableAdapter.reloadLaunchables();
-                    }
-                } else {
-                    response = "Deny";
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_READ_CONTACTS) {
+            String response;
+            if (grantResults.length == 0) {
+                // If request is cancelled, the result arrays are empty.
+                response = "Cancel";
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                response = "Allow";
+                if (launchableAdapter != null) {
+                    launchableAdapter.reloadLaunchables();
                 }
-
-                LoggingUtils.logCustom(new CustomEvent("Request READ_CONTACTS")
-                        .putCustomAttribute("Response", response));
-
-                return;
+            } else {
+                response = "Deny";
             }
 
-            default: {
-                Timber.w("Got unknown permissions result %d: %s", requestCode, Arrays.toString(permissions));
-            }
+            LoggingUtils.logCustom(new CustomEvent("Request READ_CONTACTS")
+                    .putCustomAttribute("Response", response));
+
+            return;
         }
+
+        Timber.w("Got unknown permissions result %d: %s", requestCode, Arrays.toString(permissions));
     }
 
     public void setLaunchableAdapter(@Nullable LaunchableAdapter launchableAdapter) {

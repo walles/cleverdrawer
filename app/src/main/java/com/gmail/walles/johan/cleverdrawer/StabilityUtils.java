@@ -48,7 +48,7 @@ import timber.log.Timber;
 public class StabilityUtils {
     // Changing this can break the unit tests without actually being wrong, fix the unit tests in
     // that case.
-    private static int GROUP_SIZE = 4;
+    private static final int GROUP_SIZE = 4;
 
     @CheckResult
     public static List<Launchable> stabilize(File lastSortOrder, List<Launchable> launchables) {
