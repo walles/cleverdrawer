@@ -25,12 +25,29 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
-public class CaseInsensitiveQuery {
-    public CaseInsensitiveQuery(CharSequence queryString) {
+import java.util.ArrayList;
+import java.util.List;
 
+public class CaseInsensitiveQuery {
+    private final List<CaseInsensitive> words = new ArrayList<>(1);
+
+    public CaseInsensitiveQuery(String queryString) {
+        // From: https://stackoverflow.com/a/7899558/473672
+        for (String word: queryString.split("\\s+")) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            words.add(new CaseInsensitive(word));
+        }
     }
 
     public boolean matches(CaseInsensitive tryMe) {
-        return false;
+        for (CaseInsensitive word: words) {
+            if (!tryMe.contains(word)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
