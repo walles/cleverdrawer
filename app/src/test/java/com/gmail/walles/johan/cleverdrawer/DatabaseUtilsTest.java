@@ -253,7 +253,7 @@ public class DatabaseUtilsTest {
                 }
 
                 @Override
-                public boolean contains(CaseInsensitive substring) {
+                public boolean matches(CaseInsensitiveQuery query) {
                     throw new UnsupportedOperationException();
                 }
 

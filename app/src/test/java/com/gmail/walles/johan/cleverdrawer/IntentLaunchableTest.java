@@ -45,16 +45,16 @@ public class IntentLaunchableTest {
     @Test
     public void testMatches() {
         Launchable launchable = new IntentLaunchable("fot", new CaseInsensitive("Gnu"));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("g")), is(true));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("n")), is(true));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("u")), is(true));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("nu")), is(true));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("gnu")), is(true));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("g")), is(true));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("n")), is(true));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("u")), is(true));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("nu")), is(true));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("gnu")), is(true));
 
-        Assert.assertThat(launchable.contains(new CaseInsensitive("f")), is(false));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("o")), is(false));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("t")), is(false));
-        Assert.assertThat(launchable.contains(new CaseInsensitive("fot")), is(false));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("f")), is(false));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("o")), is(false));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("t")), is(false));
+        Assert.assertThat(launchable.matches(new CaseInsensitiveQuery("fot")), is(false));
     }
 
     @Test

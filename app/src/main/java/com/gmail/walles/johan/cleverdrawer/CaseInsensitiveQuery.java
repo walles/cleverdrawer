@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Johan Walles <johan.walles@gmail.com>
+ * Copyright (c) 2019 Johan Walles <johan.walles@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,32 +25,29 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import java.util.ArrayList;
+import java.util.List;
 
-class DummyLaunchable extends Launchable {
-    protected DummyLaunchable(String id) {
-        super(id);
-        setName(new CaseInsensitive(getId()));
+public class CaseInsensitiveQuery {
+    private final List<CaseInsensitive> words = new ArrayList<>(1);
+
+    public CaseInsensitiveQuery(String queryString) {
+        // From: https://stackoverflow.com/a/7899558/473672
+        for (String word: queryString.split("\\s+")) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            words.add(new CaseInsensitive(word));
+        }
     }
 
-    @Override
-    public Drawable getIcon() {
-        return null;
-    }
+    public boolean matches(CaseInsensitive tryMe) {
+        for (CaseInsensitive word: words) {
+            if (!tryMe.contains(word)) {
+                return false;
+            }
+        }
 
-    @Override
-    public boolean matches(CaseInsensitiveQuery query) {
-        return false;
-    }
-
-    @Override
-    public double getScoreFactor() {
-        return 0;
-    }
-
-    @Override
-    public Intent getLaunchIntent() {
-        return null;
+        return true;
     }
 }

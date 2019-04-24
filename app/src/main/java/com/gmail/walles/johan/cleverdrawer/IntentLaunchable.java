@@ -189,12 +189,9 @@ public class IntentLaunchable extends Launchable {
         return intent;
     }
 
-    /**
-     * @param substring This should be a lowercase search string.
-     */
     @Override
-    public boolean contains(CaseInsensitive substring) {
-        return getName().contains(substring);
+    public boolean matches(CaseInsensitiveQuery query) {
+        return query.matches(getName());
     }
 
     @Override

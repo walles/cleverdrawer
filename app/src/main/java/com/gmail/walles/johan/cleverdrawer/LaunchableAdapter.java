@@ -385,9 +385,9 @@ class LaunchableAdapter extends BaseAdapter {
         }
 
         List<Launchable> newFilteredList = new LinkedList<>();
-        CaseInsensitive caseInsensitiveSearch = CaseInsensitive.create(search);
+        CaseInsensitiveQuery query = new CaseInsensitiveQuery(search.toString());
         for (Launchable launchable: allLaunchables) {
-            if (launchable.contains(caseInsensitiveSearch)) {
+            if (launchable.matches(query)) {
                 newFilteredList.add(launchable);
             }
         }
