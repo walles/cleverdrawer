@@ -142,7 +142,7 @@ public class UniquifierTest {
     @Test
     public void shouldNotRegress7() {
         testUniquify(
-                "com.android.settings.com.android.settings.Settings$NotificationSettingsActivity", "Notifications",
+                "com.android.settings.com.android.settings.Settings$NotificationSettingsActivity", "Notification",
                 "com.android.settings.com.android.settings.Settings$SoundSettingsActivity", "Sound"
         );
     }
