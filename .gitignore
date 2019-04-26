@@ -12,3 +12,4 @@
 *.blend[1-9]
 /.idea/runConfigurations/CleverDrawer.xml
 /.idea/runConfigurations/All_Tests.xml
+/.idea/markdown*
