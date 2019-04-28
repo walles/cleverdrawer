@@ -42,6 +42,10 @@ class Uniquifier {
     private static final Pattern INNER_CLASS_NAME = Pattern.compile(".*\\$(.*)");
     private static final Pattern CLASS_NAME = Pattern.compile(".*\\.([^$]+)");
 
+    interface Splitter {
+        List<String> split(String string);
+    }
+
     public void uniquify(List<Launchable> launchables) {
         Map<String, List<Launchable>> nameToLaunchables = new HashMap<>();
 
@@ -61,11 +65,11 @@ class Uniquifier {
                 continue;
             }
 
-            if (uniquifyByClassName(list, INNER_CLASS_NAME)) {
+            if (uniquifyByClassName(list, INNER_CLASS_NAME, Uniquifier::splitInCamelParts)) {
                 return;
             }
 
-            if (uniquifyByClassName(list, CLASS_NAME)) {
+            if (uniquifyByClassName(list, CLASS_NAME, Uniquifier::splitInCamelParts)) {
                 return;
             }
 
@@ -73,7 +77,7 @@ class Uniquifier {
         }
     }
 
-    private boolean uniquifyByClassName(List<Launchable> launchables, Pattern classNamePattern) {
+    private boolean uniquifyByClassName(List<Launchable> launchables, Pattern classNamePattern, Splitter splitter) {
         List<String> classNames = new LinkedList<>();
         List<Set<String>> parts = new LinkedList<>();
         for (Launchable launchable: launchables) {
@@ -85,7 +89,7 @@ class Uniquifier {
 
             String className = matcher.group(1);
             classNames.add(className);
-            parts.add(new HashSet<>(splitInCamelParts(className)));
+            parts.add(new HashSet<>(splitter.split(className)));
         }
 
         // We now have a set of parts for each class name
@@ -98,7 +102,7 @@ class Uniquifier {
         while (classNamesIterator.hasNext() && partsIterator.hasNext()) {
             String className = classNamesIterator.next();
             Set<String> partNames = partsIterator.next();
-            String decoration = keepOnlyNamedParts(className, partNames);
+            String decoration = keepOnlyNamedParts(className, partNames, splitter);
             decorators.add(decoration);
         }
 
@@ -139,9 +143,9 @@ class Uniquifier {
         return false;
     }
 
-    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> keepThese) {
+    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> keepThese, Splitter splitter) {
         StringBuilder builder = new StringBuilder();
-        for (String part: splitInCamelParts(string)) {
+        for (String part: splitter.split(string)) {
             if (keepThese.contains(part)) {
                 if (builder.length() > 0) {
                     builder.append(" ");

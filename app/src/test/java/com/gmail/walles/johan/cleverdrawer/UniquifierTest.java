@@ -191,8 +191,12 @@ public class UniquifierTest {
     @Test
     public void testKeepOnlyNamedParts() {
         String string = "IAmAnABCBook";
-        Assert.assertThat(Uniquifier.keepOnlyNamedParts(string,
-                new HashSet<>(Arrays.asList("I", "ABC", "Book"))), is("I ABC Book"));
+        Assert.assertThat(
+                Uniquifier.keepOnlyNamedParts(
+                        string,
+                        new HashSet<>(Arrays.asList("I", "ABC", "Book")),
+                        Uniquifier::splitInCamelParts),
+                is("I ABC Book"));
     }
 
     @Test
