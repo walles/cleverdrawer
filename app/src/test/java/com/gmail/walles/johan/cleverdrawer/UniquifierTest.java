@@ -179,9 +179,12 @@ public class UniquifierTest {
 
     @Test
     public void shouldUniquifyKingOfMathJunior() {
+        // "Free" would be better than "Komjfree", but I can't see how to figure that out
+        // automatically without some complex heuristics which would just behave weirdly in other
+        // cases.
         testUniquify(
                 "com.oddrobo.komj.com.oddrobo.komj.activities.LoadActivity", null,
-                "com.oddrobo.komjfree.com.oddrobo.komj.activities.LoadActivity", "Free");
+                "com.oddrobo.komjfree.com.oddrobo.komj.activities.LoadActivity", "Komjfree");
 
         // But not if we only have Free
         testUniquify(
