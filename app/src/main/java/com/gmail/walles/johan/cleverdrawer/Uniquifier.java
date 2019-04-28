@@ -27,6 +27,7 @@ package com.gmail.walles.johan.cleverdrawer;
 
 import android.support.annotation.VisibleForTesting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -88,25 +89,54 @@ class Uniquifier {
         }
 
         // We now have a set of parts for each class name
-
         uniquifyParts(parts);
 
-        // We now have a set of unique parts per class name
-
-        Iterator<Launchable> launchableIterator = launchables.iterator();
+        // We now have a set of unique parts per class name, turn them into decorators
         Iterator<String> classNamesIterator = classNames.iterator();
         Iterator<Set<String>> partsIterator = parts.iterator();
-        while (launchableIterator.hasNext() && classNamesIterator.hasNext() && partsIterator.hasNext()) {
-            Launchable launchable = launchableIterator.next();
+        List<String> decorators = new ArrayList<>(launchables.size());
+        while (classNamesIterator.hasNext() && partsIterator.hasNext()) {
             String className = classNamesIterator.next();
             Set<String> partNames = partsIterator.next();
             String decoration = keepOnlyNamedParts(className, partNames);
+            decorators.add(decoration);
+        }
+
+        if (hasDuplicates(decorators)) {
+            return false;
+        }
+
+        Iterator<Launchable> launchableIterator = launchables.iterator();
+        Iterator<String> decorationsIterator = decorators.iterator();
+        while (launchableIterator.hasNext() && decorationsIterator.hasNext()) {
+            Launchable launchable = launchableIterator.next();
+            String decoration = decorationsIterator.next();
+
+            if (decoration.isEmpty()) {
+                continue;
+            }
 
             String decorated = launchable.getName().toString() + "(" + decoration + ")";
             launchable.setName(new CaseInsensitive(decorated));
         }
 
         return true;
+    }
+
+    private boolean hasDuplicates(List<String> strings) {
+        if (strings.size() <= 1) {
+            return false;
+        }
+
+        Set<String> alreadyFound = new HashSet<>();
+        for (String string: strings) {
+            if (alreadyFound.contains(string)) {
+                return true;
+            }
+            alreadyFound.add(string);
+        }
+
+        return false;
     }
 
     @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> keepThese) {
