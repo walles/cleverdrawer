@@ -28,6 +28,7 @@ package com.gmail.walles.johan.cleverdrawer;
 import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +42,8 @@ import java.util.regex.Pattern;
 class Uniquifier {
     private static final Pattern INNER_CLASS_NAME = Pattern.compile(".*\\$(.*)");
     private static final Pattern CLASS_NAME = Pattern.compile(".*\\.([^$]+)");
+    private static final Pattern PACKAGE_NAME = Pattern.compile("^(.*)[.][^.]*$");
+    private static final Pattern DOT = Pattern.compile("[.]");
 
     interface Splitter {
         List<String> split(String string);
@@ -70,6 +73,10 @@ class Uniquifier {
             }
 
             if (uniquifyByClassName(list, CLASS_NAME, Uniquifier::splitInCamelParts)) {
+                return;
+            }
+
+            if (uniquifyByClassName(list, PACKAGE_NAME, Uniquifier::splitByDots)) {
                 return;
             }
 
@@ -221,5 +228,9 @@ class Uniquifier {
         parts.add(string.substring(lastWordStart));
 
         return parts;
+    }
+
+    private static List<String> splitByDots(String string) {
+        return Arrays.asList(DOT.split(string));
     }
 }
