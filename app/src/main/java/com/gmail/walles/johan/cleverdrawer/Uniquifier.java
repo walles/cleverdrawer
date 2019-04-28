@@ -127,7 +127,7 @@ class Uniquifier {
                 continue;
             }
 
-            String decorated = launchable.getName().toString() + "(" + decoration + ")";
+            String decorated = launchable.getName().toString() + "(" + titleCase(decoration) + ")";
             launchable.setName(new CaseInsensitive(decorated));
         }
 
@@ -232,5 +232,24 @@ class Uniquifier {
 
     private static List<String> splitByDots(String string) {
         return Arrays.asList(DOT.split(string));
+    }
+
+    // From: https://stackoverflow.com/a/1086134/473672
+    private static String titleCase(String input) {
+        StringBuilder titleCase = new StringBuilder();
+        boolean nextTitleCase = true;
+
+        for (char c : input.toCharArray()) {
+            if (Character.isSpaceChar(c)) {
+                nextTitleCase = true;
+            } else if (nextTitleCase) {
+                c = Character.toTitleCase(c);
+                nextTitleCase = false;
+            }
+
+            titleCase.append(c);
+        }
+
+        return titleCase.toString();
     }
 }
