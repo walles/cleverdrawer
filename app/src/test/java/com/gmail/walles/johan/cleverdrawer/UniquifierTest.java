@@ -101,6 +101,7 @@ public class UniquifierTest {
     @Test
     public void shouldNotRegress2() {
         testUniquify(
+                "com.android.settings.com.android.settings.Settings", null,
                 "com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Zen Event",
                 "com.android.settings.com.android.settings.Settings$ZenModeExternalRuleSettingsActivity", "Zen External",
                 "com.android.settings.com.android.settings.Settings$ZenModeScheduleRuleSettingsActivity", "Zen Schedule"

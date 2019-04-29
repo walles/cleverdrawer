@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
 class Uniquifier {
     private static final Pattern INNER_CLASS_NAME = Pattern.compile(".*\\$(.*)");
     private static final Pattern CLASS_NAME = Pattern.compile(".*\\.([^$]+)");
+    private static final Pattern CLASS_NAME_WITH_INNER = Pattern.compile("^.*[.]([^.]*[$][^.]*)$");
     private static final Pattern PACKAGE_NAME = Pattern.compile("^(.*)[.][^.]*$");
     private static final Pattern DOT = Pattern.compile("[.]");
 
@@ -68,15 +69,19 @@ class Uniquifier {
                 continue;
             }
 
-            if (uniquifyByClassName(list, INNER_CLASS_NAME, Uniquifier::splitInCamelParts)) {
+            if (uniquify(list, INNER_CLASS_NAME, Uniquifier::splitInCamelParts)) {
                 return;
             }
 
-            if (uniquifyByClassName(list, CLASS_NAME, Uniquifier::splitInCamelParts)) {
+            if (uniquify(list, CLASS_NAME, Uniquifier::splitInCamelParts)) {
                 return;
             }
 
-            if (uniquifyByClassName(list, PACKAGE_NAME, Uniquifier::splitByDots)) {
+            if (uniquify(list, CLASS_NAME_WITH_INNER, Uniquifier::splitClassNameWithInner)) {
+                return;
+            }
+
+            if (uniquify(list, PACKAGE_NAME, Uniquifier::splitByDots)) {
                 return;
             }
 
@@ -84,11 +89,11 @@ class Uniquifier {
         }
     }
 
-    private boolean uniquifyByClassName(List<Launchable> launchables, Pattern classNamePattern, Splitter splitter) {
+    private boolean uniquify(List<Launchable> launchables, Pattern extractPart, Splitter splitter) {
         List<String> classNames = new LinkedList<>();
         List<Set<String>> parts = new LinkedList<>();
         for (Launchable launchable: launchables) {
-            Matcher matcher = classNamePattern.matcher(launchable.getId());
+            Matcher matcher = extractPart.matcher(launchable.getId());
             if (!matcher.matches()) {
                 // No class name, can't compare these, never mind
                 return false;
@@ -227,6 +232,13 @@ class Uniquifier {
         }
         parts.add(string.substring(lastWordStart));
 
+        return parts;
+    }
+
+    private static List<String> splitClassNameWithInner(String string) {
+        List<String> parts = new ArrayList<>();
+        parts.addAll(splitInCamelParts(string.substring(0, string.indexOf('$'))));
+        parts.addAll(splitInCamelParts(string.substring(string.indexOf('$') + 1)));
         return parts;
     }
 
