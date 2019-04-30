@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 class Uniquifier {
     private static final Pattern INNER_CLASS_NAME = Pattern.compile(".*\\$(.*)");
     private static final Pattern CLASS_NAME = Pattern.compile(".*\\.([^$]+)");
-    private static final Pattern CLASS_NAME_WITH_INNER = Pattern.compile("^.*[.]([^.]*[$][^.]*)$");
+    private static final Pattern CLASS_NAME_WITH_INNER = Pattern.compile("^.*[.]([^.]*)$");
     private static final Pattern PACKAGE_NAME = Pattern.compile("^(.*)[.][^.]*$");
     private static final Pattern DOT = Pattern.compile("[.]");
 
@@ -236,9 +236,15 @@ class Uniquifier {
     }
 
     private static List<String> splitClassNameWithInner(String string) {
+        int dollarIndex = string.indexOf('$');
+        if (dollarIndex == -1) {
+            // No $ in the string
+            return splitInCamelParts(string);
+        }
+
         List<String> parts = new ArrayList<>();
-        parts.addAll(splitInCamelParts(string.substring(0, string.indexOf('$'))));
-        parts.addAll(splitInCamelParts(string.substring(string.indexOf('$') + 1)));
+        parts.addAll(splitInCamelParts(string.substring(0, dollarIndex)));
+        parts.addAll(splitInCamelParts(string.substring(dollarIndex + 1)));
         return parts;
     }
 
