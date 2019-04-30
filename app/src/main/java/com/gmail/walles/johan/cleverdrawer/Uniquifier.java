@@ -70,19 +70,19 @@ class Uniquifier {
             }
 
             if (uniquify(list, INNER_CLASS_NAME, Uniquifier::splitInCamelParts)) {
-                return;
+                continue;
             }
 
             if (uniquify(list, CLASS_NAME, Uniquifier::splitInCamelParts)) {
-                return;
+                continue;
             }
 
             if (uniquify(list, CLASS_NAME_WITH_INNER, Uniquifier::splitClassNameWithInner)) {
-                return;
+                continue;
             }
 
             if (uniquify(list, PACKAGE_NAME, Uniquifier::splitByDots)) {
-                return;
+                continue;
             }
 
             // This failure will be logged by the duplicate-names logger, just leave it
@@ -132,7 +132,7 @@ class Uniquifier {
                 continue;
             }
 
-            String decorated = launchable.getName().toString() + "(" + titleCase(decoration) + ")";
+            String decorated = launchable.getName().toString() + " (" + titleCase(decoration) + ")";
             launchable.setName(new CaseInsensitive(decorated));
         }
 
