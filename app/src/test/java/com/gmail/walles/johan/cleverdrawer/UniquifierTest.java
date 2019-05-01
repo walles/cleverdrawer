@@ -102,9 +102,9 @@ public class UniquifierTest {
     public void shouldNotRegress2() {
         testUniquify(
                 "com.android.settings.com.android.settings.Settings", null,
-                "com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Zen Event",
-                "com.android.settings.com.android.settings.Settings$ZenModeExternalRuleSettingsActivity", "Zen External",
-                "com.android.settings.com.android.settings.Settings$ZenModeScheduleRuleSettingsActivity", "Zen Schedule"
+                "com.android.settings.com.android.settings.Settings$ZenModeEventRuleSettingsActivity", "Event",
+                "com.android.settings.com.android.settings.Settings$ZenModeExternalRuleSettingsActivity", "External",
+                "com.android.settings.com.android.settings.Settings$ZenModeScheduleRuleSettingsActivity", "Schedule"
         );
     }
 
@@ -127,8 +127,8 @@ public class UniquifierTest {
     @Test
     public void shouldNotRegress5() {
         testUniquify(
-                "com.android.settings.com.android.settings.Settings$AdvancedAppsActivity", "Advanced Apps",
-                "com.android.settings.com.android.settings.WebViewImplementation", "Web View"
+                "com.android.settings.com.android.settings.Settings$AdvancedAppsActivity", "Advanced Apps Activity",
+                "com.android.settings.com.android.settings.WebViewImplementation", "Web View Implementation"
         );
     }
 
@@ -198,8 +198,7 @@ public class UniquifierTest {
         Assert.assertThat(
                 Uniquifier.keepOnlyNamedParts(
                         string,
-                        new HashSet<>(Arrays.asList("I", "ABC", "Book")),
-                        Uniquifier::splitInCamelParts),
+                        new HashSet<>(Arrays.asList("I", "ABC", "Book"))),
                 is("I ABC Book"));
     }
 
@@ -224,5 +223,17 @@ public class UniquifierTest {
         Assert.assertThat("Ends with single word",
                 Uniquifier.splitInCamelParts("WhoAmI"),
                 is(Arrays.asList("Who", "Am", "I")));
+    }
+
+    @Test
+    public void testTokeize() {
+        Assert.assertThat(Uniquifier.tokenize("adam.bertil.Caesar$David"),
+                is(Arrays.asList("Adam", "Bertil", "Caesar", "David")));
+        Assert.assertThat(Uniquifier.tokenize("Caesar$David"),
+                is(Arrays.asList("Caesar", "David")));
+        Assert.assertThat(Uniquifier.tokenize("adam.bertil.Caesar"),
+                is(Arrays.asList("Adam", "Bertil", "Caesar")));
+        Assert.assertThat(Uniquifier.tokenize("Caesar"),
+                is(Collections.singletonList("Caesar")));
     }
 }

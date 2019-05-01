@@ -40,15 +40,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Uniquifier {
-    private static final Pattern INNER_CLASS_NAME = Pattern.compile(".*\\$(.*)");
-    private static final Pattern CLASS_NAME = Pattern.compile(".*\\.([^$]+)");
-    private static final Pattern CLASS_NAME_WITH_INNER = Pattern.compile("^.*[.]([^.]*)$");
-    private static final Pattern PACKAGE_NAME = Pattern.compile("^(.*)[.][^.]*$");
+    private static final Pattern INNER_ONLY = Pattern.compile(".*\\$(.*)");
+    private static final Pattern CLASS_NAME = Pattern.compile("^.*?([^.]*)$");
+    private static final Pattern ALL = Pattern.compile("(.*)");
     private static final Pattern DOT = Pattern.compile("[.]");
-
-    interface Splitter {
-        List<String> split(String string);
-    }
 
     public void uniquify(List<Launchable> launchables) {
         Map<String, List<Launchable>> nameToLaunchables = new HashMap<>();
@@ -64,44 +59,35 @@ class Uniquifier {
             list.add(launchable);
         }
 
-        for (List<Launchable> list: nameToLaunchables.values()) {
-            if (list.size() == 1) {
+        for (List<Launchable> sameNamedLaunchables: nameToLaunchables.values()) {
+            if (sameNamedLaunchables.size() == 1) {
                 continue;
             }
 
-            if (uniquify(list, INNER_CLASS_NAME, Uniquifier::splitInCamelParts)) {
+            if (uniquifySameNamed(sameNamedLaunchables, INNER_ONLY)) {
                 continue;
             }
 
-            if (uniquify(list, CLASS_NAME, Uniquifier::splitInCamelParts)) {
+            if (uniquifySameNamed(sameNamedLaunchables, CLASS_NAME)) {
                 continue;
             }
 
-            if (uniquify(list, CLASS_NAME_WITH_INNER, Uniquifier::splitClassNameWithInner)) {
-                continue;
-            }
-
-            if (uniquify(list, PACKAGE_NAME, Uniquifier::splitByDots)) {
-                continue;
-            }
-
-            // This failure will be logged by the duplicate-names logger, just leave it
+            uniquifySameNamed(sameNamedLaunchables, ALL);
         }
     }
 
-    private boolean uniquify(List<Launchable> launchables, Pattern extractPart, Splitter splitter) {
+    private boolean uniquifySameNamed(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
         List<String> classNames = new LinkedList<>();
         List<Set<String>> parts = new LinkedList<>();
-        for (Launchable launchable: launchables) {
-            Matcher matcher = extractPart.matcher(launchable.getId());
+        for (Launchable launchable: sameNamedLaunchables) {
+            Matcher matcher = namePartExtractor.matcher(launchable.getId());
             if (!matcher.matches()) {
-                // No class name, can't compare these, never mind
                 return false;
             }
-
             String className = matcher.group(1);
+
             classNames.add(className);
-            parts.add(new HashSet<>(splitter.split(className)));
+            parts.add(new HashSet<>(tokenize(className)));
         }
 
         // We now have a set of parts for each class name
@@ -110,19 +96,20 @@ class Uniquifier {
         // We now have a set of unique parts per class name, turn them into decorators
         Iterator<String> classNamesIterator = classNames.iterator();
         Iterator<Set<String>> partsIterator = parts.iterator();
-        List<String> decorators = new ArrayList<>(launchables.size());
+        List<String> decorators = new ArrayList<>(sameNamedLaunchables.size());
         while (classNamesIterator.hasNext() && partsIterator.hasNext()) {
             String className = classNamesIterator.next();
             Set<String> partNames = partsIterator.next();
-            String decoration = keepOnlyNamedParts(className, partNames, splitter);
+            String decoration = keepOnlyNamedParts(className, partNames);
             decorators.add(decoration);
         }
 
         if (hasDuplicates(decorators)) {
+            // Deduplication failed
             return false;
         }
 
-        Iterator<Launchable> launchableIterator = launchables.iterator();
+        Iterator<Launchable> launchableIterator = sameNamedLaunchables.iterator();
         Iterator<String> decorationsIterator = decorators.iterator();
         while (launchableIterator.hasNext() && decorationsIterator.hasNext()) {
             Launchable launchable = launchableIterator.next();
@@ -155,9 +142,9 @@ class Uniquifier {
         return false;
     }
 
-    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> keepThese, Splitter splitter) {
+    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> keepThese) {
         StringBuilder builder = new StringBuilder();
-        for (String part: splitter.split(string)) {
+        for (String part: tokenize(string)) {
             if (keepThese.contains(part)) {
                 if (builder.length() > 0) {
                     builder.append(" ");
@@ -235,17 +222,28 @@ class Uniquifier {
         return parts;
     }
 
-    private static List<String> splitClassNameWithInner(String string) {
+    /**
+     * Given a fully qualified class name "adam.bertil.caesar.David$Erik", tokenize it into "Adam",
+     * "Bertil", "Caesar", "David", "Erik".
+     */
+    @VisibleForTesting
+    static List<String> tokenize(String string) {
+        int lastDotIndex = string.lastIndexOf('.');
+        List<String> tokens = new ArrayList<>();
+        if (lastDotIndex >= 0) {
+            tokens.addAll(splitByDots(string.substring(0, lastDotIndex)));
+        }
+
         int dollarIndex = string.indexOf('$');
         if (dollarIndex == -1) {
             // No $ in the string
-            return splitInCamelParts(string);
+            tokens.addAll(splitInCamelParts(string.substring(lastDotIndex + 1)));
+        } else {
+            tokens.addAll(splitInCamelParts(string.substring(lastDotIndex + 1, dollarIndex)));
+            tokens.addAll(splitInCamelParts(string.substring(dollarIndex + 1)));
         }
 
-        List<String> parts = new ArrayList<>();
-        parts.addAll(splitInCamelParts(string.substring(0, dollarIndex)));
-        parts.addAll(splitInCamelParts(string.substring(dollarIndex + 1)));
-        return parts;
+        return tokens;
     }
 
     private static List<String> splitByDots(String string) {
@@ -263,6 +261,8 @@ class Uniquifier {
             } else if (nextTitleCase) {
                 c = Character.toTitleCase(c);
                 nextTitleCase = false;
+            } else {
+                c = Character.toLowerCase(c);
             }
 
             titleCase.append(c);
