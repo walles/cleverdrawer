@@ -193,6 +193,30 @@ public class UniquifierTest {
     }
 
     @Test
+    public void testAvoidNameTokens() {
+        Launchable a = new DummyLaunchable("SettingsHejMonkey");
+        a.setName(CaseInsensitive.create("Monkey Settings"));
+        Launchable b = new DummyLaunchable("Ape");
+        b.setName(CaseInsensitive.create("Monkey Settings"));
+
+        new Uniquifier().uniquify(Arrays.asList(a, b));
+
+        Assert.assertThat(a.getName(), is("Monkey Settings (Hej)"));
+    }
+
+    @Test
+    public void testDontRepeatUniquifiers() {
+        Launchable a = new DummyLaunchable("monkey.monkey.MonkeyMonkey$MonkeyMonkey");
+        a.setName(CaseInsensitive.create("Johan"));
+        Launchable b = new DummyLaunchable("Ape");
+        b.setName(CaseInsensitive.create("Johan"));
+
+        new Uniquifier().uniquify(Arrays.asList(a, b));
+
+        Assert.assertThat(a.getName(), is("Johan (Monkey)"));
+    }
+
+    @Test
     public void testKeepOnlyNamedParts() {
         String string = "IAmAnABCBook";
         Assert.assertThat(
