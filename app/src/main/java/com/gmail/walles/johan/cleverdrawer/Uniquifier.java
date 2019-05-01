@@ -78,24 +78,28 @@ class Uniquifier {
 
     private boolean uniquifySameNamed(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
         List<String> classNames = new LinkedList<>();
-        List<Set<String>> parts = new LinkedList<>();
+        List<Set<String>> commonNameParts = new LinkedList<>();
         for (Launchable launchable: sameNamedLaunchables) {
             Matcher matcher = namePartExtractor.matcher(launchable.getId());
             if (!matcher.matches()) {
                 return false;
             }
+            String completeClassName = launchable.getId();
             String className = matcher.group(1);
 
             classNames.add(className);
-            parts.add(new HashSet<>(tokenize(className)));
+
+            // Use the fully qualified class name here, this is by design. Change it and see which
+            // unit test fails!
+            commonNameParts.add(new HashSet<>(tokenize(completeClassName)));
         }
 
         // We now have a set of parts for each class name
-        uniquifyParts(parts);
+        uniquifyParts(commonNameParts);
 
         // We now have a set of unique parts per class name, turn them into decorators
         Iterator<String> classNamesIterator = classNames.iterator();
-        Iterator<Set<String>> partsIterator = parts.iterator();
+        Iterator<Set<String>> partsIterator = commonNameParts.iterator();
         List<String> decorators = new ArrayList<>(sameNamedLaunchables.size());
         while (classNamesIterator.hasNext() && partsIterator.hasNext()) {
             String className = classNamesIterator.next();
