@@ -231,7 +231,7 @@ class Uniquifier {
         int lastDotIndex = string.lastIndexOf('.');
         List<String> tokens = new ArrayList<>();
         if (lastDotIndex >= 0) {
-            tokens.addAll(splitByDots(string.substring(0, lastDotIndex)));
+            tokens.addAll(titleCaseAll(splitByDots(string.substring(0, lastDotIndex))));
         }
 
         int dollarIndex = string.indexOf('$');
@@ -248,6 +248,15 @@ class Uniquifier {
 
     private static List<String> splitByDots(String string) {
         return Arrays.asList(DOT.split(string));
+    }
+
+    private static List<String> titleCaseAll(List<String> toTitleCase) {
+        List<String> returnMe = new ArrayList<>(toTitleCase.size());
+        for (String input: toTitleCase) {
+            returnMe.add(titleCase(input));
+        }
+
+        return returnMe;
     }
 
     // From: https://stackoverflow.com/a/1086134/473672
