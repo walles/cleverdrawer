@@ -201,7 +201,7 @@ public class UniquifierTest {
 
         new Uniquifier().uniquify(Arrays.asList(a, b));
 
-        Assert.assertThat(a.getName(), is("Monkey Settings (Hej)"));
+        Assert.assertThat(a.getName().toString(), is("Monkey Settings (Hej)"));
     }
 
     @Test

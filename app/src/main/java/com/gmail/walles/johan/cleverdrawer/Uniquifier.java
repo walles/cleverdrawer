@@ -29,6 +29,7 @@ import android.support.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,6 +45,7 @@ class Uniquifier {
     private static final Pattern CLASS_NAME = Pattern.compile("^.*?([^.]*)$");
     private static final Pattern ALL = Pattern.compile("(.*)");
     private static final Pattern DOT = Pattern.compile("[.]");
+    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
     public void uniquify(List<Launchable> launchables) {
         Map<String, List<Launchable>> nameToLaunchables = new HashMap<>();
@@ -77,6 +79,9 @@ class Uniquifier {
     }
 
     private boolean uniquifySameNamed(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
+        final Collection<String> nameParts =
+                titleCaseAll(splitBySpace(sameNamedLaunchables.get(0).getName().toString()));
+
         List<String> classNames = new LinkedList<>();
         List<Set<String>> commonNameParts = new LinkedList<>();
         for (Launchable launchable: sameNamedLaunchables) {
@@ -91,7 +96,9 @@ class Uniquifier {
 
             // Use the fully qualified class name here, this is by design. Change it and see which
             // unit test fails!
-            commonNameParts.add(new HashSet<>(tokenize(completeClassName)));
+            Set<String> classNameParts = new HashSet<>(tokenize(completeClassName));
+            classNameParts.addAll(nameParts);
+            commonNameParts.add(new HashSet<>(classNameParts));
         }
 
         // We now have a set of parts for each class name
@@ -252,6 +259,10 @@ class Uniquifier {
 
     private static List<String> splitByDots(String string) {
         return Arrays.asList(DOT.split(string));
+    }
+
+    private static List<String> splitBySpace(String string) {
+        return Arrays.asList(WHITESPACE.split(string));
     }
 
     private static List<String> titleCaseAll(List<String> toTitleCase) {
