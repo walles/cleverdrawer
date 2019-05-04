@@ -206,14 +206,14 @@ public class UniquifierTest {
 
     @Test
     public void testDontRepeatUniquifiers() {
-        Launchable a = new DummyLaunchable("monkey.monkey.MonkeyMonkey$MonkeyMonkey");
+        Launchable a = new DummyLaunchable("monkey.monkey.MonkeyMonkey$MonkeyGorillaMonkey");
         a.setName(CaseInsensitive.create("Johan"));
         Launchable b = new DummyLaunchable("Ape");
         b.setName(CaseInsensitive.create("Johan"));
 
         new Uniquifier().uniquify(Arrays.asList(a, b));
 
-        Assert.assertThat(a.getName(), is("Johan (Monkey)"));
+        Assert.assertThat(a.getName(), is(CaseInsensitive.create("Johan (Gorilla Monkey)")));
     }
 
     @Test

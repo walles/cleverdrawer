@@ -78,6 +78,11 @@ class Uniquifier {
         }
     }
 
+    /**
+     * Take a number of launchables sharing the same name and make them not.
+     *
+     * @return True if we were able to uniquify them, false otherwise.
+     */
     private boolean uniquifySameNamed(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
         final Collection<String> nameParts =
                 titleCaseAll(splitBySpace(sameNamedLaunchables.get(0).getName().toString()));
@@ -111,8 +116,9 @@ class Uniquifier {
         while (classNamesIterator.hasNext() && partsIterator.hasNext()) {
             String className = classNamesIterator.next();
             Set<String> partNames = partsIterator.next();
-            String decoration = keepOnlyNamedParts(className, partNames);
-            decorators.add(decoration);
+            List<String> decorationParts = keepOnlyNamedParts(className, partNames);
+            decorationParts = dedupAndKeepLast(decorationParts);
+            decorators.add(joinBySpace(decorationParts));
         }
 
         if (hasDuplicates(decorators)) {
@@ -153,16 +159,47 @@ class Uniquifier {
         return false;
     }
 
-    @VisibleForTesting static String keepOnlyNamedParts(String string, Set<String> keepThese) {
-        StringBuilder builder = new StringBuilder();
+    @VisibleForTesting static List<String> keepOnlyNamedParts(String string, Set<String> keepThese) {
+        List<String> returnMe = new ArrayList<>();
         for (String part: tokenize(string)) {
             if (keepThese.contains(part)) {
-                if (builder.length() > 0) {
-                    builder.append(" ");
-                }
-
-                builder.append(part);
+                returnMe.add(part);
             }
+        }
+
+        return returnMe;
+    }
+
+    /**
+     * If the list contains duplicates, keep only the last instance of each duplicate.
+     *
+     * @return A new list with dups removed
+     */
+    private static List<String> dedupAndKeepLast(List<String> parts) {
+        LinkedList<String> returnMe = new LinkedList<>();
+
+        List<String> alreadyUsed = new ArrayList<>();
+        for (int i = parts.size() - 1; i >= 0; i--) {
+            String part = parts.get(i);
+
+            if (alreadyUsed.contains(part)) {
+                continue;
+            }
+            alreadyUsed.add(part);
+
+            returnMe.addFirst(part);
+        }
+
+        return returnMe;
+    }
+
+    private static String joinBySpace(List<String> parts) {
+        StringBuilder builder = new StringBuilder();
+        for (String part: parts) {
+            if (builder.length() > 0) {
+                builder.append(' ');
+            }
+            builder.append(part);
         }
 
         return builder.toString();
