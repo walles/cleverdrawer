@@ -25,6 +25,7 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -190,6 +191,17 @@ public class UniquifierTest {
         // But not if we only have Free
         testUniquify(
                 "com.oddrobo.komjfree.com.oddrobo.komj.activities.LoadActivity", null);
+    }
+
+    @Test
+    public void shouldNotCrashOnCornerCases() {
+        final String BROKEN_CLASS_NAME = ".$.";
+        try {
+            Uniquifier.tokenize(BROKEN_CLASS_NAME);
+            Assert.fail("tokenizing malformed class name should have failed");
+        } catch (IllegalArgumentException e) {
+            Assert.assertThat(e.getMessage(), containsString(BROKEN_CLASS_NAME));
+        }
     }
 
     @Test

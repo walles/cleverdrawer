@@ -283,6 +283,11 @@ class Uniquifier {
         }
 
         int dollarIndex = string.indexOf('$');
+        if (dollarIndex >= 0 && lastDotIndex > dollarIndex) {
+            // We have . after $, this makes no sense in a class name
+            throw new IllegalArgumentException("Dot after dollar, not a valid class name: <" + string + ">");
+        }
+
         if (dollarIndex == -1) {
             // No $ in the string
             tokens.addAll(splitInCamelParts(string.substring(lastDotIndex + 1)));
