@@ -81,7 +81,7 @@ class LaunchableAdapter extends BaseAdapter {
     private static class AsyncSetImageDrawable extends AsyncTask<Launchable, Void, Drawable> {
         private final WeakReference<ImageView> imageViewReference;
 
-        public AsyncSetImageDrawable(ImageView imageView) {
+        protected AsyncSetImageDrawable(ImageView imageView) {
             this.imageViewReference = new WeakReference<>(imageView);
         }
 

@@ -184,8 +184,8 @@ public class DatabaseUtilsTest {
     }
 
     private static class SimulatedLaunch {
-        public List<Launchable> launchables;
-        public DatabaseUtils.LaunchMetadata launch;
+        protected List<Launchable> launchables;
+        protected DatabaseUtils.LaunchMetadata launch;
     }
 
     private Iterable<SimulatedLaunch> simulatedLaunches() throws IOException {

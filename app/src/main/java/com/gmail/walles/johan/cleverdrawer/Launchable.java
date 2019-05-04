@@ -59,8 +59,9 @@ public abstract class Launchable implements Comparable<Launchable> {
             return name;
         }
 
-        name = getTrueName();
-        if (name != null) {
+        CaseInsensitive trueName = getTrueName();
+        if (trueName != null) {
+            name = trueName;
             return name;
         }
 
@@ -113,7 +114,7 @@ public abstract class Launchable implements Comparable<Launchable> {
         this.score = score * getScoreFactor();
     }
 
-    public abstract double getScoreFactor();
+    protected abstract double getScoreFactor();
 
     public String getId() {
         return id;

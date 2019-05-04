@@ -33,6 +33,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
@@ -166,10 +167,9 @@ public class IntentLaunchable extends Launchable {
     }
 
     @TestOnly
-    public IntentLaunchable(String id, @Nullable CaseInsensitive name) {
+    public IntentLaunchable(String id, @NonNull CaseInsensitive name) {
         super(id);
         setName(name);
-        this.icon = null;
         this.launchIntent = null;
     }
 

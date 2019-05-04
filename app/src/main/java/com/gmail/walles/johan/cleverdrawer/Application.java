@@ -114,7 +114,7 @@ public class Application extends android.app.Application {
     }
 
     private static class CrashlyticsTree extends Timber.Tree {
-        public CrashlyticsTree(Context context) {
+        protected CrashlyticsTree(Context context) {
             Fabric.with(context, new Crashlytics());
         }
 

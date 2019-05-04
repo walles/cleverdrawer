@@ -34,9 +34,9 @@ import java.util.List;
 public class Timer {
     private final long t0;
     private static class Leg {
-        public final String name;
-        public final long start;
-        public Leg(String name, long start) {
+        protected final String name;
+        protected final long start;
+        protected Leg(String name, long start) {
             this.name = name;
             this.start = start;
         }

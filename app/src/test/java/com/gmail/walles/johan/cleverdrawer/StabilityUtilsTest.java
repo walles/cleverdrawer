@@ -41,7 +41,7 @@ import java.util.List;
 
 public class StabilityUtilsTest {
     private static class EqualsLaunchable extends DummyLaunchable {
-        public EqualsLaunchable(String id) {
+        protected EqualsLaunchable(String id) {
             super(id);
             setName(new CaseInsensitive(id));
         }

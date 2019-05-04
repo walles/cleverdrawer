@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 REQUEST_READ_CONTACTS);
     }
 
-    boolean isHomeScreenEnabled() {
+    private boolean isHomeScreenEnabled() {
         ComponentName component =
                 new ComponentName(getPackageName(), "com.gmail.walles.johan.cleverdrawer.Homescreen");
 
@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
 
-    void setHomeScreenEnabled(boolean enabled) {
+    private void setHomeScreenEnabled(boolean enabled) {
         ComponentName component =
                 new ComponentName(getPackageName(), "com.gmail.walles.johan.cleverdrawer.Homescreen");
 
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(intent, "Contact Developer"));
     }
 
-    public static File getLaunchHistoryFile(Context context) {
+    private static File getLaunchHistoryFile(Context context) {
         return new File(context.getFilesDir(), "statistics.json");
     }
 
