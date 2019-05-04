@@ -68,7 +68,12 @@ public abstract class Launchable implements Comparable<Launchable> {
         return new CaseInsensitive("");
     }
 
-    public void setName(@Nullable CaseInsensitive name) {
+    public void setName(@NonNull CaseInsensitive name) {
+        //noinspection ConstantConditions
+        if (name == null) {
+            // Seems like this could happen some times according to Crashlytics, log diagnostics!
+            Timber.w(new NullPointerException("setName called with Null value"));
+        }
         this.name = name;
     }
 
