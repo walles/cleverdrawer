@@ -223,7 +223,7 @@ public class UniquifierTest {
                 Uniquifier.keepOnlyNamedParts(
                         string,
                         new HashSet<>(Arrays.asList("I", "ABC", "Book"))),
-                is("I ABC Book"));
+                is(Arrays.asList("I", "ABC", "Book")));
     }
 
     @Test
