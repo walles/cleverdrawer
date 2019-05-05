@@ -40,6 +40,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import timber.log.Timber;
+
 class Uniquifier {
     private static final Pattern INNER_ONLY = Pattern.compile(".*\\$(.*)");
     private static final Pattern CLASS_NAME = Pattern.compile("^.*?([^.]*)$");
@@ -138,6 +140,8 @@ class Uniquifier {
 
             String decorated = launchable.getName().toString() + " (" + titleCase(decoration) + ")";
             launchable.setName(new CaseInsensitive(decorated));
+
+            Timber.i("Uniquified <%s> based on ID <%s>", decorated, launchable.getId());
         }
 
         return true;
