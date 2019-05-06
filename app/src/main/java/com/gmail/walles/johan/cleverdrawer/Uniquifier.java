@@ -43,9 +43,10 @@ import java.util.regex.Pattern;
 import timber.log.Timber;
 
 class Uniquifier {
-    private static final Pattern INNER_ONLY = Pattern.compile(".*\\$(.*)");
+    private static final Pattern INNER_ONLY = Pattern.compile("^.*\\$(.*)$");
     private static final Pattern CLASS_NAME = Pattern.compile("^.*?([^.]*)$");
-    private static final Pattern ALL = Pattern.compile("(.*)");
+    private static final Pattern ORG_NAME = Pattern.compile("^((com)|(org))[.]([^.]+)[.].*$");
+    private static final Pattern ALL = Pattern.compile("^(.*)$");
     private static final Pattern DOT = Pattern.compile("[.]");
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
@@ -68,6 +69,10 @@ class Uniquifier {
                 continue;
             }
 
+            if (uniquifyByOrgName(sameNamedLaunchables)) {
+                continue;
+            }
+
             if (uniquifySameNamed(sameNamedLaunchables, INNER_ONLY)) {
                 continue;
             }
@@ -78,6 +83,41 @@ class Uniquifier {
 
             uniquifySameNamed(sameNamedLaunchables, ALL);
         }
+    }
+
+    private boolean uniquifyByOrgName(List<Launchable> sameNamedLaunchables) {
+        List<String> orgNames = new ArrayList<>(sameNamedLaunchables.size());
+        for (Launchable launchable: sameNamedLaunchables) {
+            Matcher matcher = ORG_NAME.matcher(launchable.getId());
+            if (!matcher.matches()) {
+                return false;
+            }
+
+            orgNames.add(titleCase(matcher.group(4)));
+        }
+
+        if (hasDuplicates(orgNames)) {
+            // Deduplication failed
+            return false;
+        }
+
+        Iterator<Launchable> launchableIterator = sameNamedLaunchables.iterator();
+        Iterator<String> orgNamesIterator = orgNames.iterator();
+        while (launchableIterator.hasNext() && orgNamesIterator.hasNext()) {
+            Launchable launchable = launchableIterator.next();
+            String orgName = orgNamesIterator.next();
+
+            if (orgName.isEmpty()) {
+                continue;
+            }
+
+            String decorated = launchable.getName().toString() + " (" + orgName + ")";
+            launchable.setName(new CaseInsensitive(decorated));
+
+            Timber.i("Uniquified <%s> based on ID <%s> (org name)", decorated, launchable.getId());
+        }
+
+        return true;
     }
 
     /**

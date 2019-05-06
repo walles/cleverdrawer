@@ -180,6 +180,13 @@ public class UniquifierTest {
     }
 
     @Test
+    public void testUniquifyCalendars() {
+        testUniquify(
+                "com.samsung.android.calendar.com.samsung.android.app.calendar.activity.MainActivity", "Samsung",
+                "com.google.android.calendar.com.android.calendar.AllInOneActivity", "Google");
+    }
+
+    @Test
     public void shouldUniquifyKingOfMathJunior() {
         // "Free" would be better than "Komjfree", but I can't see how to figure that out
         // automatically without some complex heuristics which would just behave weirdly in other
