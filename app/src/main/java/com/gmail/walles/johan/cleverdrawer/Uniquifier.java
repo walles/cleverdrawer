@@ -77,15 +77,15 @@ class Uniquifier {
                 continue;
             }
 
-            if (uniquifySameNamed(sameNamedLaunchables, INNER_ONLY)) {
+            if (uniquifyByIdParts(sameNamedLaunchables, INNER_ONLY)) {
                 continue;
             }
 
-            if (uniquifySameNamed(sameNamedLaunchables, CLASS_NAME)) {
+            if (uniquifyByIdParts(sameNamedLaunchables, CLASS_NAME)) {
                 continue;
             }
 
-            uniquifySameNamed(sameNamedLaunchables, ALL);
+            uniquifyByIdParts(sameNamedLaunchables, ALL);
         }
     }
 
@@ -101,28 +101,7 @@ class Uniquifier {
             typeDecorators.add(decorator);
         }
 
-        if (hasDuplicates(typeDecorators)) {
-            // Deduplication failed
-            return false;
-        }
-
-        Iterator<Launchable> launchableIterator = sameNamedLaunchables.iterator();
-        Iterator<String> typesIterator = typeDecorators.iterator();
-        while (launchableIterator.hasNext() && typesIterator.hasNext()) {
-            Launchable launchable = launchableIterator.next();
-            String typeName = typesIterator.next();
-
-            if (typeName == null) {
-                continue;
-            }
-
-            String decorated = launchable.getName().toString() + " (" + typeName + ")";
-            launchable.setName(new CaseInsensitive(decorated));
-
-            Timber.i("Uniquified <%s> based on ID <%s> (org name)", decorated, launchable.getId());
-        }
-
-        return true;
+        return applyDecorators(sameNamedLaunchables, typeDecorators);
     }
 
     private boolean uniquifyByOrgName(List<Launchable> sameNamedLaunchables) {
@@ -136,28 +115,7 @@ class Uniquifier {
             orgNames.add(titleCase(matcher.group(4)));
         }
 
-        if (hasDuplicates(orgNames)) {
-            // Deduplication failed
-            return false;
-        }
-
-        Iterator<Launchable> launchableIterator = sameNamedLaunchables.iterator();
-        Iterator<String> orgNamesIterator = orgNames.iterator();
-        while (launchableIterator.hasNext() && orgNamesIterator.hasNext()) {
-            Launchable launchable = launchableIterator.next();
-            String orgName = orgNamesIterator.next();
-
-            if (orgName.isEmpty()) {
-                continue;
-            }
-
-            String decorated = launchable.getName().toString() + " (" + orgName + ")";
-            launchable.setName(new CaseInsensitive(decorated));
-
-            Timber.i("Uniquified <%s> based on ID <%s> (org name)", decorated, launchable.getId());
-        }
-
-        return true;
+        return applyDecorators(sameNamedLaunchables, orgNames);
     }
 
     /**
@@ -165,7 +123,7 @@ class Uniquifier {
      *
      * @return True if we were able to uniquify them, false otherwise.
      */
-    private boolean uniquifySameNamed(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
+    private boolean uniquifyByIdParts(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
         final Collection<String> nameParts =
                 titleCaseAll(splitBySpace(sameNamedLaunchables.get(0).getName().toString()));
 
@@ -203,6 +161,11 @@ class Uniquifier {
             decorators.add(joinBySpace(decorationParts));
         }
 
+        return applyDecorators(sameNamedLaunchables, decorators);
+    }
+
+    private static boolean applyDecorators(List<Launchable> sameNamedLaunchables,
+            List<String> decorators) {
         if (hasDuplicates(decorators)) {
             // Deduplication failed
             return false;
@@ -213,6 +176,10 @@ class Uniquifier {
         while (launchableIterator.hasNext() && decorationsIterator.hasNext()) {
             Launchable launchable = launchableIterator.next();
             String decoration = decorationsIterator.next();
+
+            if (decoration == null) {
+                continue;
+            }
 
             if (decoration.isEmpty()) {
                 continue;
@@ -227,7 +194,7 @@ class Uniquifier {
         return true;
     }
 
-    private boolean hasDuplicates(List<String> strings) {
+    private static boolean hasDuplicates(List<String> strings) {
         if (strings.size() <= 1) {
             return false;
         }
