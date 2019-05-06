@@ -212,6 +212,19 @@ public class UniquifierTest {
     }
 
     @Test
+    public void shouldDedupByLauncherType() {
+        final CaseInsensitive FLUPP = new CaseInsensitive("Flupp");
+        ContactLaunchable contactLaunchable = new ContactLaunchable(null, 123, FLUPP, null);
+        IntentLaunchable intentLaunchable =
+                new IntentLaunchable("a.b.c.D", FLUPP);
+
+        new Uniquifier().uniquify(Arrays.asList(contactLaunchable, intentLaunchable));
+
+        Assert.assertThat(contactLaunchable.getName().toString(), is("Flupp (Contact)"));
+        Assert.assertThat(intentLaunchable.getName().toString(), is("Flupp"));
+    }
+
+    @Test
     public void testAvoidNameTokens() {
         Launchable a = new DummyLaunchable("SettingsHejMonkey");
         a.setName(CaseInsensitive.create("Monkey Settings"));

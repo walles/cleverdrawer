@@ -69,6 +69,10 @@ class Uniquifier {
                 continue;
             }
 
+            if (uniquifyByType(sameNamedLaunchables)) {
+                continue;
+            }
+
             if (uniquifyByOrgName(sameNamedLaunchables)) {
                 continue;
             }
@@ -83,6 +87,42 @@ class Uniquifier {
 
             uniquifySameNamed(sameNamedLaunchables, ALL);
         }
+    }
+
+    private boolean uniquifyByType(List<Launchable> sameNamedLaunchables) {
+        List<String> typeDecorators = new ArrayList<>(sameNamedLaunchables.size());
+        for (Launchable launchable: sameNamedLaunchables) {
+            String decorator;
+            if (launchable instanceof ContactLaunchable) {
+                decorator = "Contact";
+            } else {
+                decorator = null;
+            }
+            typeDecorators.add(decorator);
+        }
+
+        if (hasDuplicates(typeDecorators)) {
+            // Deduplication failed
+            return false;
+        }
+
+        Iterator<Launchable> launchableIterator = sameNamedLaunchables.iterator();
+        Iterator<String> typesIterator = typeDecorators.iterator();
+        while (launchableIterator.hasNext() && typesIterator.hasNext()) {
+            Launchable launchable = launchableIterator.next();
+            String typeName = typesIterator.next();
+
+            if (typeName == null) {
+                continue;
+            }
+
+            String decorated = launchable.getName().toString() + " (" + typeName + ")";
+            launchable.setName(new CaseInsensitive(decorated));
+
+            Timber.i("Uniquified <%s> based on ID <%s> (org name)", decorated, launchable.getId());
+        }
+
+        return true;
     }
 
     private boolean uniquifyByOrgName(List<Launchable> sameNamedLaunchables) {
