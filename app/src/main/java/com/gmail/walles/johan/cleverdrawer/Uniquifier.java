@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -43,9 +44,10 @@ import java.util.regex.Pattern;
 import timber.log.Timber;
 
 class Uniquifier {
-    private static final Pattern INNER_ONLY = Pattern.compile(".*\\$(.*)");
+    private static final Pattern INNER_ONLY = Pattern.compile("^.*\\$(.*)$");
     private static final Pattern CLASS_NAME = Pattern.compile("^.*?([^.]*)$");
-    private static final Pattern ALL = Pattern.compile("(.*)");
+    private static final Pattern ORG_NAME = Pattern.compile("^((com)|(org))[.]([^.]+)[.].*$");
+    private static final Pattern ALL = Pattern.compile("^(.*)$");
     private static final Pattern DOT = Pattern.compile("[.]");
     private static final Pattern WHITESPACE = Pattern.compile("\\s+");
 
@@ -68,16 +70,56 @@ class Uniquifier {
                 continue;
             }
 
-            if (uniquifySameNamed(sameNamedLaunchables, INNER_ONLY)) {
+            if (uniquifyByType(sameNamedLaunchables)) {
                 continue;
             }
 
-            if (uniquifySameNamed(sameNamedLaunchables, CLASS_NAME)) {
+            if (uniquifyByOrgName(sameNamedLaunchables)) {
                 continue;
             }
 
-            uniquifySameNamed(sameNamedLaunchables, ALL);
+            if (uniquifyByIdParts(sameNamedLaunchables, INNER_ONLY)) {
+                continue;
+            }
+
+            if (uniquifyByIdParts(sameNamedLaunchables, CLASS_NAME)) {
+                continue;
+            }
+
+            uniquifyByIdParts(sameNamedLaunchables, ALL);
         }
+    }
+
+    private boolean uniquifyByType(List<Launchable> sameNamedLaunchables) {
+        List<String> typeDecorators = new ArrayList<>(sameNamedLaunchables.size());
+        for (Launchable launchable: sameNamedLaunchables) {
+            String decorator;
+            if (launchable instanceof ContactLaunchable) {
+                decorator = "Contact";
+            } else if (launchable instanceof IntentLaunchable) {
+                boolean isSettings = launchable.getId().toLowerCase(Locale.getDefault()).contains("settings");
+                decorator = isSettings ? "Settings" : "App";
+            } else {
+                decorator = null;
+            }
+            typeDecorators.add(decorator);
+        }
+
+        return applyDecorators(sameNamedLaunchables, typeDecorators);
+    }
+
+    private boolean uniquifyByOrgName(List<Launchable> sameNamedLaunchables) {
+        List<String> orgNames = new ArrayList<>(sameNamedLaunchables.size());
+        for (Launchable launchable: sameNamedLaunchables) {
+            Matcher matcher = ORG_NAME.matcher(launchable.getId());
+            if (!matcher.matches()) {
+                return false;
+            }
+
+            orgNames.add(titleCase(matcher.group(4)));
+        }
+
+        return applyDecorators(sameNamedLaunchables, orgNames);
     }
 
     /**
@@ -85,7 +127,7 @@ class Uniquifier {
      *
      * @return True if we were able to uniquify them, false otherwise.
      */
-    private boolean uniquifySameNamed(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
+    private boolean uniquifyByIdParts(List<Launchable> sameNamedLaunchables, Pattern namePartExtractor) {
         final Collection<String> nameParts =
                 titleCaseAll(splitBySpace(sameNamedLaunchables.get(0).getName().toString()));
 
@@ -123,6 +165,11 @@ class Uniquifier {
             decorators.add(joinBySpace(decorationParts));
         }
 
+        return applyDecorators(sameNamedLaunchables, decorators);
+    }
+
+    private static boolean applyDecorators(List<Launchable> sameNamedLaunchables,
+            List<String> decorators) {
         if (hasDuplicates(decorators)) {
             // Deduplication failed
             return false;
@@ -133,6 +180,10 @@ class Uniquifier {
         while (launchableIterator.hasNext() && decorationsIterator.hasNext()) {
             Launchable launchable = launchableIterator.next();
             String decoration = decorationsIterator.next();
+
+            if (decoration == null) {
+                continue;
+            }
 
             if (decoration.isEmpty()) {
                 continue;
@@ -147,7 +198,7 @@ class Uniquifier {
         return true;
     }
 
-    private boolean hasDuplicates(List<String> strings) {
+    private static boolean hasDuplicates(List<String> strings) {
         if (strings.size() <= 1) {
             return false;
         }

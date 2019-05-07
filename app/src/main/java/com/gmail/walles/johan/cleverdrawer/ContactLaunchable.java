@@ -33,6 +33,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.content.ContextCompat;
 
 import java.io.FileNotFoundException;
@@ -58,7 +59,8 @@ class ContactLaunchable extends Launchable {
             ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
     };
 
-    private ContactLaunchable(Context context, long id, CaseInsensitive name, @Nullable Uri photoRef) {
+    @VisibleForTesting
+    ContactLaunchable(Context context, long id, CaseInsensitive name, @Nullable Uri photoRef) {
         super("contacts." + id);
         this.context = context;
         this.id = id;

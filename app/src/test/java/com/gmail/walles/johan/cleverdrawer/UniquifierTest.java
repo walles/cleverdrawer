@@ -180,6 +180,13 @@ public class UniquifierTest {
     }
 
     @Test
+    public void testUniquifyCalendars() {
+        testUniquify(
+                "com.samsung.android.calendar.com.samsung.android.app.calendar.activity.MainActivity", "Samsung",
+                "com.google.android.calendar.com.android.calendar.AllInOneActivity", "Google");
+    }
+
+    @Test
     public void shouldUniquifyKingOfMathJunior() {
         // "Free" would be better than "Komjfree", but I can't see how to figure that out
         // automatically without some complex heuristics which would just behave weirdly in other
@@ -202,6 +209,19 @@ public class UniquifierTest {
         } catch (IllegalArgumentException e) {
             Assert.assertThat(e.getMessage(), containsString(BROKEN_CLASS_NAME));
         }
+    }
+
+    @Test
+    public void shouldDedupByLauncherType() {
+        final CaseInsensitive FLUPP = new CaseInsensitive("Flupp");
+        ContactLaunchable contactLaunchable = new ContactLaunchable(null, 123, FLUPP, null);
+        IntentLaunchable intentLaunchable =
+                new IntentLaunchable("a.b.c.D", FLUPP);
+
+        new Uniquifier().uniquify(Arrays.asList(contactLaunchable, intentLaunchable));
+
+        Assert.assertThat(contactLaunchable.getName().toString(), is("Flupp (Contact)"));
+        Assert.assertThat(intentLaunchable.getName().toString(), is("Flupp (App)"));
     }
 
     @Test
