@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -95,6 +96,9 @@ class Uniquifier {
             String decorator;
             if (launchable instanceof ContactLaunchable) {
                 decorator = "Contact";
+            } else if (launchable instanceof IntentLaunchable) {
+                boolean isSettings = launchable.getId().toLowerCase(Locale.getDefault()).contains("settings");
+                decorator = isSettings ? "Settings" : "App";
             } else {
                 decorator = null;
             }

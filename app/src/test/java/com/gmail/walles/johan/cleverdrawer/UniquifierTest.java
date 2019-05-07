@@ -221,7 +221,7 @@ public class UniquifierTest {
         new Uniquifier().uniquify(Arrays.asList(contactLaunchable, intentLaunchable));
 
         Assert.assertThat(contactLaunchable.getName().toString(), is("Flupp (Contact)"));
-        Assert.assertThat(intentLaunchable.getName().toString(), is("Flupp"));
+        Assert.assertThat(intentLaunchable.getName().toString(), is("Flupp (App)"));
     }
 
     @Test
