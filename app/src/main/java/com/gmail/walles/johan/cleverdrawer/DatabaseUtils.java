@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -133,6 +134,14 @@ public class DatabaseUtils {
          * Launch timestamp in milliseconds since epoch.
          */
         public long timestamp;
+
+        @Override
+        public String toString() {
+            return "LaunchMetadata{" +
+                    "id='" + id + '\'' +
+                    ", timestamp=" + new Date(timestamp) +
+                    '}';
+        }
     }
 
     /**
