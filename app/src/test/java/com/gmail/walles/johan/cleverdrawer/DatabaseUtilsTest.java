@@ -33,6 +33,7 @@ import static org.hamcrest.Matchers.empty;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,12 +44,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class DatabaseUtilsTest {
     @SuppressWarnings("CanBeFinal")
@@ -107,80 +108,60 @@ public class DatabaseUtilsTest {
         // We should be at least this good, otherwise we have regressed. If you update the example
         // data that we're testing, this baseline will need to change.
         //
-        // 100.0 = All launches were done from one of the first four launchables
-        final double BASELINE_SCORE_PER_LAUNCH = 58.76;
+        // 100.0 = All launches were done from the same place as previously, muscle memory heaven!
+        final double BASELINE_SCORE_PER_LAUNCH = 71.28;
+
+        Collection<SimulatedLaunch> simulatedLaunches = loadSimulatedLaunches();
+        Assert.assertThat("Not enough data for both warming up and measuring",
+                simulatedLaunches.size(), Matchers.greaterThan(DatabaseUtils.SCORING_MAX_LAUNCH_COUNT * 2));
 
         int score = 0;
-        for (SimulatedLaunch simulatedLaunch: simulatedLaunches()) {
+        int scoreCount = 0;
+        int warmupSkips = DatabaseUtils.SCORING_MAX_LAUNCH_COUNT;
+        Map<String, Integer> lastLaunchIndices = new HashMap<>();
+        for (SimulatedLaunch simulatedLaunch: simulatedLaunches) {
             // Locate what we want to launch in the sorted launchables list
-            int index = -1;
+            int launchIndex = -1;
             for (int i = 0; i < simulatedLaunch.launchables.size(); i++) {
                 Launchable launchable = simulatedLaunch.launchables.get(i);
                 if (simulatedLaunch.launch.id.equals(launchable.getId())) {
-                    index = i;
+                    launchIndex = i;
                 }
             }
+            Integer lastLaunchIndex = lastLaunchIndices.get(simulatedLaunch.launch.id);
+            lastLaunchIndices.put(simulatedLaunch.launch.id, launchIndex);
 
-            // Rate how well this launch was predicted
-            if (index < 4) {
-                score += 100;
-            } else if (index < 8) {
-                score += 50;
-            } else {
-                // Further down than that isn't good enough
+            if (warmupSkips-- > 0) {
+                continue;
             }
+
+            scoreCount++;
+
+            if (launchIndex >= 12) {
+                // Too far down, too hard to find, no points
+                continue;
+            }
+
+            // Findable by looking for it
+            score += 50;
+
+            if (lastLaunchIndex == null) {
+                // No previous launch, no muscle memory bonus
+                continue;
+            }
+
+            if (lastLaunchIndex != launchIndex) {
+                // Not the same as the previous launch, no muscle memory bonus
+                continue;
+            }
+
+            score += 50;
         }
 
         // We do an exact match; if something changes the score we should investigate and either
         // update our baseline or fix whatever we broke.
-        Assert.assertThat(score / (double)getLaunchHistorySize(),
+        Assert.assertThat(score / (double)scoreCount,
                 closeTo(BASELINE_SCORE_PER_LAUNCH, 0.1));
-    }
-
-    /**
-     * Verify that we don't move the top of the list around too much; it's bad for muscle memory.
-     */
-    @Test
-    public void testScoreLaunchablesJumpiness() throws IOException {
-        // We should be at most this bad, otherwise we have regressed. If you update the example
-        // data that we're testing, this baseline will need to change.
-        //
-        // 0 = Nothing ever moved at the top of the list
-        final double BASELINE_JUMPS_PER_LAUNCH = 0.173;
-
-        int jumpiness = 0;
-        List<Launchable> previousLaunchables = null;
-        for (SimulatedLaunch simulatedLaunch: simulatedLaunches()) {
-            if (previousLaunchables != null) {
-                for (int i = 0; i < 8; i++) {
-                    if (i >= previousLaunchables.size()) {
-                        break;
-                    }
-                    if (i >= simulatedLaunch.launchables.size()) {
-                        break;
-                    }
-
-                    Launchable previousLaunchable = previousLaunchables.get(i);
-                    Launchable currentLaunchable = simulatedLaunch.launchables.get(i);
-                    if (!Objects.equals(
-                            previousLaunchable.getId(),
-                            currentLaunchable.getId()))
-                    {
-                        if (previousLaunchable.hasScore()) {
-                            // Jumpiness is only relevant when something we care about is moved
-                            jumpiness++;
-                        }
-                    }
-                }
-            }
-
-            previousLaunchables = simulatedLaunch.launchables;
-        }
-
-        // We do an exact match; if something changes the score we should investigate and either
-        // update our baseline or fix whatever we broke.
-        Assert.assertThat(jumpiness / (double)getLaunchHistorySize(),
-                closeTo(BASELINE_JUMPS_PER_LAUNCH, 0.1));
     }
 
     private static class SimulatedLaunch {
@@ -188,7 +169,7 @@ public class DatabaseUtilsTest {
         protected DatabaseUtils.LaunchMetadata launch;
     }
 
-    private Iterable<SimulatedLaunch> simulatedLaunches() throws IOException {
+    private Collection<SimulatedLaunch> loadSimulatedLaunches() throws IOException {
         List<DatabaseUtils.LaunchMetadata> launchHistory;
         try (InputStream launchHistoryStream =
                      getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
@@ -226,14 +207,6 @@ public class DatabaseUtilsTest {
             ids.add(launchable.getId());
         }
         return ids;
-    }
-
-    private int getLaunchHistorySize() throws IOException {
-        try (InputStream launchHistoryStream =
-                     getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
-        {
-            return DatabaseUtils.loadLaunches(launchHistoryStream).size();
-        }
     }
 
     /**

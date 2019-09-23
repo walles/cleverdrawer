@@ -54,7 +54,7 @@ public class DatabaseUtils {
     /**
      * Only consider the SCORING_MAX_LAUNCH_COUNT most recent launches when scoring.
      */
-    private static final int SCORING_MAX_LAUNCH_COUNT = 300;
+    public static final int SCORING_MAX_LAUNCH_COUNT = 300;
 
     public static Map<String, String> readIdToNameCache(File file) {
         if (!file.exists()) {
