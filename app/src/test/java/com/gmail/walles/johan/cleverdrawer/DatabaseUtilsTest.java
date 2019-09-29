@@ -109,7 +109,7 @@ public class DatabaseUtilsTest {
         // data that we're testing, this baseline will need to change.
         //
         // 100.0 = All launches were done from the same place as previously, muscle memory heaven!
-        final double BASELINE_SCORE_PER_LAUNCH = 71.28;
+        final double BASELINE_SCORE_PER_LAUNCH = 68.36;
 
         Collection<SimulatedLaunch> simulatedLaunches = simulateLaunches(loadLaunchesFromFile());
         Assert.assertThat("Not enough data for both warming up and measuring",
@@ -120,14 +120,7 @@ public class DatabaseUtilsTest {
         int warmupSkips = DatabaseUtils.SCORING_MAX_LAUNCH_COUNT;
         Map<String, Integer> lastLaunchIndices = new HashMap<>();
         for (SimulatedLaunch simulatedLaunch: simulatedLaunches) {
-            // Locate what we want to launch in the sorted launchables list
-            int launchIndex = -1;
-            for (int i = 0; i < simulatedLaunch.launchables.size(); i++) {
-                Launchable launchable = simulatedLaunch.launchables.get(i);
-                if (simulatedLaunch.launch.id.equals(launchable.getId())) {
-                    launchIndex = i;
-                }
-            }
+            int launchIndex = simulatedLaunch.getLaunchIndex();
             Integer lastLaunchIndex = lastLaunchIndices.get(simulatedLaunch.launch.id);
             lastLaunchIndices.put(simulatedLaunch.launch.id, launchIndex);
 
@@ -163,9 +156,122 @@ public class DatabaseUtilsTest {
         Assert.assertThat(score / (double)scoreCount,
                 closeTo(BASELINE_SCORE_PER_LAUNCH, 0.1));
     }
+
+    private String findMostCommonId(List<DatabaseUtils.LaunchMetadata> launches) {
+        Map<String, Integer> id2score = new HashMap<>();
+        for (DatabaseUtils.LaunchMetadata launch: launches) {
+            int score = id2score.getOrDefault(launch.id, 0);
+            id2score.put(launch.id, score + 1);
+        }
+
+        // Find the highest scored ID
+        String highestScoredId = null;
+        int highestScore = 0;
+
+        for (Map.Entry<String, Integer> entry: id2score.entrySet()) {
+            if (entry.getValue() <= highestScore) {
+                continue;
+            }
+
+            highestScore = entry.getValue();
+            highestScoredId = entry.getKey();
+        }
+        assert highestScoredId != null;
+
+        return highestScoredId;
+    }
+
+    /**
+     * Verify how well we manage to respond to changes in user behavior.
+     */
+    @Test
+    public void testScoreLaunchablesResponsiveness() throws IOException {
+        // We should be at least this good, otherwise we have regressed. If you update the example
+        // data that we're testing, this baseline will need to change.
+        //
+        // This is the number of launches required until the new favorite gets to the top
+        final int LAUNCHES_TO_TOP_BASELINE = 23;
+
+        List<DatabaseUtils.LaunchMetadata> launches = loadLaunchesFromFile();
+        String replaceId = findMostCommonId(launches);
+        String replacementId = "JOHAN";
+
+        // Change user behavior right after the warmup run
+        int warmupSkips = DatabaseUtils.SCORING_MAX_LAUNCH_COUNT;
+        int count = 0;
+        for (DatabaseUtils.LaunchMetadata launch: launches) {
+            if (count++ < warmupSkips) {
+                continue;
+            }
+
+            if (!launch.id.equals(replaceId)) {
+                continue;
+            }
+
+            // Post-warmup most common ID, this is what we want to behave well for responsiveness
+            // to be high
+            launch.id = replacementId;
+        }
+
+        Collection<SimulatedLaunch> simulatedLaunches = simulateLaunches(launches);
+        Assert.assertThat("Not enough data for both warming up and measuring",
+                simulatedLaunches.size(), Matchers.greaterThan(DatabaseUtils.SCORING_MAX_LAUNCH_COUNT * 2));
+
+        int launchesToTop = 0;
+        Map<String, Integer> lastLaunchIndices = new HashMap<>();
+        for (SimulatedLaunch simulatedLaunch: simulatedLaunches) {
+            int launchIndex = simulatedLaunch.getLaunchIndex();
+            Integer lastLaunchIndex = lastLaunchIndices.get(simulatedLaunch.launch.id);
+            lastLaunchIndices.put(simulatedLaunch.launch.id, launchIndex);
+
+            if (warmupSkips-- > 0) {
+                continue;
+            }
+
+            if (!replacementId.equals(simulatedLaunch.launch.id)) {
+                // We measure the performance of replacementId only
+                continue;
+            }
+
+            launchesToTop++;
+            if (launchIndex >= 4) {
+                // Not yet on the first line, never mind
+                continue;
+            }
+
+            if (lastLaunchIndex == null) {
+                // No previous launch, not there yet
+                continue;
+            }
+
+            if (lastLaunchIndex != launchIndex) {
+                // Not the same as the previous launch, not there yet
+                continue;
+            }
+
+            // Done!
+            Assert.assertThat(launchesToTop, is(LAUNCHES_TO_TOP_BASELINE));
+            return;
+        }
+
+        Assert.fail("The new favorite app never reached the top");
+    }
+
     private static class SimulatedLaunch {
         protected List<Launchable> launchables;
         protected DatabaseUtils.LaunchMetadata launch;
+
+        /** Locate what we're launching in the sorted launchables list */
+        public int getLaunchIndex() {
+            for (int i = 0; i < launchables.size(); i++) {
+                Launchable launchable = launchables.get(i);
+                if (launch.id.equals(launchable.getId())) {
+                    return i;
+                }
+            }
+
+            return launchables.size();
+        }
     }
 
     private List<DatabaseUtils.LaunchMetadata> loadLaunchesFromFile() throws IOException {
