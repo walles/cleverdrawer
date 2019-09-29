@@ -189,7 +189,8 @@ public class DatabaseUtilsTest {
         // We should be at least this good, otherwise we have regressed. If you update the example
         // data that we're testing, this baseline will need to change.
         //
-        // This is the number of launches required until the new favorite gets to the top
+        // This is the number of launches required until the new favorite gets to the top, lower is
+        // better.
         final int LAUNCHES_TO_TOP_BASELINE = 23;
 
         List<DatabaseUtils.LaunchMetadata> launches = loadLaunchesFromFile();
