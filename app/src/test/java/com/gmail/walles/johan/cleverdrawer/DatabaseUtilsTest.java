@@ -111,7 +111,7 @@ public class DatabaseUtilsTest {
         // 100.0 = All launches were done from the same place as previously, muscle memory heaven!
         final double BASELINE_SCORE_PER_LAUNCH = 71.28;
 
-        Collection<SimulatedLaunch> simulatedLaunches = loadSimulatedLaunches();
+        Collection<SimulatedLaunch> simulatedLaunches = simulateLaunches(loadLaunchesFromFile());
         Assert.assertThat("Not enough data for both warming up and measuring",
                 simulatedLaunches.size(), Matchers.greaterThan(DatabaseUtils.SCORING_MAX_LAUNCH_COUNT * 2));
 
@@ -163,13 +163,12 @@ public class DatabaseUtilsTest {
         Assert.assertThat(score / (double)scoreCount,
                 closeTo(BASELINE_SCORE_PER_LAUNCH, 0.1));
     }
-
     private static class SimulatedLaunch {
         protected List<Launchable> launchables;
         protected DatabaseUtils.LaunchMetadata launch;
     }
 
-    private Collection<SimulatedLaunch> loadSimulatedLaunches() throws IOException {
+    private List<DatabaseUtils.LaunchMetadata> loadLaunchesFromFile() throws IOException {
         List<DatabaseUtils.LaunchMetadata> launchHistory;
         try (InputStream launchHistoryStream =
                      getClass().getClassLoader().getResourceAsStream("real-statistics-example.json"))
@@ -178,6 +177,10 @@ public class DatabaseUtilsTest {
         }
         Assert.assertThat(launchHistory, is(not(empty())));
 
+        return launchHistory;
+    }
+
+    private Collection<SimulatedLaunch> simulateLaunches(List<DatabaseUtils.LaunchMetadata> launchHistory) {
         List<SimulatedLaunch> returnMe = new ArrayList<>();
         List<String> lastOrder = Collections.emptyList();
         for (DatabaseUtils.LaunchMetadata launch: launchHistory) {
