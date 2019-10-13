@@ -109,7 +109,7 @@ public class DatabaseUtilsTest {
         // data that we're testing, this baseline will need to change.
         //
         // 100.0 = All launches were done from the same place as previously, muscle memory heaven!
-        final double BASELINE_SCORE_PER_LAUNCH = 68.36;
+        final double BASELINE_SCORE_PER_LAUNCH = 71.727;
 
         Collection<SimulatedLaunch> simulatedLaunches = simulateLaunches(loadLaunchesFromFile());
         Assert.assertThat("Not enough data for both warming up and measuring",
@@ -191,7 +191,7 @@ public class DatabaseUtilsTest {
         //
         // This is the number of launches required until the new favorite gets to the top, lower is
         // better.
-        final int LAUNCHES_TO_TOP_BASELINE = 23;
+        final int LAUNCHES_TO_TOP_BASELINE = 31;
 
         List<DatabaseUtils.LaunchMetadata> launches = loadLaunchesFromFile();
         String replaceId = findMostCommonId(launches);

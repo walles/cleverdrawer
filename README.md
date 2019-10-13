@@ -34,6 +34,10 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Misc
+* Long pressing an app should bring up a menu:
+  * Manage (Like clicking an app in the device Settings)
+  * Show on Google Play
+  * Add home screen launcher for the long pressed app
 * Move names caching into `IntentLaunchable`
 * Put a clear-the-search-box button inside the search box.
 * Sort recently installed apps earlier
@@ -53,9 +57,6 @@ launching a Launchable?
 * Use weekday vs weekend as scoring factor
 * Use time of day as a scoring factor
 * Use most recently used other app as scoring factor
-* Long clicking app should bring up a menu:
-  * Manage (Like clicking an app in the Settings)
-  * Show on Google Play
 
 # DONE
 * Add Timber logging
