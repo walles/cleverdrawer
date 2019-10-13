@@ -28,8 +28,6 @@ package com.gmail.walles.johan.cleverdrawer;
 import static org.hamcrest.CoreMatchers.is;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -42,6 +40,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -56,7 +57,7 @@ public class LaunchableAdapterTest {
 
     @Test
     public void testLoadLaunchablesNoDuplicateIds() throws Exception {
-        Context appContext = InstrumentationRegistry.getTargetContext();
+        Context appContext = ApplicationProvider.getApplicationContext();
         File nameCache = tempdir.newFile("nameCache");
         File statsFile = tempdir.newFile("statsFile");
         File lastOrderFile = tempdir.newFile("lastOrderFile");

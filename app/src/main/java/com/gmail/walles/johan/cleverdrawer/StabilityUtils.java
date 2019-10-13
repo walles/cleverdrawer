@@ -25,8 +25,8 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
-import android.support.annotation.CheckResult;
-import android.support.annotation.Nullable;
+import androidx.annotation.CheckResult;
+import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;

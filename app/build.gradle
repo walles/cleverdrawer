@@ -85,15 +85,15 @@ def getVersionName = { ->
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "com.gmail.walles.johan.cleverdrawer"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 29
         versionCode getVersionCode()
         versionName getVersionName()
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -163,10 +163,9 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'org.jetbrains:annotations:17.0.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
@@ -180,6 +179,6 @@ dependencies {
     // For Matchers.empty(), see DatabaseUtilsTest.testScoreLaunchablesPerformance()
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 }
