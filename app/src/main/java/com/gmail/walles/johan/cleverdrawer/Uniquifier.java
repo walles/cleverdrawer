@@ -25,7 +25,7 @@
 
 package com.gmail.walles.johan.cleverdrawer;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
