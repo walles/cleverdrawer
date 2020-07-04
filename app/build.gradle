@@ -138,7 +138,7 @@ android {
     }
 
     // NOTE: Must match the value in .travis.yml
-    buildToolsVersion = '28.0.3'
+    buildToolsVersion = '29.0.3'
 
     // Read signing properties from ~/.gradle/cleverdrawer.properties
     //
