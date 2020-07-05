@@ -1,7 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ MIT License
   ~
-  ~ Copyright (c) 2017 Johan Walles <johan.walles@gmail.com>
+  ~ Copyright (c) 2020 Johan Walles <johan.walles@gmail.com>
   ~
   ~ Permission is hereby granted, free of charge, to any person obtaining a copy
   ~ of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +24,8 @@
   ~
   -->
 
-<resources>
-    <string name="app_name" translatable="false">CleverDrawer</string>
-    <string name="launchable_icon_description">Icon</string>
-    <string name="action_contact_developer">Contact Developer</string>
-    <string name="action_view_source_code">View Source Code</string>
-    <string name="home_button_launcher">Home Button Launcher</string>
-    <string name="manage">Manage</string>
-    <string name="show_in_play_store">Show in Play Store</string>
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/manage" />
+    <item android:title="@string/show_in_play_store" />
+</menu>
