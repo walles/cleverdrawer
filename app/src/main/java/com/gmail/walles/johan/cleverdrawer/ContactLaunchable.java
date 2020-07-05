@@ -32,9 +32,6 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -43,6 +40,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 import timber.log.Timber;
 
 class ContactLaunchable extends Launchable {
@@ -140,14 +140,24 @@ class ContactLaunchable extends Launchable {
         return 0.98;
     }
 
-    @Override
-    public Intent getLaunchIntent() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
+    private Intent getIntent(String action) {
+        Intent intent = new Intent(action);
         Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(id));
         intent.setData(uri);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
         return intent;
+    }
+
+    @Override
+    public Intent getLaunchIntent() {
+        return getIntent(Intent.ACTION_VIEW);
+    }
+
+    @Nullable
+    @Override
+    public Intent getManageIntent() {
+        return getIntent(Intent.ACTION_EDIT);
     }
 }

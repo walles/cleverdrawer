@@ -143,6 +143,16 @@ public class MainActivity extends AppCompatActivity {
         PopupMenu popup = new PopupMenu(this, anchorView);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.launchable_popup, popup.getMenu());
+
+        Intent manageIntent = launchable.getManageIntent();
+        MenuItem manageItem = popup.getMenu().findItem(R.id.action_manage);
+        if (manageIntent == null) {
+            manageItem.setEnabled(false);
+        } else {
+            manageItem.setEnabled(true);
+            manageItem.setIntent(manageIntent);
+        }
+
         popup.show();
     }
 
