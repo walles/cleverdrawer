@@ -33,18 +33,19 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import timber.log.Timber;
 
 public class IntentLaunchable extends Launchable {
@@ -53,11 +54,13 @@ public class IntentLaunchable extends Launchable {
 
     private Drawable icon;
 
+    private final boolean isApp;
     private final Intent launchIntent;
 
-    private IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager) {
+    private IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager, boolean isApp) {
         super(resolveInfo.activityInfo.applicationInfo.packageName + "." + resolveInfo.activityInfo.name);
 
+        this.isApp = isApp;
         this.resolveInfo = resolveInfo;
         this.packageManager = packageManager;
 
@@ -73,40 +76,68 @@ public class IntentLaunchable extends Launchable {
         this.isApp = isApp;
     }
 
-    /**
-     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
-     * empty names.
-     */
-    public static List<Launchable> loadLaunchables(Context context) {
+    private static List<Launchable> loadAppLaunchables(Context context) {
         Timer timer = new Timer();
         final PackageManager packageManager = context.getPackageManager();
 
-        timer.addLeg("Listing Query Intents");
+        timer.addLeg("Listing App Query Intents");
         List<ResolveInfo> resInfos = new LinkedList<>();
-        for (Intent intent: getQueryIntents()) {
+        for (Intent intent: getAppQueryIntents()) {
             resInfos.addAll(packageManager.queryIntentActivities(intent, 0));
         }
 
-        timer.addLeg("Creating Launchables");
+        timer.addLeg("Creating App Launchables");
         List<Launchable> launchables = new ArrayList<>();
         for(ResolveInfo resolveInfo : resInfos) {
-            launchables.add(new IntentLaunchable(resolveInfo, packageManager));
+            launchables.add(new IntentLaunchable(resolveInfo, packageManager, true));
         }
 
         Timber.i("loadIntentLaunchables() timings: %s", timer);
         return launchables;
     }
 
-    private static Iterable<Intent> getQueryIntents() {
-        List<Intent> queryIntents = new LinkedList<>();
+    private static List<Launchable> loadSettingsLaunchables(Context context) {
+        Timer timer = new Timer();
+        final PackageManager packageManager = context.getPackageManager();
 
+        timer.addLeg("Listing Settings Query Intents");
+        List<ResolveInfo> resInfos = new LinkedList<>();
+        for (Intent intent: getSettingsQueryIntents()) {
+            resInfos.addAll(packageManager.queryIntentActivities(intent, 0));
+        }
+
+        timer.addLeg("Creating Settings Launchables");
+        List<Launchable> launchables = new ArrayList<>();
+        for(ResolveInfo resolveInfo : resInfos) {
+            launchables.add(new IntentLaunchable(resolveInfo, packageManager, false));
+        }
+
+        Timber.i("loadIntentLaunchables() timings: %s", timer);
+        return launchables;
+    }
+
+    /**
+     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
+     * empty names.
+     */
+    public static List<Launchable> loadLaunchables(Context context) {
+        List<Launchable> launchables = new ArrayList<>(loadAppLaunchables(context));
+        launchables.addAll(loadSettingsLaunchables(context));
+        return launchables;
+    }
+
+    private static List<Intent> getAppQueryIntents() {
         Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
         queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        queryIntents.add(queryIntent);
 
-        for (String action: getActions(Settings.class)) {
-            queryIntent = new Intent(action);
-            queryIntents.add(queryIntent);
+        return Collections.singletonList(queryIntent);
+    }
+
+    private static Iterable<Intent> getSettingsQueryIntents() {
+        List<Intent> queryIntents = new LinkedList<>();
+
+        for (String settingsAction: getSettingsActions()) {
+            queryIntents.add(new Intent(settingsAction));
         }
 
         // Battery screen on my Galaxy S6, I want to find this when searching for "battery"
@@ -217,5 +248,15 @@ public class IntentLaunchable extends Launchable {
     @Override
     public Intent getLaunchIntent() {
         return launchIntent;
+    }
+
+    @Nullable
+    @Override
+    public Intent getManageIntent() {
+        if (!isApp) {
+            return null;
+        }
+
+        FIXME
     }
 }
