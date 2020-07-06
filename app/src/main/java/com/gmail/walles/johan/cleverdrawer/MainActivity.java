@@ -32,17 +32,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.GridView;
 
@@ -52,6 +47,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
         LaunchableAdapter adapter =
                 new LaunchableAdapter(this, launchHistoryFile, cacheFile, lastOrderFile);
         gridView.setAdapter(adapter);
-        timer.addLeg("Setting up Listener");
+
+        timer.addLeg("Setting up click listener");
         gridView.setOnItemClickListener((adapterView, view1, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
 
@@ -102,6 +106,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             finish();
+        });
+
+        timer.addLeg("Setting up hold listener");
+        gridView.setOnItemLongClickListener((adapterView, icon, position, id) -> {
+            Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
+            showLongPressPopup(launchable, icon);
+
+            return true;
         });
 
         timer.addLeg("Finding Search Box");
@@ -124,6 +136,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Timber.i("onCreateView() timings: %s", timer.toString());
+    }
+
+    private void showLongPressPopup(Launchable launchable, View anchorView) {
+        Timber.i("Bringing up popup menu for %s (%s)...", launchable.getName(), launchable.getId());
+        PopupMenu popup = new PopupMenu(this, anchorView);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.launchable_popup, popup.getMenu());
+
+        Intent manageIntent = launchable.getManageIntent();
+        MenuItem manageItem = popup.getMenu().findItem(R.id.action_manage);
+        if (manageIntent == null) {
+            manageItem.setEnabled(false);
+        } else {
+            manageItem.setEnabled(true);
+            manageItem.setIntent(manageIntent);
+        }
+
+        popup.show();
     }
 
     @Override

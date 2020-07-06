@@ -33,8 +33,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.jetbrains.annotations.TestOnly;
 
@@ -45,6 +43,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import timber.log.Timber;
 
 public class IntentLaunchable extends Launchable {
@@ -53,9 +53,9 @@ public class IntentLaunchable extends Launchable {
 
     private Drawable icon;
 
-    private final Intent launchIntent;
+    protected final Intent launchIntent;
 
-    private IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager) {
+    protected IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager) {
         super(resolveInfo.activityInfo.applicationInfo.packageName + "." + resolveInfo.activityInfo.name);
 
         this.resolveInfo = resolveInfo;
@@ -65,21 +65,24 @@ public class IntentLaunchable extends Launchable {
         this.launchIntent = createLaunchIntent(resolveInfo);
     }
 
-    /**
-     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
-     * empty names.
-     */
-    public static List<Launchable> loadLaunchables(Context context) {
+    @TestOnly
+    public IntentLaunchable(String id, @NonNull CaseInsensitive name) {
+        super(id);
+        setName(name);
+        this.launchIntent = null;
+    }
+
+    private static List<Launchable> loadSettingsLaunchables(Context context) {
         Timer timer = new Timer();
         final PackageManager packageManager = context.getPackageManager();
 
-        timer.addLeg("Listing Query Intents");
+        timer.addLeg("Listing Settings Query Intents");
         List<ResolveInfo> resInfos = new LinkedList<>();
-        for (Intent intent: getQueryIntents()) {
+        for (Intent intent: getSettingsQueryIntents()) {
             resInfos.addAll(packageManager.queryIntentActivities(intent, 0));
         }
 
-        timer.addLeg("Creating Launchables");
+        timer.addLeg("Creating Settings Launchables");
         List<Launchable> launchables = new ArrayList<>();
         for(ResolveInfo resolveInfo : resInfos) {
             launchables.add(new IntentLaunchable(resolveInfo, packageManager));
@@ -89,16 +92,21 @@ public class IntentLaunchable extends Launchable {
         return launchables;
     }
 
-    private static Iterable<Intent> getQueryIntents() {
+    /**
+     * @return A collection of launchables. No duplicate IDs, but zero or more Launchables may have
+     * empty names.
+     */
+    public static List<Launchable> loadLaunchables(Context context) {
+        List<Launchable> launchables = new ArrayList<>(AppLaunchable.loadAppLaunchables(context));
+        launchables.addAll(loadSettingsLaunchables(context));
+        return launchables;
+    }
+
+    private static Iterable<Intent> getSettingsQueryIntents() {
         List<Intent> queryIntents = new LinkedList<>();
 
-        Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
-        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        queryIntents.add(queryIntent);
-
-        for (String action: getActions(Settings.class)) {
-            queryIntent = new Intent(action);
-            queryIntents.add(queryIntent);
+        for (String settingsAction: getSettingsActions()) {
+            queryIntents.add(new Intent(settingsAction));
         }
 
         // Battery screen on my Galaxy S6, I want to find this when searching for "battery"
@@ -107,9 +115,9 @@ public class IntentLaunchable extends Launchable {
         return queryIntents;
     }
 
-    private static Iterable<String> getActions(Class<?> classWithConstants) {
+    private static Iterable<String> getSettingsActions() {
         List<String> actions = new LinkedList<>();
-        for (Field field: classWithConstants.getFields()) {
+        for (Field field: Settings.class.getFields()) {
             if (!Modifier.isFinal(field.getModifiers())) {
                 continue;
             }
@@ -131,7 +139,13 @@ public class IntentLaunchable extends Launchable {
                 value = (String)field.get(null);
             } catch (IllegalAccessException e) {
                 Timber.w(e, "Unable to get field value of %s.%s",
-                        classWithConstants.getName(), field.getName());
+                        Settings.class.getName(), field.getName());
+                continue;
+            }
+
+            if (value == null) {
+                Timber.w("Got null value for field %s.%s",
+                        Settings.class.getName(), field.getName());
                 continue;
             }
 
@@ -166,13 +180,6 @@ public class IntentLaunchable extends Launchable {
         return null;
     }
 
-    @TestOnly
-    public IntentLaunchable(String id, @NonNull CaseInsensitive name) {
-        super(id);
-        setName(name);
-        this.launchIntent = null;
-    }
-
     private static Intent createLaunchIntent(
             ResolveInfo resolveInfo)
     {
@@ -201,7 +208,7 @@ public class IntentLaunchable extends Launchable {
             // * People expect apps, not settings, so put what people expect first
             // * All the settings have the same icon, mixing this with the apps makes both apps and
             //  settings harder to find
-            return  0.99;
+            return 0.99;
         }
 
         return 1.0;
@@ -210,5 +217,11 @@ public class IntentLaunchable extends Launchable {
     @Override
     public Intent getLaunchIntent() {
         return launchIntent;
+    }
+
+    @Nullable
+    @Override
+    public Intent getManageIntent() {
+        return null;
     }
 }

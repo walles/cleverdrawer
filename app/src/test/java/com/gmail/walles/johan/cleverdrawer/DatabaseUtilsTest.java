@@ -51,6 +51,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
+
 public class DatabaseUtilsTest {
     @SuppressWarnings("CanBeFinal")
     @Rule
@@ -348,6 +350,12 @@ public class DatabaseUtilsTest {
                 @Override
                 public Intent getLaunchIntent() {
                     throw new UnsupportedOperationException();
+                }
+
+                @Nullable
+                @Override
+                public Intent getManageIntent() {
+                    return null;
                 }
             };
             launchable.setName(new CaseInsensitive(launch.id));

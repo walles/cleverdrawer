@@ -28,6 +28,8 @@ package com.gmail.walles.johan.cleverdrawer;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.Nullable;
+
 class DummyLaunchable extends Launchable {
     protected DummyLaunchable(String id) {
         super(id);
@@ -51,6 +53,12 @@ class DummyLaunchable extends Launchable {
 
     @Override
     public Intent getLaunchIntent() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Intent getManageIntent() {
         return null;
     }
 }
