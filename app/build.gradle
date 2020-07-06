@@ -40,13 +40,13 @@ buildscript {
 
 apply plugin: 'com.android.application'
 
-apply plugin: 'com.android.application'
-
 // Fabric / Crashlytics must come after the Android plugin
 apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
+
+apply from: "$project.rootDir/spotless.gradle"
 
 // During git hook execution some GIT_ variables are set which make our commands fail unless we
 // strip those variables out
