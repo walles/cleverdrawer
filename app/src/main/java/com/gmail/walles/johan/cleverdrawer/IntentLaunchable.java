@@ -32,6 +32,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.provider.Settings;
 
 import org.jetbrains.annotations.TestOnly;
@@ -257,6 +258,14 @@ public class IntentLaunchable extends Launchable {
             return null;
         }
 
-        FIXME
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        ComponentName component = launchIntent.getComponent();
+        if (component == null) {
+            Timber.w("Got null component for <%s>", getName());
+            return null;
+        }
+
+        intent.setData(Uri.parse("package:" + component.getPackageName()));
+        return intent;
     }
 }
