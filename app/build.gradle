@@ -23,30 +23,9 @@
  *
  */
 
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-
-    dependencies {
-        // These docs use an open ended version so that our plugin
-        // can be updated quickly in response to Android tooling updates
-
-        // We recommend changing it to the latest version from our changelog:
-        // https://docs.fabric.io/android/changelog.html#fabric-gradle-plugin
-        classpath 'io.fabric.tools:gradle:1.31.1'
-    }
-}
-
 apply plugin: 'com.android.application'
-
-apply plugin: 'com.android.application'
-
-// Fabric / Crashlytics must come after the Android plugin
-apply plugin: 'io.fabric'
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 // During git hook execution some GIT_ variables are set which make our commands fail unless we
 // strip those variables out
@@ -172,9 +151,8 @@ dependencies {
     implementation 'org.jetbrains:annotations:17.0.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
-        transitive = true
-    }
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
+    implementation 'com.google.firebase:firebase-analytics:17.4.3'
 
     testImplementation 'junit:junit:4.12'
 
