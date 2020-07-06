@@ -32,7 +32,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.provider.Settings;
 
 import org.jetbrains.annotations.TestOnly;
@@ -40,7 +39,6 @@ import org.jetbrains.annotations.TestOnly;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -55,13 +53,11 @@ public class IntentLaunchable extends Launchable {
 
     private Drawable icon;
 
-    private final boolean isApp;
-    private final Intent launchIntent;
+    protected final Intent launchIntent;
 
-    private IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager, boolean isApp) {
+    protected IntentLaunchable(ResolveInfo resolveInfo, PackageManager packageManager) {
         super(resolveInfo.activityInfo.applicationInfo.packageName + "." + resolveInfo.activityInfo.name);
 
-        this.isApp = isApp;
         this.resolveInfo = resolveInfo;
         this.packageManager = packageManager;
 
@@ -70,31 +66,10 @@ public class IntentLaunchable extends Launchable {
     }
 
     @TestOnly
-    public IntentLaunchable(String id, @NonNull CaseInsensitive name, boolean isApp) {
+    public IntentLaunchable(String id, @NonNull CaseInsensitive name) {
         super(id);
         setName(name);
         this.launchIntent = null;
-        this.isApp = isApp;
-    }
-
-    private static List<Launchable> loadAppLaunchables(Context context) {
-        Timer timer = new Timer();
-        final PackageManager packageManager = context.getPackageManager();
-
-        timer.addLeg("Listing App Query Intents");
-        List<ResolveInfo> resInfos = new LinkedList<>();
-        for (Intent intent: getAppQueryIntents()) {
-            resInfos.addAll(packageManager.queryIntentActivities(intent, 0));
-        }
-
-        timer.addLeg("Creating App Launchables");
-        List<Launchable> launchables = new ArrayList<>();
-        for(ResolveInfo resolveInfo : resInfos) {
-            launchables.add(new IntentLaunchable(resolveInfo, packageManager, true));
-        }
-
-        Timber.i("loadIntentLaunchables() timings: %s", timer);
-        return launchables;
     }
 
     private static List<Launchable> loadSettingsLaunchables(Context context) {
@@ -110,7 +85,7 @@ public class IntentLaunchable extends Launchable {
         timer.addLeg("Creating Settings Launchables");
         List<Launchable> launchables = new ArrayList<>();
         for(ResolveInfo resolveInfo : resInfos) {
-            launchables.add(new IntentLaunchable(resolveInfo, packageManager, false));
+            launchables.add(new IntentLaunchable(resolveInfo, packageManager));
         }
 
         Timber.i("loadIntentLaunchables() timings: %s", timer);
@@ -122,16 +97,9 @@ public class IntentLaunchable extends Launchable {
      * empty names.
      */
     public static List<Launchable> loadLaunchables(Context context) {
-        List<Launchable> launchables = new ArrayList<>(loadAppLaunchables(context));
+        List<Launchable> launchables = new ArrayList<>(AppLaunchable.loadAppLaunchables(context));
         launchables.addAll(loadSettingsLaunchables(context));
         return launchables;
-    }
-
-    private static List<Intent> getAppQueryIntents() {
-        Intent queryIntent = new Intent(Intent.ACTION_MAIN, null);
-        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-
-        return Collections.singletonList(queryIntent);
     }
 
     private static Iterable<Intent> getSettingsQueryIntents() {
@@ -254,18 +222,6 @@ public class IntentLaunchable extends Launchable {
     @Nullable
     @Override
     public Intent getManageIntent() {
-        if (!isApp) {
-            return null;
-        }
-
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        ComponentName component = launchIntent.getComponent();
-        if (component == null) {
-            Timber.w("Got null component for <%s>", getName());
-            return null;
-        }
-
-        intent.setData(Uri.parse("package:" + component.getPackageName()));
-        return intent;
+        return null;
     }
 }
