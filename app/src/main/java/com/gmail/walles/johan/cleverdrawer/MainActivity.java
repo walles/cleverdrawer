@@ -140,13 +140,13 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.launchable_popup, popup.getMenu());
 
-        Intent manageIntent = launchable.getManageIntent();
-        MenuItem manageItem = popup.getMenu().findItem(R.id.action_manage);
-        if (manageIntent == null) {
-            manageItem.setEnabled(false);
+        Intent appInfoIntent = launchable.getAppInfoIntent();
+        MenuItem appInfoItem = popup.getMenu().findItem(R.id.action_app_info);
+        if (appInfoIntent == null) {
+            appInfoItem.setEnabled(false);
         } else {
-            manageItem.setEnabled(true);
-            manageItem.setIntent(manageIntent);
+            appInfoItem.setEnabled(true);
+            appInfoItem.setIntent(appInfoIntent);
         }
 
         popup.show();

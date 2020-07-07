@@ -65,7 +65,7 @@ class AppLaunchable extends IntentLaunchable {
 
     @Nullable
     @Override
-    public Intent getManageIntent() {
+    public Intent getAppInfoIntent() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         ComponentName component = launchIntent.getComponent();
         if (component == null) {

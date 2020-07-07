@@ -150,10 +150,10 @@ public abstract class Launchable implements Comparable<Launchable> {
 
     /**
      * The intent returned here will be launched when the user long-presses an icon
-     * and chooses "Manage" from the popup menu.
+     * and chooses "App Info" from the popup menu.
      *
      * @return null if managing this kind of launcher is unsupported
      */
     @Nullable
-    public abstract Intent getManageIntent();
+    public abstract Intent getAppInfoIntent();
 }

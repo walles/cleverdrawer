@@ -26,6 +26,6 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/action_manage"
-        android:title="@string/manage" />
+        android:id="@+id/action_app_info"
+        android:title="@string/app_info" />
 </menu>

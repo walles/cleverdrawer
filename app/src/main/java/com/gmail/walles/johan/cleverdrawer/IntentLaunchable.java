@@ -221,7 +221,7 @@ public class IntentLaunchable extends Launchable {
 
     @Nullable
     @Override
-    public Intent getManageIntent() {
+    public Intent getAppInfoIntent() {
         return null;
     }
 }

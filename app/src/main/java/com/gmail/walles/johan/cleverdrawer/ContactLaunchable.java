@@ -140,8 +140,9 @@ class ContactLaunchable extends Launchable {
         return 0.98;
     }
 
-    private Intent getIntent(String action) {
-        Intent intent = new Intent(action);
+    @Override
+    public Intent getLaunchIntent() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
         Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(id));
         intent.setData(uri);
 
@@ -150,14 +151,9 @@ class ContactLaunchable extends Launchable {
         return intent;
     }
 
-    @Override
-    public Intent getLaunchIntent() {
-        return getIntent(Intent.ACTION_VIEW);
-    }
-
     @Nullable
     @Override
-    public Intent getManageIntent() {
-        return getIntent(Intent.ACTION_EDIT);
+    public Intent getAppInfoIntent() {
+        return null;
     }
 }
