@@ -97,6 +97,13 @@ android {
     }
 
     lintOptions {
+        isAbortOnError = true
+        isCheckAllWarnings = true
+        isWarningsAsErrors = true
+        textReport = true
+        textOutput = "stdout"
+        isExplainIssues = false
+
         // These tests can be fine one day and not fine the next without us changing anything. Not
         // reliable enough, disable.
         //
@@ -119,14 +126,6 @@ android {
         // From <http://tools.android.com/tips/lint-checks>:
         // "This is not important in small projects"
         disable("SyntheticAccessor")
-
-        abortOnError = true
-        checkAllWarnings = true
-        warningsAsErrors = true
-
-        textReport = true
-        textOutput = "stdout"
-        explainIssues = false
     }
 
     // NOTE: Must match the value in .travis.yml
