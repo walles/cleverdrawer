@@ -23,6 +23,10 @@
  *
  */
 
+import java.io.ByteArrayOutputStream
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -49,7 +53,7 @@ fun getNoGitEnv(): Map<String, String> {
 
 // From: http://stackoverflow.com/questions/17097263/automatically-versioning-android-project-from-git-describe-with-android-studio-g
 fun getVersionCode(): Int {
-    val output = java.io.ByteArrayOutputStream()
+    val output = ByteArrayOutputStream()
     exec {
         environment = getNoGitEnv()
         standardOutput = output
@@ -59,7 +63,7 @@ fun getVersionCode(): Int {
 }
 
 fun getVersionName(): String {
-    val output = java.io.ByteArrayOutputStream()
+    val output = ByteArrayOutputStream()
     exec {
         environment = getNoGitEnv()
         standardOutput = output
@@ -116,13 +120,13 @@ android {
         // "This is not important in small projects"
         disable("SyntheticAccessor")
 
-        abortOnError true
-        checkAllWarnings true
-        warningsAsErrors true
+        abortOnError = true
+        checkAllWarnings = true
+        warningsAsErrors = true
 
-        textReport true
-        textOutput "stdout"
-        explainIssues false
+        textReport = true
+        textOutput = "stdout"
+        explainIssues = false
     }
 
     // NOTE: Must match the value in .travis.yml
@@ -131,9 +135,9 @@ android {
     // Read signing properties from ~/.gradle/cleverdrawer.properties
     //
     // From: https://www.timroes.de/2013/09/22/handling-signing-configs-with-gradle/
-    if (new File("${gradle.gradleUserHomeDir}/cleverdrawer.properties").exists()) {
-        Properties props = new Properties()
-        props.load(new FileInputStream(file("${gradle.gradleUserHomeDir}/cleverdrawer.properties")))
+    if (File("${gradle.gradleUserHomeDir}/cleverdrawer.properties").exists()) {
+        val props = Properties()
+        props.load(FileInputStream(file("${gradle.gradleUserHomeDir}/cleverdrawer.properties")))
 
         signingConfigs {
             release {
