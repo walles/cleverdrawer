@@ -30,15 +30,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import androidx.core.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.crashlytics.android.answers.CustomEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +58,7 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import androidx.core.content.ContextCompat;
 import timber.log.Timber;
 
 class LaunchableAdapter extends BaseAdapter {
@@ -113,25 +111,9 @@ class LaunchableAdapter extends BaseAdapter {
     }
 
     public void reloadLaunchables() {
-        boolean haveNameCache = nameCacheFile.isFile();
-        long t0 = System.currentTimeMillis();
-
         allLaunchables = loadLaunchables(context, nameCacheFile, launchHistoryFile, lastOrderFile);
         filteredLaunchables = allLaunchables;
         notifyDataSetChanged();
-
-        long t1 = System.currentTimeMillis();
-        long dtMillis = t1 - t0;
-
-        if (haveNameCache) {
-            // This is the ususal case
-            LoggingUtils.logCustom(new CustomEvent("Reload launchables")
-                    .putCustomAttribute("Total duration ms", dtMillis));
-        } else {
-            // This should only happen for first-time users
-            LoggingUtils.logCustom(new CustomEvent("Reload launchables")
-                    .putCustomAttribute("Uncached total duration ms", dtMillis));
-        }
     }
 
     static List<Launchable> loadLaunchables(Context context,

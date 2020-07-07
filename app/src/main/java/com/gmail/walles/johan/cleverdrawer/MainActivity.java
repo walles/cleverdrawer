@@ -41,8 +41,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.GridView;
 
-import com.crashlytics.android.answers.CustomEvent;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -95,8 +93,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(launchable.getLaunchIntent());
 
                 DatabaseUtils.registerLaunch(launchHistoryFile, launchable);
-
-                LoggingUtils.logCustom(new CustomEvent("Launched Other App"));
             } catch (RuntimeException e) {
                 // We can get a SecurityException, log what we were trying to launch. Note that the
                 // above info level message with this information never seems to reach Crashlytics.
@@ -261,21 +257,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_READ_CONTACTS) {
-            String response;
             if (grantResults.length == 0) {
                 // If request is cancelled, the result arrays are empty.
-                response = "Cancel";
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                response = "Allow";
                 if (launchableAdapter != null) {
                     launchableAdapter.reloadLaunchables();
                 }
-            } else {
-                response = "Deny";
             }
-
-            LoggingUtils.logCustom(new CustomEvent("Request READ_CONTACTS")
-                    .putCustomAttribute("Response", response));
 
             return;
         }
