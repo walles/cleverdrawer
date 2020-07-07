@@ -26,20 +26,17 @@
 package com.gmail.walles.johan.cleverdrawer;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-import io.fabric.sdk.android.Fabric;
+import androidx.annotation.NonNull;
 import timber.log.Timber;
 
 // Can't use Timber before logging set up
@@ -53,7 +50,7 @@ public class Application extends android.app.Application {
     public void onCreate() {
         Timber.Tree tree;
         if (IS_CRASHLYTICS_ENABLED) {
-            tree = new CrashlyticsTree(getApplicationContext());
+            tree = new CrashlyticsTree();
         } else {
             tree = new Timber.DebugTree();
         }
@@ -114,24 +111,12 @@ public class Application extends android.app.Application {
     }
 
     private static class CrashlyticsTree extends Timber.Tree {
-        protected CrashlyticsTree(Context context) {
-            Fabric.with(context, new Crashlytics());
-        }
-
         @Override
         protected void log(int priority, String tag, @NonNull String message, Throwable t) {
-            if (BuildConfig.DEBUG) {
-                tag = "DEBUG";
-            } else if (TextUtils.isEmpty(tag)) {
-                tag = "CleverDrawer";
-            }
-
-            // This call logs to *both* Crashlytics and LogCat, and will log the Exception backtrace
-            // to LogCat on exceptions.
-            Crashlytics.log(priority, tag, message);
-
+            final FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+            crashlytics.log(message);
             if (t != null) {
-                Crashlytics.logException(t);
+                crashlytics.recordException(t);
             }
         }
     }
