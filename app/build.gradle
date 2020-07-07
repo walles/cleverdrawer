@@ -24,9 +24,9 @@
  */
 
 plugins {
-    id('com.android.application')
-    id('com.google.gms.google-services')
-    id('com.google.firebase.crashlytics')
+    id("com.android.application")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 // During git hook execution some GIT_ variables are set which make our commands fail unless we
@@ -50,7 +50,7 @@ def getVersionCode = { ->
     exec {
         environment = getNoGitEnv()
         standardOutput = output
-        commandLine 'git', 'tag', '--list'
+        commandLine "git", "tag", "--list"
     }
     return output.toString().split("\n").size()
 }
@@ -60,7 +60,7 @@ def getVersionName = { ->
     exec {
         environment = getNoGitEnv()
         standardOutput = output
-        commandLine 'git', 'describe', '--tags', '--dirty', '--first-parent'
+        commandLine "git", "describe", "--tags", "--dirty", "--first-parent"
     }
     return output.toString().trim()
 }
@@ -80,7 +80,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 
@@ -98,11 +98,11 @@ android {
         disable("NewerVersionAvailable")
         disable("OldTargetApi")
 
-        // Johan doesn't want to generate multiple icon sizes; most phones can resize an icon just
+        // Johan doesn"t want to generate multiple icon sizes; most phones can resize an icon just
         // fine by themselves.
         disable("IconMissingDensityFolder")
 
-        // Johan doesn't care about Kotlin. PRs welcome :)
+        // Johan doesn"t care about Kotlin. PRs welcome :)
         disable("UnknownNullness")
         disable("KotlinPropertyAccess")
 
@@ -123,7 +123,7 @@ android {
     }
 
     // NOTE: Must match the value in .travis.yml
-    buildToolsVersion = '29.0.3'
+    buildToolsVersion = "29.0.3"
 
     // Read signing properties from ~/.gradle/cleverdrawer.properties
     //
@@ -134,10 +134,10 @@ android {
 
         signingConfigs {
             release {
-                storeFile file(props['keystore'])
-                storePassword props['keystore.password']
-                keyAlias props['keyAlias']
-                keyPassword props['keyPassword']
+                storeFile file(props["keystore"])
+                storePassword props["keystore.password"]
+                keyAlias props["keyAlias"]
+                keyPassword props["keyPassword"]
             }
         }
 
@@ -150,20 +150,20 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'org.jetbrains:annotations:17.0.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.9.3'
+    implementation "androidx.appcompat:appcompat:1.0.0"
+    implementation "androidx.constraintlayout:constraintlayout:1.1.3"
+    implementation "com.google.android.material:material:1.0.0"
+    implementation "com.jakewharton.timber:timber:4.7.1"
+    implementation "org.jetbrains:annotations:17.0.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.9.3"
 
-    implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
+    implementation "com.google.firebase:firebase-crashlytics:17.1.1"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:4.12"
 
     // For Matchers.empty(), see DatabaseUtilsTest.testScoreLaunchablesPerformance()
-    testImplementation 'org.hamcrest:hamcrest-library:1.3'
+    testImplementation "org.hamcrest:hamcrest-library:1.3"
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation "androidx.test.ext:junit:1.1.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.0"
 }
