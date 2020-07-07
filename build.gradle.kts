@@ -48,6 +48,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+task("clean") {
     delete(rootProject.buildDir)
 }
