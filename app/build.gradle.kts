@@ -101,7 +101,7 @@ android {
         isCheckAllWarnings = true
         isWarningsAsErrors = true
         textReport = true
-        textOutput = "stdout"
+        textOutput = File("stdout")
         isExplainIssues = false
 
         // These tests can be fine one day and not fine the next without us changing anything. Not
