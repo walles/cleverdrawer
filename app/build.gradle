@@ -97,7 +97,7 @@ android {
         disable("OldTargetApi")
 
         // Johan doesn't want to generate multiple icon sizes; most phones can resize an icon just
-        // fine by itself.
+        // fine by themselves.
         disable("IconMissingDensityFolder")
 
         // Johan doesn't care about Kotlin. PRs welcome :)
@@ -106,6 +106,10 @@ android {
 
         // We will never autofill anything here (knock, knock)
         disable("Autofill")
+
+        // From <http://tools.android.com/tips/lint-checks>:
+        // "This is not important in small projects"
+        disable("SyntheticAccessor")
 
         abortOnError true
         checkAllWarnings true
