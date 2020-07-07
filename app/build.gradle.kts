@@ -25,17 +25,20 @@
 
 plugins {
     id("com.android.application")
+    kotlin("android")
+    kotlin("android.extensions")
+
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
 }
 
 // During git hook execution some GIT_ variables are set which make our commands fail unless we
 // strip those variables out
-def getNoGitEnv = { ->
-    def noGitEnv = new HashMap<String, String>(System.getenv())
-    def iterator = noGitEnv.entrySet().iterator()
+fun getNoGitEnv(): Map<String, String> {
+    val noGitEnv = HashMap<String, String>(System.getenv())
+    val iterator = noGitEnv.entries.iterator()
     while (iterator.hasNext()) {
-        def entry = iterator.next()
+        val entry = iterator.next()
         if (entry.key.startsWith("GIT_")) {
             iterator.remove()
         }
@@ -45,22 +48,22 @@ def getNoGitEnv = { ->
 }
 
 // From: http://stackoverflow.com/questions/17097263/automatically-versioning-android-project-from-git-describe-with-android-studio-g
-def getVersionCode = { ->
-    def output = new ByteArrayOutputStream()
+fun getVersionCode(): Int {
+    val output = java.io.ByteArrayOutputStream()
     exec {
         environment = getNoGitEnv()
         standardOutput = output
-        commandLine "git", "tag", "--list"
+        commandLine = listOf("git", "tag", "--list")
     }
-    return output.toString().split("\n").size()
+    return output.toString().split("\n").size
 }
 
-def getVersionName = { ->
-    def output = new ByteArrayOutputStream()
+fun getVersionName(): String {
+    val output = java.io.ByteArrayOutputStream()
     exec {
         environment = getNoGitEnv()
         standardOutput = output
-        commandLine "git", "describe", "--tags", "--dirty", "--first-parent"
+        commandLine = listOf("git", "describe", "--tags", "--dirty", "--first-parent")
     }
     return output.toString().trim()
 }
