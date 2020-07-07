@@ -73,7 +73,7 @@ fun getVersionName(): String {
 }
 
 android {
-    compileSdkVersion = 29
+    compileSdkVersion(29)
 
     defaultConfig {
         applicationId = "com.gmail.walles.johan.cleverdrawer"
@@ -85,8 +85,8 @@ android {
     }
 
     buildTypes {
-        release {
-            minifyEnabled = false
+        getByName("release") {
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
@@ -140,7 +140,7 @@ android {
         props.load(FileInputStream(file("${gradle.gradleUserHomeDir}/cleverdrawer.properties")))
 
         signingConfigs {
-            release {
+            getByName("release") {
                 storeFile = file(props["keystore"])
                 storePassword = props["keystore.password"]
                 keyAlias = props["keyAlias"]
@@ -149,7 +149,7 @@ android {
         }
 
         buildTypes {
-            release {
+            getByName("release") {
                 signingConfig = signingConfigs.release
             }
         }
