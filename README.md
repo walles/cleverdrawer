@@ -18,8 +18,6 @@ Advanced / Default apps / Home app and check CleverDrawer there.
 * [Download and install Android Studio](https://developer.android.com/sdk/index.html)
 * Start Android Studio
 * "Open an existing Android Studio project" and point it to where you cloned the source code
-* Add an `app/fabric.properties` file with one line: "`apiKey=0`" (or follow the [official Crashlytics
-instructions](https://docs.fabric.io/android/fabric/settings/working-in-teams.html#android-projects))
 * Next to the green play button in the top toolbar, make sure the dropdown says "CleverDrawer"
 * Click the green play button to build / launch, install any requested components
 * Do `./gradlew check` to test and lint code before making a pull request. This is
@@ -34,10 +32,6 @@ also a good way of researching Travis problems locally.
 5. `git push --tags`
 
 # TODO Misc
-* Long pressing an app should bring up a menu:
-  * Manage (Like clicking an app in the device Settings)
-  * Show on Google Play
-  * Add home screen launcher for the long pressed app
 * Move names caching into `IntentLaunchable`
 * Put a clear-the-search-box button inside the search box.
 * Sort recently installed apps earlier
@@ -102,7 +96,7 @@ app labels from the system and update all cache lines that have changed
 * Don't show Launchables with empty labels
 * Give settings a lower score than apps
 * Make sure the System Battery Settings is in the list on my Galaxy S6
-* Add [Crashlytics crash reporting](https://fabric.io/kits/android/crashlytics/install)
+* Add [Crashlytics crash reporting](https://firebase.google.com/products/crashlytics)
 * Don't log to Crashlytics while running Instrumented Tests
 * Don't log to Crashlytics while running in the emulator
 * Don't log to Crashlytics while unit testing
@@ -145,3 +139,4 @@ button.
 icons that need to change lines.
 * Improve startup performance by doing multiple independent slow tasks
 in parallel.
+* Long pressing an app should bring up a menu

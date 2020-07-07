@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1087247509835",
+    "firebase_url": "https://clever-drawer.firebaseio.com",
+    "project_id": "clever-drawer",
+    "storage_bucket": "clever-drawer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087247509835:android:caf45cb7bb3bfc435260ce",
+        "android_client_info": {
+          "package_name": "com.gmail.walles.johan.cleverdrawer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1087247509835-lgcefaiar04ql5q9bacta0sr4e8api8j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAqT9G1PdbIX07KkJK3OOMf4tJpQeAUKI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1087247509835-lgcefaiar04ql5q9bacta0sr4e8api8j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
