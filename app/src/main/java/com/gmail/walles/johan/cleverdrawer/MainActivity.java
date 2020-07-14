@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         timer.addLeg("Setting up hold listener");
         gridView.setOnItemLongClickListener((adapterView, icon, position, id) -> {
             Launchable launchable = (Launchable)adapterView.getItemAtPosition(position);
-            showLongPressPopup(launchable, icon);
+            showLongPressPopup(launchable, icon, launchHistoryFile);
 
             return true;
         });
@@ -134,7 +134,11 @@ public class MainActivity extends AppCompatActivity {
         Timber.i("onCreateView() timings: %s", timer.toString());
     }
 
-    private void showLongPressPopup(Launchable launchable, View anchorView) {
+    private void showLongPressPopup(
+            Launchable launchable,
+            View anchorView,
+            File launchHistoryFile)
+    {
         Timber.i("Bringing up popup menu for %s (%s)...", launchable.getName(), launchable.getId());
         PopupMenu popup = new PopupMenu(this, anchorView);
         MenuInflater inflater = popup.getMenuInflater();
@@ -146,7 +150,18 @@ public class MainActivity extends AppCompatActivity {
             appInfoItem.setEnabled(false);
         } else {
             appInfoItem.setEnabled(true);
-            appInfoItem.setIntent(appInfoIntent);
+            appInfoItem.setOnMenuItemClickListener(item -> {
+                startActivity(appInfoIntent);
+                try {
+                    DatabaseUtils.registerLaunch(launchHistoryFile, launchable);
+                } catch (IOException e) {
+                    Timber.w(e, "Failed to up launch count after long press");
+                }
+                finish();
+
+                // "true" here means "event handled"
+                return true;
+            });
         }
 
         popup.show();
